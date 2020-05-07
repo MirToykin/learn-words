@@ -3,14 +3,14 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import {Redirect} from "react-router-dom";
 
-const CurrentSet = ({auth}) => {
+const LearnedSet = ({auth}) => {
   if (!auth) return <Redirect to='/login'/>
 
   return (
     <Paper>
-      <Typography variant='h5'>Текущий набор</Typography>
+      <Typography variant='h5'>Изученные</Typography>
     </Paper>
   );
 };
 
-export default CurrentSet;
+export default LearnedSet;

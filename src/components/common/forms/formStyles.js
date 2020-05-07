@@ -1,6 +1,6 @@
 import {makeStyles} from "@material-ui/core/styles";
 
-export const useAuthStyles = makeStyles(theme => {
+export const useCommonStyles = makeStyles(theme => {
   return ({
     paper: {
       padding: theme.spacing(2)

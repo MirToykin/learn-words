@@ -8,7 +8,7 @@ import {connect} from "react-redux";
 import {combineValidators, isRequired} from "revalidate";
 import {Redirect} from "react-router-dom";
 import {RenderTextField} from "../common/forms/formElems";
-import {useAuthStyles} from "../common/forms/formStyles";
+import {useCommonStyles} from "../common/forms/formStyles";
 import {registerUser} from "../../redux/actions/authActions";
 
 const validate = combineValidators({
@@ -23,7 +23,7 @@ const actions = {
 }
 
 const RegisterForm = ({pristine, submitting, error, handleSubmit, registerUser, reset, auth}) => {
-  const classes = useAuthStyles();
+  const classes = useCommonStyles();
 
   if (auth) return <Redirect to='/current'/>
 

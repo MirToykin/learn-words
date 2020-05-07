@@ -47,6 +47,8 @@ const SignedInMenu = ({visible, toggleDrawer, logout, name}) => {
         <Drawer anchor='top' open={visible} onClose={toggleDrawer(false)}>
           <List component="nav">
             <ListItem
+              component={NavLink}
+              to='/to-learn'
               button
               selected={false}
               onClick={toggleDrawer(false)}
@@ -54,6 +56,8 @@ const SignedInMenu = ({visible, toggleDrawer, logout, name}) => {
               <ListItemText primary="На очереди"/>
             </ListItem>
             <ListItem
+              component={NavLink}
+              to='/current'
               button
               selected={false}
               onClick={toggleDrawer(false)}
@@ -61,6 +65,8 @@ const SignedInMenu = ({visible, toggleDrawer, logout, name}) => {
               <ListItemText primary="Текущий набор"/>
             </ListItem>
             <ListItem
+              component={NavLink}
+              to='/learned'
               button
               selected={false}
               onClick={toggleDrawer(false)}
