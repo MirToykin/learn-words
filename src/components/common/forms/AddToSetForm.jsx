@@ -5,22 +5,22 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import {combineValidators, isRequired} from "revalidate";
-import {RenderTextarea, RenderTextField} from "../../common/forms/formElems";
+import {RenderTextarea, RenderTextField} from "./formElems";
 import Dialog from "@material-ui/core/Dialog";
-import {useCommonStyles} from "../../common/forms/formStyles";
+import {useCommonFormStyles} from "../../../assets/useStyles";
 
 const validate = combineValidators({
   word: isRequired({message: 'Введите слово'}),
   means: isRequired({message: 'Введите значения'})
 })
 
-const CurrentForm = ({pristine, submitting, error,
+const AddToSetForm = ({pristine, submitting, error,
                        handleSubmit, reset,
-                       addToCurrent, open, onClose}) => {
-  const classes = useCommonStyles();
+                       addToSet, open, onClose}) => {
+  const classes = useCommonFormStyles();
 
   const onSubmit = (wordDoc) => {
-    addToCurrent(wordDoc);
+    addToSet(wordDoc);
     reset();
   }
 
@@ -53,17 +53,21 @@ const CurrentForm = ({pristine, submitting, error,
                 {error}
               </Typography>}
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <Button type='submit'
                         disabled={pristine || submitting}
                         variant="contained"
                         color="primary"
                         className={classes.submit}
+                        style={{width: '100%'}}
                 >Добавить</Button>
+              </Grid>
+              <Grid item xs={12} sm={6}>
                 <Button type='button'
                         variant="contained"
                         color="primary"
                         onClick={onClose}
+                        style={{width: '100%'}}
                 >Закрыть</Button>
               </Grid>
             </Grid>
@@ -73,5 +77,5 @@ const CurrentForm = ({pristine, submitting, error,
   )
 }
 
-export default reduxForm({form: 'currentForm', validate})(CurrentForm);
+export default reduxForm({form: 'currentForm', validate})(AddToSetForm);
 

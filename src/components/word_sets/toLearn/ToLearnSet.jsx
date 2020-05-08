@@ -1,16 +1,35 @@
 import React from 'react';
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import {Redirect} from "react-router-dom";
+import {compose} from "redux";
+import {firestoreConnect} from "react-redux-firebase";
+import {connect} from "react-redux";
+import {addToSet} from "../../../redux/actions/wordActions";
+import withAuthRedirect from "../../HOCs/withAuthRedirect";
+import SetPage from "../../common/word_sets/SetPage";
 
-const ToLearnSet = ({auth}) => {
-  if (!auth) return <Redirect to='/login'/>
+const mapState = ({ firestore }, {uid}) => {
+  return {
+    to_learn: firestore.ordered[`${uid}-to_learn`] || []
+  };
+}
+
+const actions = {
+  addToTo_lear: addToSet('to_learn')
+}
+
+const getPath = ({uid}) => {
+  return [{ collection: "users", doc: uid, subcollections: [{ collection: "to_learn" }], storeAs: `${uid}-to_learn` }];
+}
+
+const ToLearnSet = ({to_learn, addToTo_lear}) => {
 
   return (
-    <Paper>
-      <Typography variant='h5'>На очереди</Typography>
-    </Paper>
+    <SetPage set={to_learn} addToSet={addToTo_lear} title='На очереди'/>
   );
 };
 
-export default ToLearnSet;
+export default compose(
+  withAuthRedirect,
+  firestoreConnect(getPath),
+  connect(mapState, actions)
+)(ToLearnSet);
+

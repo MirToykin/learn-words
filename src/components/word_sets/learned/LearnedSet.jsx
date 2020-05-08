@@ -1,16 +1,30 @@
 import React from 'react';
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import {Redirect} from "react-router-dom";
+import {compose} from "redux";
+import {firestoreConnect} from "react-redux-firebase";
+import {connect} from "react-redux";
+import withAuthRedirect from "../../HOCs/withAuthRedirect";
+import SetPage from "../../common/word_sets/SetPage";
 
-const LearnedSet = ({auth}) => {
-  if (!auth) return <Redirect to='/login'/>
+const mapState = ({ firestore }, {uid}) => {
+  return {
+    learned: firestore.ordered[`${uid}-learned`] || []
+  };
+}
+
+const getPath = ({uid}) => {
+  return [{ collection: "users", doc: uid, subcollections: [{ collection: "learned" }], storeAs: `${uid}-learned` }];
+}
+
+const LearnedSet = ({learned}) => {
 
   return (
-    <Paper>
-      <Typography variant='h5'>Изученные</Typography>
-    </Paper>
+    <SetPage set={learned} addToSet={null} title='Изученные'/>
   );
 };
 
-export default LearnedSet;
+export default compose(
+  withAuthRedirect,
+  firestoreConnect(getPath),
+  connect(mapState)
+)(LearnedSet);
+

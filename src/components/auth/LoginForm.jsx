@@ -9,7 +9,7 @@ import {login} from "../../redux/actions/authActions";
 import {combineValidators, isRequired} from "revalidate";
 import {Redirect} from "react-router-dom";
 import {RenderTextField} from "../common/forms/formElems";
-import {useCommonStyles} from "../common/forms/formStyles";
+import {useCommonFormStyles} from "../../assets/useStyles";
 
 const validate = combineValidators({
   email: isRequired({message: 'Введите email'}),
@@ -22,7 +22,7 @@ const actions = {
 }
 
 const LoginForm = ({pristine, submitting, error, handleSubmit, login, reset, auth}) => {
-  const classes = useCommonStyles();
+  const classes = useCommonFormStyles();
 
   if (auth) return <Redirect to='/current'/>
 
