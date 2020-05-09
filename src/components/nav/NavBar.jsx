@@ -138,7 +138,7 @@ const NavBar = ({auth, firebase, history, profile: {displayName}}) => {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" style={{ backgroundColor: '#2196F3', color: '#fff' }}>
+      <AppBar position="static" style={{ backgroundColor: "#1976d2", color: '#fff' }}>
         <Container>
           {authenticated ?
             <SignedInMenu visible={visible} toggleDrawer={toggleDrawer} logout={handleLogOut} name={displayName}/> :

@@ -5,7 +5,7 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import Icon from "@material-ui/core/Icon";
 import Divider from "@material-ui/core/Divider";
-import CurrentForm from "../forms/AddToSetForm";
+import AddToSetForm from "../forms/AddToSetForm";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import WordItem from "./WordItem";
@@ -26,7 +26,7 @@ const SetPage = ({set, addToSet, title}) => {
             </IconButton>
           </div>
           <Divider/>
-          {addToSet && <CurrentForm open={open} onClose={() => setOpen(false)} addToSet={addToSet}/>}
+          {addToSet && <AddToSetForm open={open} onClose={() => setOpen(false)} addToSet={addToSet}/>}
           <List>
             {set.map(wordDoc => (
               <ListItem key={wordDoc.id}>

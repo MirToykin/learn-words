@@ -13,7 +13,7 @@ export const addToSet = (set) => (wordDoc) =>
 
     try {
       if(wordDoc.id) {
-        const {id, ...restDoc} = wordDoc;
+        const {id, ...restDoc} = wordDocument;
         await firestore.collection('users').doc(uid).collection(set).doc(wordDoc.id).set(restDoc);
       } else {
         await firestore.collection('users').doc(uid).collection(set).add({...wordDocument});
