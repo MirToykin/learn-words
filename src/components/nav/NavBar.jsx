@@ -32,8 +32,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const mapState = (state) => ({
-  auth: state.firebase.auth,
-  profile: state.firebase.profile
+  auth: false,
+  profile: {name: 'guest'}
 })
 
 const SignedInMenu = ({visible, toggleDrawer, logout, name}) => {

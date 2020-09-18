@@ -2,33 +2,19 @@ import {composeWithDevTools} from "redux-devtools-extension";
 import {applyMiddleware, combineReducers, createStore} from "redux";
 import thunk from "redux-thunk";
 import {reducer as formReducer} from "redux-form";
-import {firestoreReducer, getFirestore, reduxFirestore} from "redux-firestore";
-import {firebaseReducer, getFirebase, reactReduxFirebase} from "react-redux-firebase";
-import firebase from "../../config/firebase";
+import authReducer from "../reducers/authReducer";
 
 const rootReducer = combineReducers({
-  firebase: firebaseReducer,
-  firestore: firestoreReducer,
-  form: formReducer
+  form: formReducer,
+  auth: authReducer
 })
 
-const rrfConfig = {
-  userProfile: 'users',
-  attachAuthIsReady: true,
-  useFirestoreForProfile: true,
-  updateProfileOnLogin: false
-};
-
 export const configureStore = () => {
-  const middlewares = [thunk.withExtraArgument({getFirebase, getFirestore})];
+  const middlewares = [thunk];
 
   const composedEnhancer = composeWithDevTools(
-    applyMiddleware(...middlewares),
-    reactReduxFirebase(firebase, rrfConfig),
-    reduxFirestore(firebase)
+    applyMiddleware(...middlewares)
   );
 
-  const store = createStore(rootReducer, composedEnhancer);
-
-  return store;
+  return createStore(rootReducer, composedEnhancer);
 };

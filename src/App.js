@@ -10,12 +10,12 @@ import ToLearnSet from "./components/word_sets/toLearn/ToLearnSet";
 import LearnedSet from "./components/word_sets/learned/LearnedSet";
 
 const mapState = (state) => ({
-  auth: state.firebase.auth,
-  uid: state.firebase.auth.uid
+  auth: state.auth.isAuth,
+  uid: state.auth.id
 })
 
 const App = ({auth, uid}) => {
-  const authenticated = auth.isLoaded && !auth.isEmpty;
+  const authenticated = auth;
 
   return (
     <>

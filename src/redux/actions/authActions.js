@@ -1,35 +1,40 @@
 import {SubmissionError} from "redux-form";
+import api from "../../api/Api";
+import {SET_AUTH_DATA, SET_IS_FETCHING} from "../constants";
 
-export const login = (creds) => async (dispatch, getState, {getFirebase}) => {
-  const firebase = getFirebase();
+export const setAuthData = (id, name, email, isAuth) => {
+  return {
+    type: SET_AUTH_DATA,
+    payload: {id, name, email, isAuth}
+  }
+}
+
+const setIsFetching = (isFetching) => {
+  return {
+    type: SET_IS_FETCHING,
+    payload: isFetching
+  }
+}
+
+export const login = (loginData) => async (dispatch) => {
+  dispatch(setIsFetching(true));
   try {
-    await firebase.auth().signInWithEmailAndPassword(creds.email, creds.password);
-  } catch (err) {
+    const response = await api.post('login', loginData);
+    const user = response.data.user;
+    console.log(user);
+  } catch (e) {
     throw new SubmissionError({
       _error: 'Неверный логин или пароль'
     })
   }
+  dispatch(setIsFetching(false));
 }
 
-export const registerUser = (user) => async (dispatch, getState, {getFirebase, getFirestore}) => {
-  const firebase = getFirebase();
-  const firestore = getFirestore();
+export const logOut = () => async (dispatch) => {
+  const response = await api.delete('auth/login');
 
-  try {
-    let createdUser = await firebase.auth().createUserWithEmailAndPassword(user.email, user.password);
-    await createdUser.user.updateProfile({
-      displayName: user.displayName
-    });
-
-    let newUser = {
-      displayName: user.displayName,
-      createdAt: firestore.FieldValue.serverTimestamp()
-    }
-
-    await firestore.set(`users/${createdUser.user.uid}`, {...newUser})
-  } catch (error) {
-    throw new SubmissionError({
-      _error: error.message
-    })
+  if (response.resultCode === 0) {
+    dispatch(setAuthData(null, null, null, false));
   }
+
 }

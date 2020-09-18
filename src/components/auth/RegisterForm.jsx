@@ -9,7 +9,7 @@ import {combineValidators, isRequired} from "revalidate";
 import {Redirect} from "react-router-dom";
 import {RenderTextField} from "../common/forms/formElems";
 import {useCommonFormStyles} from "../../assets/useStyles";
-import {registerUser} from "../../redux/actions/authActions";
+// import {registerUser} from "../../redux/actions/authActions";
 
 const validate = combineValidators({
   displayName: isRequired({message: 'Введите имя'}),
@@ -19,7 +19,7 @@ const validate = combineValidators({
 })
 
 const actions = {
-  registerUser
+  // registerUser
 }
 
 const RegisterForm = ({pristine, submitting, error, handleSubmit, registerUser, reset, auth}) => {
