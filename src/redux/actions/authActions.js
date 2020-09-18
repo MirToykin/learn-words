@@ -2,10 +2,10 @@ import {SubmissionError} from "redux-form";
 import api from "../../api/Api";
 import {SET_AUTH_DATA, SET_IS_FETCHING} from "../constants";
 
-export const setAuthData = (id, name, email, isAuth) => {
+export const setAuthData = (id, name, email, token, isAuth) => {
   return {
     type: SET_AUTH_DATA,
-    payload: {id, name, email, isAuth}
+    payload: {id, name, email, token, isAuth}
   }
 }
 
@@ -20,8 +20,9 @@ export const login = (loginData) => async (dispatch) => {
   dispatch(setIsFetching(true));
   try {
     const response = await api.post('login', loginData);
-    const user = response.data.user;
-    console.log(user);
+    const {id, name, email, token} = response.data.user;
+    dispatch(setAuthData(id, name, email, token, true));
+    console.log(response.data.user);
   } catch (e) {
     throw new SubmissionError({
       _error: 'Неверный логин или пароль'
@@ -30,11 +31,10 @@ export const login = (loginData) => async (dispatch) => {
   dispatch(setIsFetching(false));
 }
 
-export const logOut = () => async (dispatch) => {
-  const response = await api.delete('auth/login');
-
-  if (response.resultCode === 0) {
-    dispatch(setAuthData(null, null, null, false));
-  }
+export const logout = () => async (dispatch) => {
+  // Пока реализован на стороне клиента, обращение к api будет, когда там будет реализован метод logout
+  dispatch(setIsFetching(true));
+  dispatch(setAuthData(null, null, null, false));
+  dispatch(setIsFetching(false));
 
 }

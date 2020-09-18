@@ -1,4 +1,4 @@
-import {SET_AUTH_DATA, SET_AUTH_USER_PROFILE, SET_IS_FETCHING} from "../constants";
+import {SET_AUTH_DATA, SET_IS_FETCHING} from "../constants";
 
 let initialState = {
   id: null,
@@ -6,6 +6,7 @@ let initialState = {
   email: null,
   isFetching: false,
   isAuth: false,
+  token: null
 }
 
 const authReducer = (state = initialState, {type, payload}) => {

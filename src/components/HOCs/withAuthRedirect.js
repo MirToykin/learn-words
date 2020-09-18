@@ -4,16 +4,14 @@ import {connect} from "react-redux";
 
 const mapState = (state) => {
   return {
-    auth: state.firebase.auth
+    auth: state.auth.isAuth
   }
 }
 
 const withAuthRedirect = (Component) => {
   const ComponentContainer = (props) => {
     const {auth} = props;
-    const authenticated = auth.isLoaded && !auth.isEmpty;
-
-    if (!authenticated) return <Redirect to='/login'/>
+    if (!auth) return <Redirect to='/login'/>
     return <Component {...props} />
   }
 

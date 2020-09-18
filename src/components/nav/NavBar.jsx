@@ -14,9 +14,9 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import {ThemeProvider} from "@material-ui/core/styles";
-import {withFirebase} from "react-redux-firebase";
 import {connect} from "react-redux";
 import {NavLink, withRouter} from "react-router-dom";
+import {logout} from '../../redux/actions/authActions'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,9 +32,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const mapState = (state) => ({
-  auth: false,
-  profile: {name: 'guest'}
-})
+  auth: state.auth.isAuth,
+  name: state.auth.name
+});
+
+const actions = {
+  logout
+}
 
 const SignedInMenu = ({visible, toggleDrawer, logout, name}) => {
   const classes = useStyles();
@@ -118,13 +122,12 @@ const SignedOutMenu = () => {
   )
 };
 
-const NavBar = ({auth, firebase, history, profile: {displayName}}) => {
+const NavBar = ({auth, history, name, logout}) => {
   const classes = useStyles();
   const [visible, setVisible] = useState(false);
-  const authenticated = auth.isLoaded && !auth.isEmpty;
 
   const handleLogOut = () => {
-    firebase.logout();
+    logout();
     history.push('/');
   }
 
@@ -140,8 +143,8 @@ const NavBar = ({auth, firebase, history, profile: {displayName}}) => {
     <div className={classes.root}>
       <AppBar position="static" style={{ backgroundColor: "#1976d2", color: '#fff' }}>
         <Container>
-          {authenticated ?
-            <SignedInMenu visible={visible} toggleDrawer={toggleDrawer} logout={handleLogOut} name={displayName}/> :
+          {auth ?
+            <SignedInMenu visible={visible} toggleDrawer={toggleDrawer} logout={handleLogOut} name={name}/> :
             <SignedOutMenu />}
         </Container>
       </AppBar>
@@ -149,4 +152,4 @@ const NavBar = ({auth, firebase, history, profile: {displayName}}) => {
   );
 }
 
-export default connect(mapState)(withFirebase(withRouter(NavBar)));
+export default connect(mapState, actions)(withRouter(NavBar));
