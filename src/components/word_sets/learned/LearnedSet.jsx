@@ -3,23 +3,27 @@ import {compose} from "redux";
 import {connect} from "react-redux";
 import withAuthRedirect from "../../HOCs/withAuthRedirect";
 import SetPage from "../../common/word_sets/SetPage";
+import {getSet} from "../../../redux/actions/wordsActions";
 
-const mapState = ({ firestore }, {uid}) => {
+const mapState = state => {
   return {
-    learned: []
+    done: state.words.done
   };
 }
 
-const LearnedSet = ({learned}) => {
+const actions = {
+  getDone: getSet('done')
+}
+
+const LearnedSet = ({done, getDone, uid, token}) => {
 
   return (
-    <h1>Заглушка: изученные</h1>
-    //<SetPage set={learned} addToSet={null} title='Изученные'/>
+    <SetPage token={token} uid={uid} set={done} getSet={getDone} pageTitle='Изученные'/>
   );
 };
 
 export default compose(
   withAuthRedirect,
-  connect(mapState)
+  connect(mapState, actions)
 )(LearnedSet);
 

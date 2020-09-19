@@ -9,6 +9,7 @@ import {configureStore} from "./redux/store/configureStore";
 
 const rootElement = document.getElementById('root');
 const store = configureStore();
+window.store = store;
 
 let render = () => {
   ReactDOM.render(<Provider store={store}><BrowserRouter><App/></BrowserRouter></Provider>, rootElement);
@@ -16,11 +17,11 @@ let render = () => {
 
 render();
 
-if (module.hot) {
-  module.hot.accept('./App', () => {
-    setTimeout(render);
-  })
-}
+// if (module.hot) {
+//   module.hot.accept('./App', () => {
+//     setTimeout(render);
+//   })
+// }
 
 
 // If you want your app to work offline and load faster, you can change

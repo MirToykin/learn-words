@@ -25,12 +25,14 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const WordItem = ({wordDoc: {id, word, means}, title}) => {
+const WordItem = ({word: {id, title, meanings}, pageTitle}) => {
   const classes = useStyles();
   const [expanded, setExpand] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const currentSet = title === 'На очереди' ? 'to_learn' : title === 'Текущий набор' ? 'current' : 'learned'
+  const meaningsArray = meanings.split(',');
+  const currentSet = pageTitle === 'На очереди' ? 'to_learn' : pageTitle === 'Текущий набор' ? 'current' : 'learned';
+
 
   return (
     <div className={classes.root}>
@@ -45,23 +47,23 @@ const WordItem = ({wordDoc: {id, word, means}, title}) => {
             <IconButton onClick={() => setExpand(true)}>
               <ExpandMoreIcon/>
             </IconButton>}
-          <Typography variant='h6'>{word}</Typography>
+          <Typography variant='h6'>{title}</Typography>
           <IconButton onClick={(event) => setAnchorEl(event.currentTarget)}>
             <MoreVertIcon/>
           </IconButton>
           <WordItemMenu anchorEl={anchorEl}
                         setAnchorEl={setAnchorEl}
-                        id={id} word={word}
-                        means={means} currentSet={currentSet}
+                        id={id} title={title}
+                        meanings={meanings} currentSet={currentSet}
           />
         </ExpansionPanelSummary>
         <Divider/>
         <ExpansionPanelDetails>
           <List className={classes.root}>
-            {means.map(mean => (
-              <Fragment key={mean}>
+            {meaningsArray.map(meaning => (
+              <Fragment key={meaning}>
                 <ListItem>
-                  <ListItemText primary={mean}/>
+                  <ListItemText primary={meaning}/>
                 </ListItem>
                 <Divider/>
               </Fragment>

@@ -10,8 +10,8 @@ const mapState = (state) => {
 
 const withAuthRedirect = (Component) => {
   const ComponentContainer = (props) => {
-    const {auth} = props;
-    if (!auth) return <Redirect to='/login'/>
+    const {token} = props;
+    if (!token) return <Redirect to='/login'/>
     return <Component {...props} />
   }
 

@@ -3,22 +3,29 @@ import {compose} from "redux";
 import {connect} from "react-redux";
 import withAuthRedirect from "../../HOCs/withAuthRedirect";
 import SetPage from "../../common/word_sets/SetPage";
+import {addToSet, getSet} from "../../../redux/actions/wordsActions";
 
-const mapState = () => {
+const mapState = (state) => {
   return {
-    current: []
+    current: state.words.current,
   };
 }
 
 const actions = {
-  // addToCurrent: addToSet('current')
+  getCurrent: getSet('current'),
+  addToCurrent: addToSet('current')
 }
 
-const CurrentSet = ({current, addToCurrent}) => {
+const CurrentSet = ({current, getCurrent, uid, token, addToCurrent}) => {
 
   return (
-    <h1>Заглушка: текущие</h1>
-    // {/*<SetPage set={current} addToSet={addToCurrent} title='Текущий набор'/>*/}
+    <SetPage token={token}
+             uid={uid}
+             set={current}
+             getSet={getCurrent}
+             addToSet={addToCurrent}
+             pageTitle='Текущий набор'
+    />
   );
 };
 

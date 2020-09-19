@@ -3,22 +3,29 @@ import {compose} from "redux";
 import {connect} from "react-redux";
 import withAuthRedirect from "../../HOCs/withAuthRedirect";
 import SetPage from "../../common/word_sets/SetPage";
+import {addToSet, getSet} from "../../../redux/actions/wordsActions";
 
-const mapState = () => {
+const mapState = state => {
   return {
-    to_learn: []
+    next: state.words.next,
   };
 }
 
 const actions = {
-  // addToTo_lear: addToSet('to_learn')
+  getNext: getSet('next'),
+  addToNext: addToSet('next')
 }
 
-const ToLearnSet = ({to_learn, addToTo_lear}) => {
+const ToLearnSet = ({next, getNext, uid, token, addToNext}) => {
 
   return (
-    <h1>Заглушка: на очереди</h1>
-    //<SetPage set={to_learn} addToSet={addToTo_lear} title='На очереди'/>
+    <SetPage token={token}
+             uid={uid}
+             set={next}
+             getSet={getNext}
+             addToSet={addToNext}
+             pageTitle='На очереди'
+    />
   );
 };
 

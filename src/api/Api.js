@@ -1,19 +1,26 @@
 import * as axios from "axios";
 
-let api = {
+class Api {
+  constructor() {
+    this.ajax = axios.create({
+      baseURL: "http://learnwords/api/"
+    });
+  }
 
-  ajax: axios.create({
-    // withCredentials: true, // на будущее, для отправки куки, с credentials - true ошибка CORS
-    baseURL: "http://learnwords/api/"
-  }),
-  get(endpoint) {
-    return this.ajax.get(endpoint);
-  },
+  getSet(set, uid, options) {
+    return this.ajax.get(`words/${set}/${uid}`, options);
+  }
+
   post(endpoint, data) {
     return this.ajax.post(endpoint, data);
   }
+
+  addToSet(data, options) {
+    return this.ajax.post(`words`, data, options);
+  }
+
 }
 
-export default api;
+export default Api;
 
 

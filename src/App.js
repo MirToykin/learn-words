@@ -11,23 +11,23 @@ import LearnedSet from "./components/word_sets/learned/LearnedSet";
 
 const mapState = (state) => ({
   auth: state.auth.isAuth,
-  uid: state.auth.id
+  uid: state.auth.id,
+  token: state.auth.token
 })
 
-const App = ({auth, uid}) => {
-  const authenticated = auth;
+const App = ({auth, uid, token}) => {
 
   return (
     <>
       <NavBar/>
       <Container>
         <Switch>
-          <Route path='/' exact render={() => <Redirect to={authenticated ? '/current' : '/login'}/>}/>
-          <Route path='/login' render={() => <LoginForm auth={authenticated}/>}/>
-          <Route path='/register' render={() => <RegisterForm auth={authenticated}/>}/>
-          <Route path='/to-learn' render={() => <ToLearnSet uid={uid} auth={authenticated}/>}/>
-          <Route path='/current' render={() => <CurrentSet  uid={uid} auth={authenticated}/>}/>
-          <Route path='/learned' render={() => <LearnedSet  uid={uid} auth={authenticated}/>}/>
+          <Route path='/' exact render={() => <Redirect to={auth ? '/current' : '/login'}/>}/>
+          <Route path='/login' render={() => <LoginForm auth={token}/>}/>
+          <Route path='/register' render={() => <RegisterForm auth={token}/>}/>
+          <Route path='/to-learn' render={() => <ToLearnSet token={token} uid={uid}/>}/>
+          <Route path='/current' render={() => <CurrentSet token={token}  uid={uid}/>}/>
+          <Route path='/learned' render={() => <LearnedSet token={token}  uid={uid}/>}/>
         </Switch>
       </Container>
     </>

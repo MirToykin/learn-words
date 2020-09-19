@@ -17,12 +17,14 @@ const validate = combineValidators({
 const AddToSetForm = ({
                         pristine, submitting, error,
                         handleSubmit, reset,
-                        addToSet, open, onClose
+                        addToSet, open, onClose,
+                        uid, options
                       }) => {
   const classes = useCommonFormStyles();
 
-  const onSubmit = (wordDoc) => {
-    addToSet(wordDoc);
+  const onSubmit = (word) => {
+    word['user_id'] = uid;
+    addToSet(word, options);
     reset();
   }
 
@@ -38,14 +40,14 @@ const AddToSetForm = ({
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Field
-                name="word"
+                name="title"
                 component={RenderTextField}
                 label='Слово'
               />
             </Grid>
             <Grid item xs={12}>
               <Field
-                name="means"
+                name="meanings"
                 component={RenderTextarea}
                 label='Значения'
                 placeholder='Значения через запятую'
