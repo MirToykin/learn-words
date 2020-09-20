@@ -1,7 +1,11 @@
 import {SubmissionError} from "redux-form";
 import {setIsFetching} from "./appActions";
 import Api from "../../api/Api";
-import {ADD_TO_CURRENT, ADD_TO_DONE, ADD_TO_NEXT, SET_CURRENT, SET_DONE, SET_NEXT} from "../constants";
+import {
+  ADD_SET,
+  ADD_WORD_TO_STATE,
+  DELETE_WORD_FROM_STATE
+} from "../constants";
 
 
 const api = new Api();
@@ -11,17 +15,7 @@ export const getSet = set => (uid, options) => async dispatch => {
   try {
     const response = await api.getSet(set, uid, options);
     const words = response.data.words;
-    switch (set) {
-      case 'next':
-        dispatch(setNext(words));
-        break;
-      case 'current':
-        dispatch(setCurrent(words));
-        break;
-      case 'done':
-        dispatch(setDone(words));
-        break;
-    }
+    dispatch(addSet(set, words));
   } catch(e) {
     console.log(e.message);
   }
@@ -33,20 +27,10 @@ export const addToSet = set => (data, options) => async (dispatch) => {
   const newData = {...data, category: set};
 
   try {
+
     const response = await api.addToSet(newData, options);
     const word = response.data.word;
-
-    switch (set) {
-      case 'next':
-        dispatch(addToNext(word));
-        break;
-      case 'current':
-        dispatch(addToCurrent(word));
-        break;
-      case 'done':
-        dispatch(addToDone(word));
-        break;
-    }
+    dispatch(addWordToState(set, word));
 
   } catch (e) {
     console.log(e.message);
@@ -57,25 +41,18 @@ export const addToSet = set => (data, options) => async (dispatch) => {
   dispatch(setIsFetching(false));
 }
 
-export const editWord = (wordId, data, options) => async (dispatch) => {
+export const editWord = (setToRemoveFrom, wordId, data, options) => async (dispatch) => {
   dispatch(setIsFetching(true));
   try {
     const response = await api.editWord(wordId, data, options);
-    const word = response.data.word;
+    // const word = response.data.word;
     if (data.category) {
       // На текущий момент внесение изменений в state, влияющий отрисовку другой категории
       // избыточен, поскольку при открытии другой категории происходит загрузка записей из БД.
       // Если будет реализован вывод из state без загрузки из БД, то может понадобится
-      // switch (data.category) {
-      //   case 'next':
-      //     dispatch(addToNext(word));
-      //     break
-      //   case 'current':
-      //     dispatch(addToCurrent(word));
-      //     break
-      //   case 'done':
-      //     dispatch(addToDone(word))
-      // }
+      // dispatch(addWordToState(data.category, word));
+
+      dispatch(deleteWordFromState(setToRemoveFrom, wordId));
     }
   } catch (e) {
     console.log(e.message);
@@ -83,54 +60,36 @@ export const editWord = (wordId, data, options) => async (dispatch) => {
   dispatch(setIsFetching(false));
 }
 
-export const deleteWord = (id, config) => dispatch => {
+export const deleteWord = (set, wordId, config) => async dispatch => {
   dispatch(setIsFetching(true));
   try {
-
+    const response = await api.deleteWord(wordId, config);
+    if (response.statusText === 'OK') {
+      dispatch(deleteWordFromState(set, wordId));
+    }
   } catch (e) {
     console.log(e.message);
   }
   dispatch(setIsFetching(false));
 }
 
-const setNext = (payload) => {
+const addSet = (setName, set) => {
   return {
-    type: SET_NEXT,
-    payload
+    type: ADD_SET,
+    payload: {setName, set}
   }
 }
 
-const addToNext = (payload) => {
+const deleteWordFromState = (set, wordId) => {
   return {
-    type: ADD_TO_NEXT,
-    payload
+    type: DELETE_WORD_FROM_STATE,
+    payload: {set, wordId}
   }
 }
 
-const setCurrent = (payload) => {
+const addWordToState = (set, word) => {
   return {
-    type: SET_CURRENT,
-    payload
-  }
-}
-
-const addToCurrent = (payload) => {
-  return {
-    type: ADD_TO_CURRENT,
-    payload
-  }
-}
-
-const setDone = (payload) => {
-  return {
-    type: SET_DONE,
-    payload
-  }
-}
-
-const addToDone = (payload) => {
-  return {
-    type: ADD_TO_DONE,
-    payload
+    type: ADD_WORD_TO_STATE,
+    payload: {set, word}
   }
 }

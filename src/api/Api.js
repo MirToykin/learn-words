@@ -23,6 +23,10 @@ class Api {
     return this.ajax.patch(`words/${wordId}`, data, options);
   }
 
+  deleteWord(wordId, options) {
+    return this.ajax.delete(`words/${wordId}`, options);
+  }
+
 }
 
 export default Api;

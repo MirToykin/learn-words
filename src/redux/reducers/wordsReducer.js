@@ -1,4 +1,6 @@
-import {SET_NEXT, SET_CURRENT, SET_DONE, ADD_TO_NEXT, ADD_TO_CURRENT, ADD_TO_DONE} from "../constants";
+import {
+  DELETE_WORD_FROM_STATE, ADD_WORD_TO_STATE, ADD_SET
+} from "../constants";
 
 let initialState = {
   next: [],
@@ -6,23 +8,17 @@ let initialState = {
   done: [],
 }
 
-const authReducer = (state = initialState, {type, payload}) => {
+const wordsReducer = (state = initialState, {type, payload}) => {
   switch (type) {
-    case SET_NEXT:
-      return {...state, next: payload};
-    case ADD_TO_NEXT:
-      return {...state, next: [...state.next, payload]}
-    case SET_CURRENT:
-      return {...state, current: payload};
-    case ADD_TO_CURRENT:
-      return {...state, next: [...state.current, payload]}
-    case SET_DONE:
-      return {...state, done: payload};
-    case ADD_TO_DONE:
-      return {...state, next: [...state.done, payload]}
+    case ADD_SET:
+      return {...state, [payload.setName]: payload.set};
+    case ADD_WORD_TO_STATE:
+      return {...state, [payload.set]: [...state[payload.set], payload.word]};
+    case DELETE_WORD_FROM_STATE:
+      return {...state, [payload.set]: state[payload.set].filter(word => word.id !== payload.wordId)};
     default:
       return state;
   }
 }
 
-export default authReducer;
+export default wordsReducer;

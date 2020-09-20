@@ -7,16 +7,17 @@ import Paper from "@material-ui/core/Paper/Paper";
 import Typography from "@material-ui/core/Typography";
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import {useCommonFormStyles} from "../../../assets/useStyles";
-import {editWord} from "../../../redux/actions/wordsActions";
+import {deleteWord, editWord} from "../../../redux/actions/wordsActions";
 
 const actions = {
-  editWord
+  editWord,
+  deleteWord
 }
 
 const WordItemMenu = ({
                         anchorEl, setAnchorEl, id,
                         title, meanings, currentSet,
-                        editWord, options
+                        editWord, options, deleteWord
                       }) => {
 
   const [open, setOpen] = useState(false);
@@ -36,29 +37,29 @@ const WordItemMenu = ({
   const menuConfig = {
     next: [
       {
-        moveToSet: () => editWord(id, {"category": "current"}, options),
+        moveToSet: () => editWord(currentSet, id, {"category": "current"}, options),
         title: 'Переместить в текущий набор'
       },
       {
-        moveToSet: () => editWord(id, {"category": "done"}, options),
+        moveToSet: () => editWord(currentSet, id, {"category": "done"}, options),
         title: 'Переместить в изученные'
       }],
     current: [
       {
-        moveToSet: () => editWord(id, {"category": "next"}, options),
+        moveToSet: () => editWord(currentSet, id, {"category": "next"}, options),
         title: 'Переместить в очередь'
       },
       {
-        moveToSet: () => editWord(id, {"category": "done"}, options),
+        moveToSet: () => editWord(currentSet, id, {"category": "done"}, options),
         title: 'Переместить в изученные'
       }],
     done: [
       {
-        moveToSet: () => editWord(id, {"category": "next"}, options),
+        moveToSet: () => editWord(currentSet, id, {"category": "next"}, options),
         title: 'Переместить в очередь'
       },
       {
-        moveToSet: () => editWord(id, {"category": "current"}, options),
+        moveToSet: () => editWord(currentSet, id, {"category": "current"}, options),
         title: 'Переместить в текущий набор'
       }
     ]
@@ -76,13 +77,9 @@ const WordItemMenu = ({
         onClose={() => setAnchorEl(null)}
       >
         <MenuItem onClick={(e) => handleMoveToSet(e, menuItem1.moveToSet)}>{menuItem1.title}</MenuItem>
-        {/*<MenuItem>{menuItem1.title}</MenuItem>*/}
         <MenuItem onClick={(e) => handleMoveToSet(e, menuItem2.moveToSet)}>{menuItem2.title}</MenuItem>
-        {/*<MenuItem>{menuItem2.title}</MenuItem>*/}
         {currentSet !== 'done' && <MenuItem onClick={onChangeMeans}>Изменить значения</MenuItem>}
-        {/*{currentSet !== 'learned' && <MenuItem>Изменить значения</MenuItem>}*/}
-        {/*<MenuItem onClick={() => removeFromSet(currentSet, id)}>Удалить</MenuItem>*/}
-        <MenuItem>Удалить</MenuItem>
+        <MenuItem onClick={() => deleteWord(currentSet, id, options)}>Удалить</MenuItem>
       </Menu>
       <Dialog open={open} onClose={() => setOpen(false)}>
         <Paper className={classes.paper}>
