@@ -7,61 +7,59 @@ import Paper from "@material-ui/core/Paper/Paper";
 import Typography from "@material-ui/core/Typography";
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import {useCommonFormStyles} from "../../../assets/useStyles";
+import {editWord} from "../../../redux/actions/wordsActions";
 
-// const actions = {
-//   addToTo_learn: addToSet('to_learn'),
-//   addToCurrent: addToSet('current'),
-//   addToLearned: addToSet('learned'),
-//   removeFromSet
-// }
+const actions = {
+  editWord
+}
 
 const WordItemMenu = ({
                         anchorEl, setAnchorEl, id,
-                        title, meanings, currentSet
+                        title, meanings, currentSet,
+                        editWord, options
                       }) => {
 
   const [open, setOpen] = useState(false);
   // const wordDoc = {id, word, means};
   const classes = useCommonFormStyles();
 
-  // const handleAddToSet = (e, setToRemove, id, addFunc) => {
-  //   addFunc(wordDoc);
-  //   removeFromSet(setToRemove, id);
-  //   setAnchorEl(false);
-  // }
-  //
-  // const onChangeMeans = () => {
-  //   setOpen(true);
-  //   setAnchorEl(null);
-  // }
+  const handleMoveToSet = (e, moveToSet) => {
+    moveToSet();
+    setAnchorEl(false);
+  }
+
+  const onChangeMeans = () => {
+    setOpen(true);
+    setAnchorEl(null);
+  }
 
   const menuConfig = {
-    to_learn: [
+    next: [
       {
-        addToSet: () => {},
-        title: 'Добавить в текущий набор'
+        moveToSet: () => editWord(id, {"category": "current"}, options),
+        title: 'Переместить в текущий набор'
       },
       {
-        addToSet: () => {},
-        title: 'Добавить в изученные'
+        moveToSet: () => editWord(id, {"category": "done"}, options),
+        title: 'Переместить в изученные'
       }],
     current: [
       {
-        addToSet: () => {},
-        title: 'Добавить в очередь'
+        moveToSet: () => editWord(id, {"category": "next"}, options),
+        title: 'Переместить в очередь'
       },
       {
-        addToSet: () => {},
-        title: 'Добавить в изученные'
+        moveToSet: () => editWord(id, {"category": "done"}, options),
+        title: 'Переместить в изученные'
       }],
-    learned: [
+    done: [
       {
-        addToSet: () => {},
-        title: 'Добавить в очередь'
+        moveToSet: () => editWord(id, {"category": "next"}, options),
+        title: 'Переместить в очередь'
       },
       {
-        addToSet: () => {},
-        title: 'Добавить в текущий набор'
+        moveToSet: () => editWord(id, {"category": "current"}, options),
+        title: 'Переместить в текущий набор'
       }
     ]
   }
@@ -77,12 +75,12 @@ const WordItemMenu = ({
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
       >
-        {/*<MenuItem onClick={(e) => handleAddToSet(e, currentSet, id, menuItem1.addToSet)}>{menuItem1.title}</MenuItem>*/}
-        <MenuItem>{menuItem1.title}</MenuItem>
-        {/*<MenuItem onClick={(e) => handleAddToSet(e, currentSet, id, menuItem2.addToSet)}>{menuItem2.title}</MenuItem>*/}
-        <MenuItem>{menuItem2.title}</MenuItem>
-        {/*{currentSet !== 'learned' && <MenuItem onClick={onChangeMeans}>Изменить значения</MenuItem>}*/}
-        {currentSet !== 'learned' && <MenuItem >Изменить значения</MenuItem>}
+        <MenuItem onClick={(e) => handleMoveToSet(e, menuItem1.moveToSet)}>{menuItem1.title}</MenuItem>
+        {/*<MenuItem>{menuItem1.title}</MenuItem>*/}
+        <MenuItem onClick={(e) => handleMoveToSet(e, menuItem2.moveToSet)}>{menuItem2.title}</MenuItem>
+        {/*<MenuItem>{menuItem2.title}</MenuItem>*/}
+        {currentSet !== 'done' && <MenuItem onClick={onChangeMeans}>Изменить значения</MenuItem>}
+        {/*{currentSet !== 'learned' && <MenuItem>Изменить значения</MenuItem>}*/}
         {/*<MenuItem onClick={() => removeFromSet(currentSet, id)}>Удалить</MenuItem>*/}
         <MenuItem>Удалить</MenuItem>
       </Menu>
@@ -95,7 +93,7 @@ const WordItemMenu = ({
           >Изменить значения для <span style={{fontWeight: "bold", color: 'black'}}>{title}</span></Typography>
           {/*<ChangeMeansForm*/}
           {/*  initialValues={{means: means.join(', ')}}*/}
-          {/*  addToSet={currentSet === 'current' ? addToCurrent : addToTo_learn}*/}
+          {/*  moveToSet={currentSet === 'current' ? addToCurrent : addToTo_learn}*/}
           {/*  onClose={() => setOpen(false)}*/}
           {/*  word={word}*/}
           {/*  id={id}*/}
@@ -106,4 +104,4 @@ const WordItemMenu = ({
   );
 };
 
-export default connect(null)(WordItemMenu);
+export default connect(null, actions)(WordItemMenu);

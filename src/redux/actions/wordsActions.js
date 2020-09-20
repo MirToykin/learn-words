@@ -57,6 +57,42 @@ export const addToSet = set => (data, options) => async (dispatch) => {
   dispatch(setIsFetching(false));
 }
 
+export const editWord = (wordId, data, options) => async (dispatch) => {
+  dispatch(setIsFetching(true));
+  try {
+    const response = await api.editWord(wordId, data, options);
+    const word = response.data.word;
+    if (data.category) {
+      // На текущий момент внесение изменений в state, влияющий отрисовку другой категории
+      // избыточен, поскольку при открытии другой категории происходит загрузка записей из БД.
+      // Если будет реализован вывод из state без загрузки из БД, то может понадобится
+      // switch (data.category) {
+      //   case 'next':
+      //     dispatch(addToNext(word));
+      //     break
+      //   case 'current':
+      //     dispatch(addToCurrent(word));
+      //     break
+      //   case 'done':
+      //     dispatch(addToDone(word))
+      // }
+    }
+  } catch (e) {
+    console.log(e.message);
+  }
+  dispatch(setIsFetching(false));
+}
+
+export const deleteWord = (id, config) => dispatch => {
+  dispatch(setIsFetching(true));
+  try {
+
+  } catch (e) {
+    console.log(e.message);
+  }
+  dispatch(setIsFetching(false));
+}
+
 const setNext = (payload) => {
   return {
     type: SET_NEXT,

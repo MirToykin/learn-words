@@ -44,7 +44,7 @@ const SetPage = ({set, getSet, pageTitle, uid, token, addToSet}) => {
           <List>
             {set.map(word => (
               <ListItem key={word.id}>
-                <WordItem word={word} pageTitle={pageTitle}/>
+                <WordItem word={word} pageTitle={pageTitle} options={options}/>
               </ListItem>
             ))}
           </List>

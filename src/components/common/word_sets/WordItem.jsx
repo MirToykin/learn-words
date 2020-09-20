@@ -25,13 +25,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const WordItem = ({word: {id, title, meanings}, pageTitle}) => {
+const WordItem = ({word: {id, title, meanings}, pageTitle, options}) => {
   const classes = useStyles();
   const [expanded, setExpand] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const meaningsArray = meanings.split(',');
-  const currentSet = pageTitle === 'На очереди' ? 'to_learn' : pageTitle === 'Текущий набор' ? 'current' : 'learned';
+  const currentSet = pageTitle === 'На очереди' ? 'next' : pageTitle === 'Текущий набор' ? 'current' : 'done';
 
 
   return (
@@ -55,6 +55,7 @@ const WordItem = ({word: {id, title, meanings}, pageTitle}) => {
                         setAnchorEl={setAnchorEl}
                         id={id} title={title}
                         meanings={meanings} currentSet={currentSet}
+                        options={options}
           />
         </ExpansionPanelSummary>
         <Divider/>

@@ -19,6 +19,10 @@ class Api {
     return this.ajax.post(`words`, data, options);
   }
 
+  editWord(wordId, data, options) {
+    return this.ajax.patch(`words/${wordId}`, data, options);
+  }
+
 }
 
 export default Api;
