@@ -11,16 +11,15 @@ const validate = combineValidators({
   means: isRequired({message: 'Введите значения'})
 })
 
-const ChangeMeansForm = ({
+const ChangeMeaningsForm = ({
                            pristine, submitting, error,
-                           handleSubmit, addToSet,
-                           onClose, word, id
+                           handleSubmit, editWord,
+                           onClose, id, options
                          }) => {
   const classes = useCommonFormStyles();
 
-  const onSubmit = (wordDoc) => {
-    const newDoc = {...wordDoc, id, word};
-    addToSet(newDoc);
+  const onSubmit = (meanings) => {
+    editWord(null, id, meanings, options);
     onClose();
   }
 
@@ -29,7 +28,7 @@ const ChangeMeansForm = ({
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Field
-            name="means"
+            name="meanings"
             component={RenderTextarea}
             label='Значения'
             placeholder='Значения через запятую'
@@ -61,5 +60,5 @@ const ChangeMeansForm = ({
   )
 }
 
-export default reduxForm({form: 'changeMeansForm', enableReinitialize: true, validate})(ChangeMeansForm);
+export default reduxForm({form: 'changeMeaningsForm', enableReinitialize: true, validate})(ChangeMeaningsForm);
 

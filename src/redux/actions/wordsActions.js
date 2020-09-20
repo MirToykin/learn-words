@@ -4,7 +4,7 @@ import Api from "../../api/Api";
 import {
   ADD_SET,
   ADD_WORD_TO_STATE,
-  DELETE_WORD_FROM_STATE
+  DELETE_WORD_FROM_STATE, UPDATE_WORD_IN_STATE
 } from "../constants";
 
 
@@ -45,7 +45,7 @@ export const editWord = (setToRemoveFrom, wordId, data, options) => async (dispa
   dispatch(setIsFetching(true));
   try {
     const response = await api.editWord(wordId, data, options);
-    // const word = response.data.word;
+    const word = response.data.word;
     if (data.category) {
       // На текущий момент внесение изменений в state, влияющий отрисовку другой категории
       // избыточен, поскольку при открытии другой категории происходит загрузка записей из БД.
@@ -54,6 +54,9 @@ export const editWord = (setToRemoveFrom, wordId, data, options) => async (dispa
 
       dispatch(deleteWordFromState(setToRemoveFrom, wordId));
     }
+
+    dispatch(updateWordInState(word));
+
   } catch (e) {
     console.log(e.message);
   }
@@ -91,5 +94,12 @@ const addWordToState = (set, word) => {
   return {
     type: ADD_WORD_TO_STATE,
     payload: {set, word}
+  }
+}
+
+const updateWordInState = (payload) => {
+  return {
+    type: UPDATE_WORD_IN_STATE,
+    payload
   }
 }

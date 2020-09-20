@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu/Menu";
 import {connect} from "react-redux";
-import ChangeMeansForm from "../forms/ChangeMeansForm";
+import ChangeMeaningsForm from "../forms/ChangeMeaningsForm";
 import Paper from "@material-ui/core/Paper/Paper";
 import Typography from "@material-ui/core/Typography";
 import Dialog from "@material-ui/core/Dialog/Dialog";
@@ -88,13 +88,13 @@ const WordItemMenu = ({
                       color='primary'
                       className={classes.head}
           >Изменить значения для <span style={{fontWeight: "bold", color: 'black'}}>{title}</span></Typography>
-          {/*<ChangeMeansForm*/}
-          {/*  initialValues={{means: means.join(', ')}}*/}
-          {/*  moveToSet={currentSet === 'current' ? addToCurrent : addToTo_learn}*/}
-          {/*  onClose={() => setOpen(false)}*/}
-          {/*  word={word}*/}
-          {/*  id={id}*/}
-          {/*/>*/}
+          <ChangeMeaningsForm
+            initialValues={{meanings: meanings}}
+            editWord={editWord}
+            onClose={() => setOpen(false)}
+            id={id}
+            options={options}
+          />
         </Paper>
       </Dialog>
     </>
