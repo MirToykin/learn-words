@@ -5,24 +5,24 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import {connect} from "react-redux";
-import {combineValidators, isRequired} from "revalidate";
+import {combineValidators, composeValidators, isRequired, matchesField} from "revalidate";
 import {Redirect} from "react-router-dom";
 import {RenderTextField} from "../common/forms/formElems";
 import {useCommonFormStyles} from "../../assets/useStyles";
-// import {registerUser} from "../../redux/actions/authActions";
+import {register} from "../../redux/actions/authActions";
 
 const validate = combineValidators({
-  displayName: isRequired({message: 'Введите имя'}),
+  name: isRequired({message: 'Введите имя'}),
   email: isRequired({message: 'Введите email'}),
-  password: isRequired({message: 'Введите пароль'})
-
+  password: isRequired({message: 'Введите пароль'}),
+  password_confirmation: isRequired({message: 'Введите пароль повторно'})
 })
 
 const actions = {
-  // registerUser
+  register
 }
 
-const RegisterForm = ({pristine, submitting, error, handleSubmit, registerUser, reset, auth}) => {
+const RegisterForm = ({pristine, submitting, error, handleSubmit, register, reset, auth}) => {
   const classes = useCommonFormStyles();
 
   if (auth) return <Redirect to='/current'/>
@@ -36,11 +36,11 @@ const RegisterForm = ({pristine, submitting, error, handleSubmit, registerUser, 
                       color={'primary'}
                       className={classes.head}
           >Зарегистрироваться</Typography>
-          <form onSubmit={handleSubmit(registerUser)}>
+          <form onSubmit={handleSubmit(register)}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Field
-                  name="displayName"
+                  name="name"
                   component={RenderTextField}
                   label='Имя'
                 />
@@ -57,6 +57,14 @@ const RegisterForm = ({pristine, submitting, error, handleSubmit, registerUser, 
                   name="password"
                   component={RenderTextField}
                   label='Пароль'
+                  type='password'
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Field
+                  name="password_confirmation"
+                  component={RenderTextField}
+                  label='Повторите пароль'
                   type='password'
                 />
               </Grid>

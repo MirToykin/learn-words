@@ -16,7 +16,7 @@ const actions = {
   addToNext: addToSet('next')
 }
 
-const ToLearnSet = ({next, getNext, uid, token, addToNext}) => {
+const ToLearnSet = ({next, getNext, uid, token, addToNext, options}) => {
 
   return (
     <SetPage token={token}
@@ -25,6 +25,7 @@ const ToLearnSet = ({next, getNext, uid, token, addToNext}) => {
              getSet={getNext}
              addToSet={addToNext}
              pageTitle='На очереди'
+             options={options}
     />
   );
 };

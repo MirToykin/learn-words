@@ -43,6 +43,7 @@ const AddToSetForm = ({
                 name="title"
                 component={RenderTextField}
                 label='Слово'
+                placeholder='слово'
               />
             </Grid>
             <Grid item xs={12}>
@@ -50,7 +51,7 @@ const AddToSetForm = ({
                 name="meanings"
                 component={RenderTextarea}
                 label='Значения'
-                placeholder='Значения через запятую'
+                placeholder='значения через слэш (/)'
               />
             </Grid>
             <Grid item xs={12}>{error && <Typography variant='body1' color='error'>

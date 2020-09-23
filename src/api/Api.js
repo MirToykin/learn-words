@@ -11,8 +11,12 @@ class Api {
     return this.ajax.get(`words/${set}/${uid}`, options);
   }
 
-  post(endpoint, data) {
+  auth(endpoint, data) {
     return this.ajax.post(endpoint, data);
+  }
+
+  logout(options) {
+    return this.ajax.post('logout', options);
   }
 
   addToSet(data, options) {

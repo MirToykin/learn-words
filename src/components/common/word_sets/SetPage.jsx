@@ -11,15 +11,9 @@ import ListItem from "@material-ui/core/ListItem";
 import WordItem from "./WordItem";
 import {useSetStyles} from "../../../assets/useStyles";
 
-const SetPage = ({set, getSet, pageTitle, uid, token, addToSet}) => {
+const SetPage = ({set, getSet, pageTitle, uid, token, addToSet, options}) => {
   const classes = useSetStyles();
   const [open, setOpen] = useState(false);
-  const options = {
-    headers: {
-      "Authorization": `Bearer ${token}`
-    }
-  }
-
 
   useEffect(() => {
     (async () => getSet(uid, options))()

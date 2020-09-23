@@ -16,18 +16,23 @@ const mapState = (state) => ({
 })
 
 const App = ({auth, uid, token}) => {
+  const options = {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  }
 
   return (
     <>
-      <NavBar/>
+      <NavBar options={options}/>
       <Container>
         <Switch>
           <Route path='/' exact render={() => <Redirect to={auth ? '/current' : '/login'}/>}/>
           <Route path='/login' render={() => <LoginForm auth={token}/>}/>
-          <Route path='/register' render={() => <RegisterForm auth={token}/>}/>
-          <Route path='/to-learn' render={() => <ToLearnSet token={token} uid={uid}/>}/>
-          <Route path='/current' render={() => <CurrentSet token={token}  uid={uid}/>}/>
-          <Route path='/learned' render={() => <LearnedSet token={token}  uid={uid}/>}/>
+          <Route path='/register' render={() => <RegisterForm auth={token} options={options}/>}/>
+          <Route path='/to-learn' render={() => <ToLearnSet token={token} uid={uid} options={options}/>}/>
+          <Route path='/current' render={() => <CurrentSet token={token}  uid={uid} options={options}/>}/>
+          <Route path='/learned' render={() => <LearnedSet token={token}  uid={uid} options={options}/>}/>
         </Switch>
       </Container>
     </>

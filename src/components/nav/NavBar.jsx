@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 const mapState = (state) => ({
   auth: state.auth.isAuth,
-  name: state.auth.name
+  name: state.auth.name,
 });
 
 const actions = {
@@ -122,12 +122,12 @@ const SignedOutMenu = () => {
   )
 };
 
-const NavBar = ({auth, history, name, logout}) => {
+const NavBar = ({auth, history, name, logout, options}) => {
   const classes = useStyles();
   const [visible, setVisible] = useState(false);
 
   const handleLogOut = () => {
-    logout();
+    logout(options);
     history.push('/');
   }
 
@@ -144,7 +144,11 @@ const NavBar = ({auth, history, name, logout}) => {
       <AppBar position="static" style={{ backgroundColor: "#1976d2", color: '#fff' }}>
         <Container>
           {auth ?
-            <SignedInMenu visible={visible} toggleDrawer={toggleDrawer} logout={handleLogOut} name={name}/> :
+            <SignedInMenu visible={visible}
+                          toggleDrawer={toggleDrawer}
+                          logout={handleLogOut}
+                          name={name}
+            /> :
             <SignedOutMenu />}
         </Container>
       </AppBar>

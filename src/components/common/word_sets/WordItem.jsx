@@ -12,7 +12,10 @@ import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ClearIcon from '@material-ui/icons/Clear';
 import WordItemMenu from "./WordItemMenu";
+import {useDispatch} from "react-redux";
+import {editWord} from "../../../redux/actions/wordsActions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,9 +32,16 @@ const WordItem = ({word: {id, title, meanings}, pageTitle, options}) => {
   const classes = useStyles();
   const [expanded, setExpand] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const dispatch = useDispatch();
 
-  const meaningsArray = meanings.split(',');
+  let meaningsArray = meanings.split('/');
   const currentSet = pageTitle === 'На очереди' ? 'next' : pageTitle === 'Текущий набор' ? 'current' : 'done';
+
+
+  const deleteMeaning = (meaning) => {
+    const meanings = meaningsArray.filter(item => item !== meaning).join('/');
+    dispatch(editWord(null, id, {meanings}, options));
+  }
 
 
   return (
@@ -65,6 +75,9 @@ const WordItem = ({word: {id, title, meanings}, pageTitle, options}) => {
               <Fragment key={meaning}>
                 <ListItem>
                   <ListItemText primary={meaning}/>
+                  {meaningsArray.length > 1 && <IconButton onClick={() => deleteMeaning(meaning)}>
+                    <ClearIcon/>
+                  </IconButton>}
                 </ListItem>
                 <Divider/>
               </Fragment>

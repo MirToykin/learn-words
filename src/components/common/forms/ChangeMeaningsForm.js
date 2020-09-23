@@ -4,7 +4,7 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import {combineValidators, isRequired} from "revalidate";
-import {RenderTextarea} from "./formElems";
+import {RenderChangeMeaningsTextarea} from "./formElems";
 import {useCommonFormStyles} from "../../../assets/useStyles";
 
 const validate = combineValidators({
@@ -29,9 +29,9 @@ const ChangeMeaningsForm = ({
         <Grid item xs={12}>
           <Field
             name="meanings"
-            component={RenderTextarea}
+            component={RenderChangeMeaningsTextarea}
             label='Значения'
-            placeholder='Значения через запятую'
+            placeholder='значения через слэш (/)'
           />
         </Grid>
         <Grid item xs={12}>{error && <Typography variant='body1' color='error'>

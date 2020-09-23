@@ -16,12 +16,14 @@ export const RenderTextField = ({
     placeholder={label}
     error={touched && invalid}
     helperText={touched && error}
+    autoFocus={true}
     {...input}
     {...custom}
   />
 }
 
-export const RenderTextarea = (props) => RenderTextField({...props, ...{multiline: true}})
+export const RenderTextarea = (props) => RenderTextField({...props, ...{multiline: true, rowsMax: 4, autoFocus: false}})
+export const RenderChangeMeaningsTextarea = (props) => RenderTextField({...props, ...{multiline: true, rowsMax: 4}})
 
 export const RenderCheckbox = ({input, label}) => (
   <div>

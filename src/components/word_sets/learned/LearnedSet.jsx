@@ -15,10 +15,16 @@ const actions = {
   getDone: getSet('done')
 }
 
-const LearnedSet = ({done, getDone, uid, token}) => {
+const LearnedSet = ({done, getDone, uid, token, options}) => {
 
   return (
-    <SetPage token={token} uid={uid} set={done} getSet={getDone} pageTitle='Изученные'/>
+    <SetPage token={token}
+             uid={uid}
+             set={done}
+             getSet={getDone}
+             pageTitle='Изученные'
+             options={options}
+    />
   );
 };
 

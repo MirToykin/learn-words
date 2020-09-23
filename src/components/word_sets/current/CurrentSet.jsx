@@ -16,7 +16,7 @@ const actions = {
   addToCurrent: addToSet('current')
 }
 
-const CurrentSet = ({current, getCurrent, uid, token, addToCurrent}) => {
+const CurrentSet = ({current, getCurrent, uid, token, addToCurrent, options}) => {
 
   return (
     <SetPage token={token}
@@ -25,6 +25,7 @@ const CurrentSet = ({current, getCurrent, uid, token, addToCurrent}) => {
              getSet={getCurrent}
              addToSet={addToCurrent}
              pageTitle='Текущий набор'
+             options={options}
     />
   );
 };

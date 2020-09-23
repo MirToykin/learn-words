@@ -12,23 +12,43 @@ export const setAuthData = (id, name, email, token, isAuth) => {
   }
 }
 
-export const login = (loginData) => async (dispatch) => {
+export const login = loginData => async dispatch => {
   dispatch(setIsFetching(true));
   try {
-    const response = await api.post('login', loginData);
+    const response = await api.auth('login', loginData);
     const {id, name, email, token} = response.data.user;
     dispatch(setAuthData(id, name, email, token, true));
   } catch (e) {
     throw new SubmissionError({
       _error: 'Неверный логин или пароль'
-    })
+    });
   }
   dispatch(setIsFetching(false));
 }
 
-export const logout = () => async (dispatch) => {
+export const register = regData => async dispatch => {
+  dispatch(setIsFetching(true));
+  try {
+    const response = await api.auth('register', regData);
+    const {id, name, email, token} = response.data.user;
+    dispatch(setAuthData(id, name, email, token, true));
+  } catch (e) {
+    throw new SubmissionError({
+      _error: e.response.data.message
+    });
+  }
+  dispatch(setIsFetching(false));
+}
+
+export const logout = (options) => async (dispatch) => {
   // Пока реализован на стороне клиента, обращение к api будет, когда там будет реализован метод logout
   dispatch(setIsFetching(true));
+  // try {
+  //   const response = await api.logout(options);
+  //   console.log(response);
+  // } catch (e) {
+  //   console.log(e.response);
+  // }
   dispatch(setAuthData(null, null, null, false));
   dispatch(setIsFetching(false));
 
