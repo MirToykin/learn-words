@@ -4,10 +4,11 @@ import {connect} from "react-redux";
 import withAuthRedirect from "../../HOCs/withAuthRedirect";
 import SetPage from "../../common/word_sets/SetPage";
 import {addToSet, getSet} from "../../../redux/actions/wordsActions";
+import {getFilteredSet} from "../../../assets/helpers";
 
 const mapState = (state) => {
   return {
-    current: state.words.current,
+    current: getFilteredSet(state.words.current, state.words.searchInput, 'title'),
   };
 }
 
@@ -16,7 +17,7 @@ const actions = {
   addToCurrent: addToSet('current')
 }
 
-const CurrentSet = ({current, getCurrent, uid, token, addToCurrent, options}) => {
+const CurrentSet = ({current, getCurrent, uid, token, addToCurrent, options, setFilteredCurrent}) => {
 
   return (
     <SetPage token={token}

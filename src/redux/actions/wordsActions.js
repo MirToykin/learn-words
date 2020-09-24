@@ -4,7 +4,7 @@ import Api from "../../api/Api";
 import {
   ADD_SET,
   ADD_WORD_TO_STATE,
-  DELETE_WORD_FROM_STATE, UPDATE_WORD_IN_STATE
+  DELETE_WORD_FROM_STATE, FILTER_SET, SET_SEARCH_INPUT, UPDATE_WORD_IN_STATE
 } from "../constants";
 
 
@@ -74,6 +74,13 @@ export const deleteWord = (set, wordId, config) => async dispatch => {
     console.log(e.message);
   }
   dispatch(setIsFetching(false));
+}
+
+export const setSearchInput = payload => {
+  return {
+    type: SET_SEARCH_INPUT,
+    payload
+  }
 }
 
 const addSet = (setName, set) => {

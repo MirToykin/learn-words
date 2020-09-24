@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useDebugValue, useEffect, useState} from 'react';
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper/Paper";
 import Typography from "@material-ui/core/Typography";
@@ -7,17 +7,26 @@ import Icon from "@material-ui/core/Icon";
 import Divider from "@material-ui/core/Divider";
 import AddToSetForm from "../forms/AddToSetForm";
 import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import WordItem from "./WordItem";
 import {useSetStyles} from "../../../assets/useStyles";
+import TextField from "@material-ui/core/TextField";
+import Set from "./Set";
+import {useDispatch, useSelector} from "react-redux";
+import {setSearchInput} from "../../../redux/actions/wordsActions";
 
-const SetPage = ({set, getSet, pageTitle, uid, token, addToSet, options}) => {
+const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
   const classes = useSetStyles();
   const [open, setOpen] = useState(false);
+  const searchInput = useSelector(state => state.words.searchInput);
+  const dispatch = useDispatch();
+
 
   useEffect(() => {
     (async () => getSet(uid, options))()
   }, [])
+
+  const handleInputChange  = e => {
+    dispatch(setSearchInput(e.target.value));
+  }
 
   return (
     <Grid container justify='center'>
@@ -36,11 +45,21 @@ const SetPage = ({set, getSet, pageTitle, uid, token, addToSet, options}) => {
                                      options={options}
           />}
           <List>
-            {set.map(word => (
-              <ListItem key={word.id}>
-                <WordItem word={word} pageTitle={pageTitle} options={options}/>
-              </ListItem>
-            ))}
+            <form>
+              <TextField fullWidth={true}
+                         placeholder={'введите строку для поиска'}
+                         inputProps={{style: {
+                           textAlign: "center"
+                           }}}
+                         value={searchInput}
+                         onChange={handleInputChange}
+                         disabled={!set.length && !searchInput}
+              />
+            </form>
+            {set.length ? <Set set={set}
+                 pageTitle={pageTitle}
+                 options={options}
+            /> : !set.length && searchInput ? <Typography className={classes.notFound} variant='body1'>Ничего не найдено</Typography> : ''}
           </List>
         </Paper>
       </Grid>

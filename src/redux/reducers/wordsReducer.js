@@ -1,11 +1,13 @@
 import {
-  DELETE_WORD_FROM_STATE, ADD_WORD_TO_STATE, ADD_SET, UPDATE_WORD_IN_STATE
+  DELETE_WORD_FROM_STATE, ADD_WORD_TO_STATE, ADD_SET, UPDATE_WORD_IN_STATE, SET_SEARCH_INPUT, FILTER_SET
 } from "../constants";
 
 let initialState = {
   next: [],
   current: [],
   done: [],
+  searchInput: '',
+  filteredSet: []
 }
 
 const wordsReducer = (state = initialState, {type, payload}) => {
@@ -23,7 +25,10 @@ const wordsReducer = (state = initialState, {type, payload}) => {
           }
           return word;
         })}
-      // return {...state, [payload.category]: [...state[payload.category].filter(word => word.id !== payload.id), payload]}
+    case SET_SEARCH_INPUT:
+      return {...state, searchInput: payload}
+    case FILTER_SET:
+      return {...state, filteredSet: state[payload.set].filter(word => word.title.indexOf(state.searchInput) !== -1)}
     default:
       return state;
   }

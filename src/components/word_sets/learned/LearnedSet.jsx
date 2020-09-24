@@ -3,16 +3,17 @@ import {compose} from "redux";
 import {connect} from "react-redux";
 import withAuthRedirect from "../../HOCs/withAuthRedirect";
 import SetPage from "../../common/word_sets/SetPage";
-import {getSet} from "../../../redux/actions/wordsActions";
+import {getSet, setFilteredSet} from "../../../redux/actions/wordsActions";
+import {getFilteredSet} from "../../../assets/helpers";
 
 const mapState = state => {
   return {
-    done: state.words.done
+    done: getFilteredSet(state.words.done, state.words.searchInput, 'title'),
   };
 }
 
 const actions = {
-  getDone: getSet('done')
+  getDone: getSet('done'),
 }
 
 const LearnedSet = ({done, getDone, uid, token, options}) => {

@@ -6,3 +6,5 @@ export const DELETE_WORD_FROM_STATE = 'DELETE_WORD_FROM_STATE';
 export const ADD_WORD_TO_STATE = 'ADD_WORD_TO_STATE';
 export const ADD_SET = 'ADD_SET';
 export const UPDATE_WORD_IN_STATE = 'UPDATE_WORD_IN_STATE';
+export const SET_SEARCH_INPUT = 'SET_SEARCH_INPUT';
+export const FILTER_SET = 'FILTER_SET';
