@@ -8,7 +8,7 @@ import {connect} from "react-redux";
 import {login} from "../../redux/actions/authActions";
 import {combineValidators, isRequired} from "revalidate";
 import {Redirect} from "react-router-dom";
-import {RenderTextField} from "../common/forms/formElems";
+import {RenderTextField} from "../../assets/formElems";
 import {useCommonFormStyles} from "../../assets/useStyles";
 
 const validate = combineValidators({

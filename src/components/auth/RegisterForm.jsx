@@ -7,7 +7,7 @@ import Paper from "@material-ui/core/Paper";
 import {connect} from "react-redux";
 import {combineValidators, composeValidators, isRequired, matchesField} from "revalidate";
 import {Redirect} from "react-router-dom";
-import {RenderTextField} from "../common/forms/formElems";
+import {RenderTextField} from "../../assets/formElems";
 import {useCommonFormStyles} from "../../assets/useStyles";
 import {register} from "../../redux/actions/authActions";
 

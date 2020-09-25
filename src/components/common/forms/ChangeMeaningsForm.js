@@ -4,7 +4,7 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import {combineValidators, isRequired} from "revalidate";
-import {RenderChangeMeaningsTextarea} from "./formElems";
+import {RenderChangeMeaningsTextarea} from "../../../assets/formElems";
 import {useCommonFormStyles} from "../../../assets/useStyles";
 
 const validate = combineValidators({

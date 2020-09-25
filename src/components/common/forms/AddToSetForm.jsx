@@ -1,31 +1,44 @@
 import React from 'react';
-import {Field, reduxForm} from "redux-form";
+import {Field, reduxForm, formValueSelector, change} from "redux-form";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import {combineValidators, isRequired} from "revalidate";
-import {RenderTextarea, RenderTextField} from "./formElems";
+import {RenderTextarea, RenderTextField} from "../../../assets/formElems";
 import Dialog from "@material-ui/core/Dialog";
 import {useCommonFormStyles} from "../../../assets/useStyles";
+import {connect, useDispatch, useSelector} from "react-redux";
+import {clearAddedMeanings, pushToAddedMeanings} from "../../../redux/actions/wordsActions";
+import Meanings from "../word_sets/Meanings";
 
 const validate = combineValidators({
   word: isRequired({message: 'Введите слово'}),
-  means: isRequired({message: 'Введите значения'})
+  // means: isRequired({message: 'Введите значения'})
 })
 
 const AddToSetForm = ({
                         pristine, submitting, error,
                         handleSubmit, reset,
                         addToSet, open, onClose,
-                        uid, options
+                        uid, options, meaningValue,
+                        addedMeanings
                       }) => {
   const classes = useCommonFormStyles();
+  const dispatch = useDispatch();
 
-  const onSubmit = (word) => {
+  const onAddMeaning = meaning => {
+    if (!meaning) return;
+    dispatch(pushToAddedMeanings(meaning));
+    dispatch(change('AddToSetForm', 'meanings', ''));
+  }
+
+  const onSubmit = (word, meanings) => {
     word['user_id'] = uid;
-    addToSet(word, options);
+    word['meanings'] = meanings.join('/');
     reset();
+    dispatch(clearAddedMeanings());
+    return addToSet(word, options);
   }
 
   return (
@@ -36,7 +49,7 @@ const AddToSetForm = ({
                     color='primary'
                     className={classes.head}
         >Добавить слово в набор</Typography>
-        <form onSubmit={handleSubmit(onSubmit)} autoComplete='off'>
+        <form onSubmit={handleSubmit((word) => onSubmit(word, addedMeanings))} autoComplete='off'>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Field
@@ -51,29 +64,46 @@ const AddToSetForm = ({
                 name="meanings"
                 component={RenderTextarea}
                 label='Значения'
-                placeholder='значения через слэш (/)'
+                placeholder='значение'
               />
             </Grid>
             <Grid item xs={12}>{error && <Typography variant='body1' color='error'>
               {error}
             </Typography>}
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
+              <Button type='button'
+                      variant="contained"
+                      color="primary"
+                      style={{width: '100%'}}
+                      onClick={() => onAddMeaning(meaningValue)}
+                      disabled={pristine || submitting}
+              >Добавить значение</Button>
+            </Grid>
+            <Grid item xs={12} sm={4}>
               <Button type='submit'
                       disabled={pristine || submitting}
                       variant="contained"
                       color="primary"
                       className={classes.submit}
                       style={{width: '100%'}}
-              >Добавить</Button>
+              >Сохранить</Button>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
               <Button type='button'
                       variant="contained"
                       color="primary"
                       onClick={onClose}
                       style={{width: '100%'}}
               >Закрыть</Button>
+            </Grid>
+            <Grid item xs={12}>
+              <Meanings
+                options={options}
+                meaningsArray={addedMeanings}
+                id={uid}
+                isHttp={false}
+              />
             </Grid>
           </Grid>
         </form>
@@ -82,5 +112,10 @@ const AddToSetForm = ({
   )
 }
 
-export default reduxForm({form: 'AddToSetForm', validate})(AddToSetForm);
+const form = reduxForm({form: 'AddToSetForm', validate})(AddToSetForm);
+const selector = formValueSelector('AddToSetForm');
+export default connect(state => ({
+  meaningValue: selector(state, 'meanings'),
+  addedMeanings: state.words.addedMeanings
+}))(form);
 
