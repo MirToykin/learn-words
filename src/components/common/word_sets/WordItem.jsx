@@ -10,7 +10,7 @@ import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import WordItemMenu from "./WordItemMenu";
-import Meanings from "./Meanings";
+import MeaningsList from "./MeaningsList";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     margin: 0,
+  },
+  details: {
+    paddingBottom: 0
   }
 }));
 
@@ -44,20 +47,23 @@ const WordItem = ({word: {id, title, meanings}, pageTitle, options}) => {
             <IconButton onClick={() => setExpand(true)}>
               <ExpandMoreIcon/>
             </IconButton>}
-          <Typography variant='h6'>{title}</Typography>
+          <Typography variant='h6' color={'primary'}>{title}</Typography>
           <IconButton onClick={(event) => setAnchorEl(event.currentTarget)}>
             <MoreVertIcon/>
           </IconButton>
           <WordItemMenu anchorEl={anchorEl}
                         setAnchorEl={setAnchorEl}
                         id={id} title={title}
-                        meanings={meanings} currentSet={currentSet}
+                        meanings={meaningsArray}
+                        currentSet={currentSet}
                         options={options}
           />
         </ExpansionPanelSummary>
         <Divider/>
-        <ExpansionPanelDetails>
-          <Meanings
+        <ExpansionPanelDetails classes={{
+          root: classes.details
+        }}>
+          <MeaningsList
             meaningsArray={meaningsArray}
             id={id}
             options={options}

@@ -3,9 +3,10 @@ import {setIsFetching} from "./appActions";
 import Api from "../../api/Api";
 import {
   ADD_SET,
-  ADD_WORD_TO_STATE, CLEAR_ADDED_MEANINGS, DELETE_FROM_ADDED_MEANINGS,
+  ADD_WORD_TO_STATE, SET_ADDED_MEANINGS, DELETE_FROM_ADDED_MEANINGS,
   DELETE_WORD_FROM_STATE, PUSH_TO_ADDED_MEANINGS, SET_SEARCH_INPUT, UPDATE_WORD_IN_STATE
 } from "../constants";
+import {setAuthData} from "./authActions";
 
 
 const api = new Api();
@@ -17,7 +18,10 @@ export const getSet = set => (uid, options) => async dispatch => {
     const words = response.data.words;
     dispatch(addSet(set, words));
   } catch(e) {
-    console.log(e.response.data.message);
+    if (e.response && e.response.status === 401) {
+      dispatch(setAuthData(null, null, null, false));
+    }
+    console.log(e.response);
   }
   dispatch(setIsFetching(false));
 }
@@ -32,6 +36,9 @@ export const addToSet = set => (data, options) => async (dispatch) => {
     const word = response.data.word;
     dispatch(addWordToState(set, word));
   } catch (e) {
+    if (e.response && e.response.status === 401) {
+      dispatch(setAuthData(null, null, null, false));
+    }
     throw new SubmissionError({
       _error: e.response.data.message
     });
@@ -56,7 +63,10 @@ export const editWord = (setToRemoveFrom, wordId, data, options) => async (dispa
     dispatch(updateWordInState(word));
 
   } catch (e) {
-    console.log(e.message);
+    if (e.response && e.response.status === 401) {
+      dispatch(setAuthData(null, null, null, false));
+    }
+    console.log(e.response.data.message);
   }
   dispatch(setIsFetching(false));
 }
@@ -69,7 +79,10 @@ export const deleteWord = (set, wordId, config) => async dispatch => {
       dispatch(deleteWordFromState(set, wordId));
     }
   } catch (e) {
-    console.log(e.message);
+    if (e.response && e.response.status === 401) {
+      dispatch(setAuthData(null, null, null, false));
+    }
+    console.log(e.response.data.message);
   }
   dispatch(setIsFetching(false));
 }
@@ -95,9 +108,10 @@ export const deleteFromAddedMeanings = payload => {
   }
 }
 
-export const clearAddedMeanings = () => {
+export const setAddedMeanings = (payload) => {
   return {
-    type: CLEAR_ADDED_MEANINGS
+    type: SET_ADDED_MEANINGS,
+    payload
   }
 }
 

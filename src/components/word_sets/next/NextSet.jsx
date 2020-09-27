@@ -3,27 +3,29 @@ import {compose} from "redux";
 import {connect} from "react-redux";
 import withAuthRedirect from "../../HOCs/withAuthRedirect";
 import SetPage from "../../common/word_sets/SetPage";
-import {getSet, setFilteredSet} from "../../../redux/actions/wordsActions";
+import {addToSet, getSet, setFilteredSet} from "../../../redux/actions/wordsActions";
 import {getFilteredSet} from "../../../assets/helpers";
 
 const mapState = state => {
   return {
-    done: getFilteredSet(state.words.done, state.words.searchInput, 'title'),
+    next: getFilteredSet(state.words.next, state.words.searchInput, 'title'),
   };
 }
 
 const actions = {
-  getDone: getSet('done'),
+  getNext: getSet('next'),
+  addToNext: addToSet('next'),
 }
 
-const LearnedSet = ({done, getDone, uid, token, options}) => {
+const NextSet = ({next, getNext, uid, token, addToNext, options}) => {
 
   return (
     <SetPage token={token}
              uid={uid}
-             set={done}
-             getSet={getDone}
-             pageTitle='Изученные'
+             set={next}
+             getSet={getNext}
+             addToSet={addToNext}
+             pageTitle='На очереди'
              options={options}
     />
   );
@@ -32,5 +34,5 @@ const LearnedSet = ({done, getDone, uid, token, options}) => {
 export default compose(
   withAuthRedirect,
   connect(mapState, actions)
-)(LearnedSet);
+)(NextSet);
 

@@ -28,7 +28,8 @@ export const configureStore = () => {
 
   store.subscribe(throttle(() => {
     saveState({
-      auth: store.getState().auth
+      auth: store.getState().auth,
+      app: store.getState().app
     });
   }, 1000))
 

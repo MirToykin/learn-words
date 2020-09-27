@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Meanings = ({meaningsArray, id, options, isHttp=true}) => {
+const MeaningsList = ({meaningsArray, id, options, isHttp=true}) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -35,19 +35,19 @@ const Meanings = ({meaningsArray, id, options, isHttp=true}) => {
 
   return (
     <List className={classes.root}>
-      {meaningsArray.map(meaning => (
+      {meaningsArray.map((meaning, i, array) => (
         <Fragment key={meaning}>
           <ListItem>
             <ListItemText primary={meaning}/>
             {meaningsArray.length > 1 && <IconButton onClick={() => deleteMeaning(meaning)}>
-              <DeleteForeverIcon color={'secondary'}/>
+              <DeleteForeverIcon/>
             </IconButton>}
           </ListItem>
-          <Divider/>
+          {i !== array.length -1 && <Divider/>}
         </Fragment>
       ))}
     </List>
   );
 };
 
-export default Meanings;
+export default MeaningsList;

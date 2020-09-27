@@ -3,7 +3,6 @@ import {createMuiTheme, makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Container from "@material-ui/core/Container";
@@ -13,10 +12,12 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import {ThemeProvider} from "@material-ui/core/styles";
 import {connect} from "react-redux";
 import {NavLink, withRouter} from "react-router-dom";
 import {logout} from '../../redux/actions/authActions'
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import {switchColorTheme} from "../../redux/actions/appActions";
+import Switch from "@material-ui/core/Switch";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,18 +35,20 @@ const useStyles = makeStyles((theme) => ({
 const mapState = (state) => ({
   auth: state.auth.isAuth,
   name: state.auth.name,
+  darkState: state.app.darkState
 });
 
 const actions = {
-  logout
+  logout,
+  switchColorTheme
 }
 
-const SignedInMenu = ({visible, toggleDrawer, logout, name}) => {
+const SignedInMenu = ({visible, toggleDrawer, logout, name, darkState, switchColorTheme}) => {
   const classes = useStyles();
   return (
     <Toolbar>
       <div>
-        <IconButton onClick={toggleDrawer(true)} edge="start" className={classes.menuButton} color="inherit">
+        <IconButton onClick={toggleDrawer(true)} edge="start" className={classes.menuButton} /*color="inherit"*/>
           <MenuIcon/>
         </IconButton>
         <Drawer anchor='top' open={visible} onClose={toggleDrawer(false)}>
@@ -83,7 +86,10 @@ const SignedInMenu = ({visible, toggleDrawer, logout, name}) => {
       <Typography variant="h6" className={classes.title}>
         {name}
       </Typography>
-      <Button onClick={logout} color="inherit">Выход</Button>
+      <Switch checked={darkState} onChange={switchColorTheme}/>
+      <IconButton onClick={logout}>
+        <ExitToAppIcon/>
+      </IconButton>
     </Toolbar>
   )
 };
@@ -104,7 +110,6 @@ const SignedOutMenu = () => {
   })
 
   return (
-    <ThemeProvider theme={theme}>
       <Tabs
         value={value}
         onChange={handleChange}
@@ -118,11 +123,10 @@ const SignedOutMenu = () => {
         <Tab component={NavLink} to='/login' label={<span style={{color: '#fff'}}>Вход</span>}/>
         <Tab component={NavLink} to='/register' label={<span style={{color: '#fff'}}>Регистрация</span>}/>
       </Tabs>
-    </ThemeProvider>
   )
 };
 
-const NavBar = ({auth, history, name, logout, options}) => {
+const NavBar = ({auth, history, name, logout, options, darkState, switchColorTheme}) => {
   const classes = useStyles();
   const [visible, setVisible] = useState(false);
 
@@ -141,15 +145,17 @@ const NavBar = ({auth, history, name, logout, options}) => {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" style={{ backgroundColor: "#1976d2", color: '#fff' }}>
+      <AppBar position={'static'} /*style={{ backgroundColor: "#1976d2", color: '#fff' }}*/>
         <Container>
           {auth ?
             <SignedInMenu visible={visible}
                           toggleDrawer={toggleDrawer}
                           logout={handleLogOut}
                           name={name}
+                          darkState={darkState}
+                          switchColorTheme={switchColorTheme}
             /> :
-            <SignedOutMenu />}
+            <SignedOutMenu darkState={darkState} switchColorTheme={switchColorTheme}/>}
         </Container>
       </AppBar>
     </div>

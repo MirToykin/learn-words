@@ -43,12 +43,12 @@ export const register = regData => async dispatch => {
 export const logout = (options) => async (dispatch) => {
   // Пока реализован на стороне клиента, обращение к api будет, когда там будет реализован метод logout
   dispatch(setIsFetching(true));
-  // try {
-  //   const response = await api.logout(options);
-  //   console.log(response);
-  // } catch (e) {
-  //   console.log(e.response);
-  // }
+  try {
+    const response = await api.logout(options);
+    console.log(response);
+  } catch (e) {
+    console.log(e.response.data.message);
+  }
   dispatch(setAuthData(null, null, null, false));
   dispatch(setIsFetching(false));
 

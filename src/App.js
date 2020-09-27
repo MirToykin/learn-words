@@ -6,24 +6,49 @@ import {connect} from "react-redux";
 import LoginForm from "./components/auth/LoginForm";
 import CurrentSet from "./components/word_sets/current/CurrentSet";
 import RegisterForm from "./components/auth/RegisterForm";
-import ToLearnSet from "./components/word_sets/toLearn/ToLearnSet";
-import LearnedSet from "./components/word_sets/learned/LearnedSet";
+import ToLearnSet from "./components/word_sets/next/NextSet";
+import LearnedSet from "./components/word_sets/done/DoneSet";
+import {createMuiTheme, ThemeProvider} from "@material-ui/core/styles";
+import {switchColorTheme} from "./redux/actions/appActions";
+import orange from "@material-ui/core/colors/orange";
+import lightBlue from "@material-ui/core/colors/lightBlue";
+import deepOrange from "@material-ui/core/colors/deepOrange";
+import deepPurple from "@material-ui/core/colors/deepPurple";
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 const mapState = (state) => ({
   auth: state.auth.isAuth,
   uid: state.auth.id,
-  token: state.auth.token
+  token: state.auth.token,
+  darkState: state.app.darkState
 })
 
-const App = ({auth, uid, token}) => {
+const App = ({auth, uid, token, darkState}) => {
   const options = {
     headers: {
       "Authorization": `Bearer ${token}`
     }
   }
 
+  const palletType = darkState ? 'dark' : 'light';
+  const mainPrimaryColor = darkState ? orange[500] : lightBlue[500];
+  const mainSecondaryColor = darkState ? deepOrange[900] : deepPurple[500];
+
+  const darkTheme = createMuiTheme({
+    palette: {
+      type: palletType,
+      primary: {
+        main: mainPrimaryColor
+      },
+      secondary: {
+        main: mainSecondaryColor
+      }
+    }
+  });
+
   return (
-    <>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
       <NavBar options={options}/>
       <Container>
         <Switch>
@@ -35,7 +60,7 @@ const App = ({auth, uid, token}) => {
           <Route path='/learned' render={() => <LearnedSet token={token}  uid={uid} options={options}/>}/>
         </Switch>
       </Container>
-    </>
+    </ThemeProvider>
   );
 }
 

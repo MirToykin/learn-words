@@ -5,7 +5,7 @@ import {
   UPDATE_WORD_IN_STATE,
   SET_SEARCH_INPUT,
   FILTER_SET,
-  PUSH_TO_ADDED_MEANINGS, DELETE_FROM_ADDED_MEANINGS, CLEAR_ADDED_MEANINGS
+  PUSH_TO_ADDED_MEANINGS, DELETE_FROM_ADDED_MEANINGS, SET_ADDED_MEANINGS
 } from "../constants";
 
 let initialState = {
@@ -37,8 +37,8 @@ const wordsReducer = (state = initialState, {type, payload}) => {
       return {...state, addedMeanings: [...state.addedMeanings, payload]};
     case DELETE_FROM_ADDED_MEANINGS:
       return {...state, addedMeanings: state.addedMeanings.filter(meaning => meaning !== payload)}
-    case CLEAR_ADDED_MEANINGS:
-      return {...state, addedMeanings: []}
+    case SET_ADDED_MEANINGS:
+      return {...state, addedMeanings: payload}
     default:
       return state;
   }

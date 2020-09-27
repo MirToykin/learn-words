@@ -9,8 +9,9 @@ import {RenderTextarea, RenderTextField} from "../../../assets/formElems";
 import Dialog from "@material-ui/core/Dialog";
 import {useCommonFormStyles} from "../../../assets/useStyles";
 import {connect, useDispatch, useSelector} from "react-redux";
-import {clearAddedMeanings, pushToAddedMeanings} from "../../../redux/actions/wordsActions";
-import Meanings from "../word_sets/Meanings";
+import {setAddedMeanings, pushToAddedMeanings} from "../../../redux/actions/wordsActions";
+import MeaningsList from "../word_sets/MeaningsList";
+import {onAddMeaning} from "../../../assets/helpers";
 
 const validate = combineValidators({
   word: isRequired({message: 'Введите слово'}),
@@ -22,27 +23,21 @@ const AddToSetForm = ({
                         handleSubmit, reset,
                         addToSet, open, onClose,
                         uid, options, meaningValue,
-                        addedMeanings
+                        addedMeanings, titleValue
                       }) => {
   const classes = useCommonFormStyles();
   const dispatch = useDispatch();
-
-  const onAddMeaning = meaning => {
-    if (!meaning) return;
-    dispatch(pushToAddedMeanings(meaning));
-    dispatch(change('AddToSetForm', 'meanings', ''));
-  }
 
   const onSubmit = (word, meanings) => {
     word['user_id'] = uid;
     word['meanings'] = meanings.join('/');
     reset();
-    dispatch(clearAddedMeanings());
+    dispatch(setAddedMeanings([]));
     return addToSet(word, options);
   }
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={() => onClose([() => dispatch(setAddedMeanings([]))])}>
       <Paper className={classes.paper}>
         <Typography variant='h5'
                     align='center'
@@ -63,7 +58,7 @@ const AddToSetForm = ({
               <Field
                 name="meanings"
                 component={RenderTextarea}
-                label='Значения'
+                label='Значение'
                 placeholder='значение'
               />
             </Grid>
@@ -76,13 +71,13 @@ const AddToSetForm = ({
                       variant="contained"
                       color="primary"
                       style={{width: '100%'}}
-                      onClick={() => onAddMeaning(meaningValue)}
+                      onClick={() => onAddMeaning(meaningValue, dispatch, 'AddToSetForm')}
                       disabled={pristine || submitting}
               >Добавить значение</Button>
             </Grid>
             <Grid item xs={12} sm={4}>
               <Button type='submit'
-                      disabled={pristine || submitting}
+                      disabled={pristine || submitting || !addedMeanings.length || !titleValue}
                       variant="contained"
                       color="primary"
                       className={classes.submit}
@@ -93,12 +88,12 @@ const AddToSetForm = ({
               <Button type='button'
                       variant="contained"
                       color="primary"
-                      onClick={onClose}
+                      onClick={() => onClose([() => dispatch(setAddedMeanings([]))])}
                       style={{width: '100%'}}
               >Закрыть</Button>
             </Grid>
             <Grid item xs={12}>
-              <Meanings
+              <MeaningsList
                 options={options}
                 meaningsArray={addedMeanings}
                 id={uid}
@@ -115,6 +110,7 @@ const AddToSetForm = ({
 const form = reduxForm({form: 'AddToSetForm', validate})(AddToSetForm);
 const selector = formValueSelector('AddToSetForm');
 export default connect(state => ({
+  titleValue: selector(state, 'title'),
   meaningValue: selector(state, 'meanings'),
   addedMeanings: state.words.addedMeanings
 }))(form);

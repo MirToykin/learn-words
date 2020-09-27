@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu/Menu";
-import {connect} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 import ChangeMeaningsForm from "../forms/ChangeMeaningsForm";
 import Paper from "@material-ui/core/Paper/Paper";
 import Typography from "@material-ui/core/Typography";
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import {useCommonFormStyles} from "../../../assets/useStyles";
-import {deleteWord, editWord} from "../../../redux/actions/wordsActions";
+import {deleteWord, editWord, setAddedMeanings} from "../../../redux/actions/wordsActions";
 
 const actions = {
   editWord,
@@ -21,8 +21,8 @@ const WordItemMenu = ({
                       }) => {
 
   const [open, setOpen] = useState(false);
-  // const wordDoc = {id, word, means};
   const classes = useCommonFormStyles();
+  const dispatch = useDispatch();
 
   const handleMoveToSet = (e, moveToSet) => {
     moveToSet();
@@ -32,6 +32,11 @@ const WordItemMenu = ({
   const onChangeMeans = () => {
     setOpen(true);
     setAnchorEl(null);
+  }
+
+  const onClose = () => {
+    setOpen(false);
+    dispatch(setAddedMeanings([]))
   }
 
   const menuConfig = {
@@ -81,15 +86,16 @@ const WordItemMenu = ({
         {currentSet !== 'done' && <MenuItem onClick={onChangeMeans}>Изменить значения</MenuItem>}
         <MenuItem onClick={() => deleteWord(currentSet, id, options)}>Удалить</MenuItem>
       </Menu>
-      <Dialog open={open} onClose={() => setOpen(false)}>
+      <Dialog open={open} onClose={onClose}>
         <Paper className={classes.paper}>
           <Typography variant='h5'
                       align='center'
                       color='primary'
                       className={classes.head}
-          >Изменить значения для <span style={{fontWeight: "bold", color: 'black'}}>{title}</span></Typography>
+          >Изменить значения для <Typography variant={'inherit'} color={'textPrimary'}>{title}</Typography></Typography>
           <ChangeMeaningsForm
-            initialValues={{meanings: meanings}}
+            // initialValues={{meanings: meanings}}
+            meanings={meanings}
             editWord={editWord}
             onClose={() => setOpen(false)}
             id={id}

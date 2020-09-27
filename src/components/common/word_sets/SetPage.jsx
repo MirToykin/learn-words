@@ -12,6 +12,7 @@ import TextField from "@material-ui/core/TextField";
 import Set from "./Set";
 import {useDispatch, useSelector} from "react-redux";
 import {setSearchInput} from "../../../redux/actions/wordsActions";
+import AddIcon from '@material-ui/icons/Add';
 
 const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
   const classes = useSetStyles();
@@ -28,19 +29,28 @@ const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
     dispatch(setSearchInput(e.target.value));
   }
 
+  const handleClose = additionalActions => {
+    setOpen(false);
+    if(additionalActions) {
+      additionalActions.forEach(action => {
+        action();
+      })
+    }
+  }
+
   return (
     <Grid container justify='center'>
       <Grid item md={5} sm={7} xs={12}>
         <Paper>
           <div className={classes.head}>
-            <Typography variant='h5'>{pageTitle}</Typography>
-            <IconButton color='secondary' size='medium' onClick={() => setOpen(true)}>
-              {addToSet && <Icon style={{ fontSize: 40 }} color='secondary'>add_circle</Icon>}
+            <Typography variant='h5' color={'textSecondary'}>{pageTitle}</Typography>
+            <IconButton color='primary' size='medium' onClick={() => setOpen(true)}>
+              {addToSet && /*<AddIcon fontSize={'large'}/>*/<Icon style={{ fontSize: 40 }} color='primary'>add_circle</Icon>}
             </IconButton>
           </div>
           <Divider/>
           {addToSet && <AddToSetForm open={open}
-                                     onClose={() => setOpen(false)}
+                                     onClose={handleClose}
                                      addToSet={addToSet} uid={uid}
                                      options={options}
           />}

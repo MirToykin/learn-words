@@ -16,7 +16,7 @@ class Api {
   }
 
   logout(options) {
-    return this.ajax.post('logout', options);
+    return this.ajax.post('logout', null, options);
   }
 
   addToSet(data, options) {
