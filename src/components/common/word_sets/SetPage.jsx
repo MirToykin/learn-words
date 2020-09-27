@@ -13,12 +13,14 @@ import Set from "./Set";
 import {useDispatch, useSelector} from "react-redux";
 import {setSearchInput} from "../../../redux/actions/wordsActions";
 import AddIcon from '@material-ui/icons/Add';
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
   const classes = useSetStyles();
   const [open, setOpen] = useState(false);
   const searchInput = useSelector(state => state.words.searchInput);
   const dispatch = useDispatch();
+  const isFetching = useSelector(state => state.app.isFetching);
 
 
   useEffect(() => {
@@ -66,6 +68,7 @@ const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
                          disabled={!set.length && !searchInput}
               />
             </form>
+            {isFetching && !set.length && <LinearProgress color={'secondary'}/>}
             {set.length ? <Set set={set}
                  pageTitle={pageTitle}
                  options={options}
