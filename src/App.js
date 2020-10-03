@@ -6,10 +6,9 @@ import {connect} from "react-redux";
 import LoginForm from "./components/auth/LoginForm";
 import CurrentSet from "./components/word_sets/current/CurrentSet";
 import RegisterForm from "./components/auth/RegisterForm";
-import ToLearnSet from "./components/word_sets/next/NextSet";
-import LearnedSet from "./components/word_sets/done/DoneSet";
+import NextSet from "./components/word_sets/next/NextSet";
+import DoneSet from "./components/word_sets/done/DoneSet";
 import {createMuiTheme, ThemeProvider} from "@material-ui/core/styles";
-import {switchColorTheme} from "./redux/actions/appActions";
 import orange from "@material-ui/core/colors/orange";
 import lightBlue from "@material-ui/core/colors/lightBlue";
 import deepOrange from "@material-ui/core/colors/deepOrange";
@@ -55,9 +54,9 @@ const App = ({auth, uid, token, darkState}) => {
           <Route path='/' exact render={() => <Redirect to={auth ? '/current' : '/login'}/>}/>
           <Route path='/login' render={() => <LoginForm auth={token}/>}/>
           <Route path='/register' render={() => <RegisterForm auth={token} options={options}/>}/>
-          <Route path='/to-learn' render={() => <ToLearnSet token={token} uid={uid} options={options}/>}/>
+          <Route path='/next' render={() => <NextSet token={token} uid={uid} options={options}/>}/>
           <Route path='/current' render={() => <CurrentSet token={token}  uid={uid} options={options}/>}/>
-          <Route path='/learned' render={() => <LearnedSet token={token}  uid={uid} options={options}/>}/>
+          <Route path='/done' render={() => <DoneSet token={token}  uid={uid} options={options}/>}/>
         </Switch>
       </Container>
     </ThemeProvider>

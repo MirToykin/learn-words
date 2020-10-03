@@ -7,6 +7,7 @@ import {
   DELETE_WORD_FROM_STATE, PUSH_TO_ADDED_MEANINGS, SET_SEARCH_INPUT, UPDATE_WORD_IN_STATE
 } from "../constants";
 import {setAuthData} from "./authActions";
+import {clearStorage} from "../../assets/browserStorage";
 
 
 const api = new Api();
@@ -19,7 +20,15 @@ export const getSet = set => (uid, options) => async dispatch => {
     dispatch(addSet(set, words));
   } catch(e) {
     if (e.response && e.response.status === 401) {
-      dispatch(setAuthData(null, null, null, false));
+      dispatch(setAuthData({
+        id: null,
+        name: null,
+        email: null,
+        token: null,
+        isAuth: false,
+        rememberMe: false
+      }));
+      clearStorage();
     }
     console.log(e.response);
   }
@@ -37,7 +46,15 @@ export const addToSet = set => (data, options) => async (dispatch) => {
     dispatch(addWordToState(set, word));
   } catch (e) {
     if (e.response && e.response.status === 401) {
-      dispatch(setAuthData(null, null, null, false));
+      dispatch(setAuthData({
+        id: null,
+        name: null,
+        email: null,
+        token: null,
+        isAuth: false,
+        rememberMe: false
+      }));
+      clearStorage();
     }
     throw new SubmissionError({
       _error: e.response.data.message
@@ -64,7 +81,15 @@ export const editWord = (setToRemoveFrom, wordId, data, options) => async (dispa
 
   } catch (e) {
     if (e.response && e.response.status === 401) {
-      dispatch(setAuthData(null, null, null, false));
+      dispatch(setAuthData({
+        id: null,
+        name: null,
+        email: null,
+        token: null,
+        isAuth: false,
+        rememberMe: false
+      }));
+      clearStorage();
     }
     console.log(e.response.data.message);
   }
@@ -80,7 +105,15 @@ export const deleteWord = (set, wordId, config) => async dispatch => {
     }
   } catch (e) {
     if (e.response && e.response.status === 401) {
-      dispatch(setAuthData(null, null, null, false));
+      dispatch(setAuthData({
+        id: null,
+        name: null,
+        email: null,
+        token: null,
+        isAuth: false,
+        rememberMe: false
+      }));
+      clearStorage();
     }
     console.log(e.response.data.message);
   }

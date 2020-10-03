@@ -2,7 +2,7 @@ import {SET_IS_FETCHING, SWITCH_COLOR_THEME} from "../constants";
 
 let initialState = {
   isFetching: false,
-  darkState: true
+  darkState: false
 }
 
 const authReducer = (state = initialState, {type, payload}) => {

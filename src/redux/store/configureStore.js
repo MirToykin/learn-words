@@ -5,7 +5,7 @@ import {reducer as formReducer} from "redux-form";
 import authReducer from "../reducers/authReducer";
 import wordsReducer from "../reducers/wordsReducer";
 import appReducer from "../reducers/appReducer";
-import {loadState, saveState} from "../../assets/localStorage";
+import {loadState, saveState} from "../../assets/browserStorage";
 import throttle from 'lodash/throttle';
 
 const rootReducer = combineReducers({

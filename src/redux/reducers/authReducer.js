@@ -6,7 +6,8 @@ let initialState = {
   email: null,
   isFetching: false,
   isAuth: false,
-  token: null
+  token: null,
+  rememberMe: false
 }
 
 const authReducer = (state = initialState, {type, payload}) => {

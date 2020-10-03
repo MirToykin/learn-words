@@ -1,5 +1,5 @@
 import React from 'react';
-import {Field, reduxForm, formValueSelector, change} from "redux-form";
+import {Field, reduxForm, formValueSelector} from "redux-form";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -8,8 +8,8 @@ import {combineValidators, isRequired} from "revalidate";
 import {RenderTextarea, RenderTextField} from "../../../assets/formElems";
 import Dialog from "@material-ui/core/Dialog";
 import {useCommonFormStyles} from "../../../assets/useStyles";
-import {connect, useDispatch, useSelector} from "react-redux";
-import {setAddedMeanings, pushToAddedMeanings} from "../../../redux/actions/wordsActions";
+import {connect, useDispatch} from "react-redux";
+import {setAddedMeanings} from "../../../redux/actions/wordsActions";
 import MeaningsList from "../word_sets/MeaningsList";
 import {onAddMeaning} from "../../../assets/helpers";
 
@@ -62,7 +62,7 @@ const AddToSetForm = ({
                 placeholder='значение'
               />
             </Grid>
-            <Grid item xs={12}>{error && <Typography variant='body1' color='error'>
+            <Grid item xs={12}>{error && <Typography align={'center'} variant='body1' color='error'>
               {error}
             </Typography>}
             </Grid>
@@ -71,7 +71,10 @@ const AddToSetForm = ({
                       variant="contained"
                       color="primary"
                       style={{width: '100%'}}
-                      onClick={() => onAddMeaning(meaningValue, dispatch, 'AddToSetForm')}
+                      onClick={() => {
+                        const repeat = addedMeanings.includes(meaningValue)
+                        onAddMeaning(meaningValue, dispatch, 'AddToSetForm', repeat);
+                      }}
                       disabled={pristine || submitting}
               >Добавить значение</Button>
             </Grid>

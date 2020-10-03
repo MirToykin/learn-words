@@ -3,7 +3,7 @@ import * as axios from "axios";
 class Api {
   constructor() {
     this.ajax = axios.create({
-      baseURL: "http://learnwords/api/"
+      baseURL: "http://api-simpledictionary.ru/api/"
     });
   }
 

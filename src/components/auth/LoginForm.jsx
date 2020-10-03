@@ -6,16 +6,9 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import {connect} from "react-redux";
 import {login} from "../../redux/actions/authActions";
-import {combineValidators, isRequired} from "revalidate";
 import {Redirect} from "react-router-dom";
-import {RenderTextField} from "../../assets/formElems";
+import {RenderCheckbox, RenderTextField} from "../../assets/formElems";
 import {useCommonFormStyles} from "../../assets/useStyles";
-
-const validate = combineValidators({
-  email: isRequired({message: 'Введите email'}),
-  password: isRequired({message: 'Введите пароль'})
-
-})
 
 const actions = {
   login
@@ -28,7 +21,7 @@ const LoginForm = ({pristine, submitting, error, handleSubmit, login, reset, aut
 
   return (
     <Grid container alignItems='center' justify='center'>
-      <Grid item xs={12} sm={9} md={6} lg={3}>
+      <Grid item xs={12} sm={9} md={6} lg={4}>
         <Paper className={classes.paper}>
           <Typography variant='h5'
                       align='center'
@@ -52,9 +45,17 @@ const LoginForm = ({pristine, submitting, error, handleSubmit, login, reset, aut
                   type='password'
                 />
               </Grid>
-              <Grid item xs={12}>{error && <Typography variant='body1' color='error'>
-                {error}
-              </Typography>}
+              <Grid style={{padding: 0}} item xs={12}>
+                {error && <Typography align={'center'} variant='body1' color='error'>
+                  {error}
+                </Typography>}
+              </Grid>
+              <Grid item xs={12}>
+                <Field
+                  name="rememberMe"
+                  component={RenderCheckbox}
+                  label='Запомнить меня на этом устройстве'
+                />
               </Grid>
               <Grid item xs={12}>
                 <Button type='submit'
@@ -78,5 +79,5 @@ const LoginForm = ({pristine, submitting, error, handleSubmit, login, reset, aut
   )
 }
 
-export default connect(null, actions)(reduxForm({form: 'login', validate})(LoginForm));
+export default connect(null, actions)(reduxForm({form: 'login'/*, validate*/})(LoginForm));
 

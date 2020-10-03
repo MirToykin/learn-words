@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {createMuiTheme, makeStyles} from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -18,6 +18,7 @@ import {logout} from '../../redux/actions/authActions'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import {switchColorTheme} from "../../redux/actions/appActions";
 import Switch from "@material-ui/core/Switch";
+import Divider from "@material-ui/core/Divider";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,16 +52,24 @@ const SignedInMenu = ({visible, toggleDrawer, logout, name, darkState, switchCol
         <IconButton onClick={toggleDrawer(true)} edge="start" className={classes.menuButton} /*color="inherit"*/>
           <MenuIcon/>
         </IconButton>
-        <Drawer anchor='top' open={visible} onClose={toggleDrawer(false)}>
+        <Drawer
+          anchor='left'
+          open={visible}
+          onClose={toggleDrawer(false)}
+        >
           <List component="nav">
+            <ListItem component={Typography} color={'primary'}>
+              <ListItemText primary="Категории"/>
+            </ListItem>
+            <Divider/>
             <ListItem
               component={NavLink}
-              to='/to-learn'
+              to='/next'
               button
               selected={false}
               onClick={toggleDrawer(false)}
             >
-              <ListItemText primary="На очереди"/>
+              <ListItemText secondary="На очереди"/>
             </ListItem>
             <ListItem
               component={NavLink}
@@ -69,16 +78,16 @@ const SignedInMenu = ({visible, toggleDrawer, logout, name, darkState, switchCol
               selected={false}
               onClick={toggleDrawer(false)}
             >
-              <ListItemText primary="Текущий набор"/>
+              <ListItemText secondary="Текущий набор"/>
             </ListItem>
             <ListItem
               component={NavLink}
-              to='/learned'
+              to='/done'
               button
               selected={false}
               onClick={toggleDrawer(false)}
             >
-              <ListItemText primary="Изученные"/>
+              <ListItemText secondary="Изученные"/>
             </ListItem>
           </List>
         </Drawer>
@@ -100,14 +109,6 @@ const SignedOutMenu = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   }
-
-  const theme = createMuiTheme({
-    palette: {
-      secondary: {
-        main: '#fff'
-      },
-    },
-  })
 
   return (
       <Tabs

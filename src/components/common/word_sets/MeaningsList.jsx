@@ -2,8 +2,6 @@ import React, {Fragment} from 'react';
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText/ListItemText";
 import IconButton from "@material-ui/core/IconButton";
-import ClearIcon from "@material-ui/core/SvgIcon/SvgIcon";
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";

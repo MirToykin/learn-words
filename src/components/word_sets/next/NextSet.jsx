@@ -3,7 +3,7 @@ import {compose} from "redux";
 import {connect} from "react-redux";
 import withAuthRedirect from "../../HOCs/withAuthRedirect";
 import SetPage from "../../common/word_sets/SetPage";
-import {addToSet, getSet, setFilteredSet} from "../../../redux/actions/wordsActions";
+import {addToSet, getSet} from "../../../redux/actions/wordsActions";
 import {getFilteredSet} from "../../../assets/helpers";
 
 const mapState = state => {

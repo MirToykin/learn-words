@@ -5,8 +5,10 @@ export const getFilteredSet = (set, query, field) => {
   return set.filter(setItem => setItem[field].startsWith(query));
 }
 
-export const onAddMeaning = (meaning, dispatch, formName) => {
+export const onAddMeaning = (meaning, dispatch, formName, repeatValue) => {
   if (!meaning) return;
-  dispatch(pushToAddedMeanings(meaning));
   dispatch(change(formName, 'meanings', ''));
+  if (repeatValue) return;
+  dispatch(pushToAddedMeanings(meaning));
+
 }

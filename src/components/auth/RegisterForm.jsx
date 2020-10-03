@@ -5,18 +5,10 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import {connect} from "react-redux";
-import {combineValidators, composeValidators, isRequired, matchesField} from "revalidate";
 import {Redirect} from "react-router-dom";
-import {RenderTextField} from "../../assets/formElems";
+import {RenderCheckbox, RenderTextField} from "../../assets/formElems";
 import {useCommonFormStyles} from "../../assets/useStyles";
 import {register} from "../../redux/actions/authActions";
-
-const validate = combineValidators({
-  name: isRequired({message: 'Введите имя'}),
-  email: isRequired({message: 'Введите email'}),
-  password: isRequired({message: 'Введите пароль'}),
-  password_confirmation: isRequired({message: 'Введите пароль повторно'})
-})
 
 const actions = {
   register
@@ -68,9 +60,17 @@ const RegisterForm = ({pristine, submitting, error, handleSubmit, register, rese
                   type='password'
                 />
               </Grid>
-              <Grid item xs={12}>{error && <Typography variant='body1' color='error'>
-                {error}
-              </Typography>}
+              <Grid style={{padding: 0}} item xs={12}>
+                {error && <Typography align={'center'} variant='body1' color='error'>
+                  {error}
+                </Typography>}
+              </Grid>
+              <Grid item xs={12}>
+                <Field
+                  name="rememberMe"
+                  component={RenderCheckbox}
+                  label='Запомнить меня на этом устройстве'
+                />
               </Grid>
               <Grid item xs={12}>
                 <Button type='submit'
@@ -94,5 +94,5 @@ const RegisterForm = ({pristine, submitting, error, handleSubmit, register, rese
   )
 }
 
-export default connect(null, actions)(reduxForm({form: 'register', validate})(RegisterForm));
+export default connect(null, actions)(reduxForm({form: 'register'/*, validate*/})(RegisterForm));
 

@@ -48,7 +48,7 @@ const ChangeMeaningsForm = ({
             placeholder='Введите значение'
           />
         </Grid>
-        <Grid item xs={12}>{error && <Typography variant='body1' color='error'>
+        <Grid item xs={12}>{error && <Typography align={'center'} variant='body1' color='error'>
           {error}
         </Typography>}
         </Grid>

@@ -1,4 +1,4 @@
-import React, {useDebugValue, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper/Paper";
 import Typography from "@material-ui/core/Typography";
@@ -12,7 +12,6 @@ import TextField from "@material-ui/core/TextField";
 import Set from "./Set";
 import {useDispatch, useSelector} from "react-redux";
 import {setSearchInput} from "../../../redux/actions/wordsActions";
-import AddIcon from '@material-ui/icons/Add';
 import LinearProgress from "@material-ui/core/LinearProgress";
 
 const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
@@ -45,11 +44,12 @@ const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
       <Grid item md={5} sm={7} xs={12}>
         <Paper>
           <div className={classes.head}>
-            <Typography variant='h5' color={'textSecondary'}>{pageTitle}</Typography>
+            <Typography variant='h5' color={'textSecondary'}>{pageTitle} ({set.length})</Typography>
             <IconButton color='primary' size='medium' onClick={() => setOpen(true)}>
               {addToSet && /*<AddIcon fontSize={'large'}/>*/<Icon style={{ fontSize: 40 }} color='primary'>add_circle</Icon>}
             </IconButton>
           </div>
+          {isFetching && !set.length && <LinearProgress color={'secondary'}/>}
           <Divider/>
           {addToSet && <AddToSetForm open={open}
                                      onClose={handleClose}
@@ -68,7 +68,6 @@ const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
                          disabled={!set.length && !searchInput}
               />
             </form>
-            {isFetching && !set.length && <LinearProgress color={'secondary'}/>}
             {set.length ? <Set set={set}
                  pageTitle={pageTitle}
                  options={options}
