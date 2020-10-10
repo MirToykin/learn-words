@@ -35,6 +35,7 @@ const LoginForm = ({pristine, submitting, error, handleSubmit, login, reset, aut
                   name="email"
                   component={RenderTextField}
                   label='Email'
+                  autoFocus={true}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -54,7 +55,7 @@ const LoginForm = ({pristine, submitting, error, handleSubmit, login, reset, aut
                 <Field
                   name="rememberMe"
                   component={RenderCheckbox}
-                  label='Запомнить меня на этом устройстве'
+                  label='Запомнить меня'
                 />
               </Grid>
               <Grid item xs={12}>

@@ -1,5 +1,6 @@
 export const SET_AUTH_DATA = 'SET_AUTH_DATA';
 export const SWITCH_COLOR_THEME = 'SWITCH_COLOR_THEME';
+export const SET_SCROLLED = 'SET_SCROLLED';
 
 export const SET_IS_FETCHING = 'SET_IS_FETCHING';
 

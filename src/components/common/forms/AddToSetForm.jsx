@@ -5,7 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import {combineValidators, isRequired} from "revalidate";
-import {RenderTextarea, RenderTextField} from "../../../assets/formElems";
+import {RenderTextField} from "../../../assets/formElems";
 import Dialog from "@material-ui/core/Dialog";
 import {useCommonFormStyles} from "../../../assets/useStyles";
 import {connect, useDispatch} from "react-redux";
@@ -27,6 +27,7 @@ const AddToSetForm = ({
                       }) => {
   const classes = useCommonFormStyles();
   const dispatch = useDispatch();
+  const correctMeaningValue = meaningValue && meaningValue.replace(/\s/g, '').length;
 
   const onSubmit = (word, meanings) => {
     word['user_id'] = uid;
@@ -36,8 +37,20 @@ const AddToSetForm = ({
     return addToSet(word, options);
   }
 
+  const onEnterPress = (e) => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      handleAddMeaning();
+    }
+  }
+
+  const handleAddMeaning = () => {
+    const repeat = addedMeanings.includes(meaningValue)
+    correctMeaningValue && onAddMeaning(meaningValue, dispatch, 'AddToSetForm', repeat);
+  }
+
   return (
-    <Dialog open={open} onClose={() => onClose([() => dispatch(setAddedMeanings([]))])}>
+    <Dialog style={{width: '100%'}} open={open} onClose={() => onClose([() => dispatch(setAddedMeanings([]))])}>
       <Paper className={classes.paper}>
         <Typography variant='h5'
                     align='center'
@@ -52,14 +65,16 @@ const AddToSetForm = ({
                 component={RenderTextField}
                 label='Слово'
                 placeholder='слово'
+                autoFocus={true}
               />
             </Grid>
             <Grid item xs={12}>
               <Field
                 name="meanings"
-                component={RenderTextarea}
+                component={RenderTextField}
                 label='Значение'
                 placeholder='значение'
+                onKeyDown={onEnterPress}
               />
             </Grid>
             <Grid item xs={12}>{error && <Typography align={'center'} variant='body1' color='error'>
@@ -71,11 +86,8 @@ const AddToSetForm = ({
                       variant="contained"
                       color="primary"
                       style={{width: '100%'}}
-                      onClick={() => {
-                        const repeat = addedMeanings.includes(meaningValue)
-                        onAddMeaning(meaningValue, dispatch, 'AddToSetForm', repeat);
-                      }}
-                      disabled={pristine || submitting}
+                      onClick={handleAddMeaning}
+                      disabled={pristine || submitting || !correctMeaningValue}
               >Добавить значение</Button>
             </Grid>
             <Grid item xs={12} sm={4}>

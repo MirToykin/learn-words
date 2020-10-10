@@ -1,8 +1,21 @@
 body {
   margin: 0;
-  min-height:100vh
+  overflow: hidden;
 }
 
 .MuiExpansionPanelSummary-root.Mui-expanded .MuiExpansionPanelSummary-content.Mui-expanded {
   margin: 0;
+}
+
+
+@media (max-width: 539px) {
+  .makeStyles-root-1 {
+    margin-bottom: 5px !important;
+  }
+  /*Формы в диалогах на всю ширину экрана*/
+  .MuiPaper-root.MuiDialog-paper.MuiDialog-paperScrollPaper.MuiDialog-paperWidthSm.MuiPaper-elevation24.MuiPaper-rounded {
+    width: 100% !important;
+    margin-left: 0;
+    margin-right: 0;
+  }
 }

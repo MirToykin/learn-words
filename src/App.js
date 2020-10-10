@@ -14,6 +14,7 @@ import lightBlue from "@material-ui/core/colors/lightBlue";
 import deepOrange from "@material-ui/core/colors/deepOrange";
 import deepPurple from "@material-ui/core/colors/deepPurple";
 import CssBaseline from "@material-ui/core/CssBaseline";
+import {useMediaQuery} from "@material-ui/core";
 
 const mapState = (state) => ({
   auth: state.auth.isAuth,
@@ -45,11 +46,13 @@ const App = ({auth, uid, token, darkState}) => {
     }
   });
 
+  const matches = useMediaQuery('(min-width:540px)');
+
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <NavBar options={options}/>
-      <Container>
+      <Container disableGutters={!matches}>
         <Switch>
           <Route path='/' exact render={() => <Redirect to={auth ? '/current' : '/login'}/>}/>
           <Route path='/login' render={() => <LoginForm auth={token}/>}/>

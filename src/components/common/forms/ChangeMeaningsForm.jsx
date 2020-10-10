@@ -46,6 +46,7 @@ const ChangeMeaningsForm = ({
             component={RenderChangeMeaningsTextarea}
             label='Значение'
             placeholder='Введите значение'
+            autoFocus={true}
           />
         </Grid>
         <Grid item xs={12}>{error && <Typography align={'center'} variant='body1' color='error'>

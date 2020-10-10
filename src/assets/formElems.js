@@ -16,7 +16,7 @@ export const RenderTextField = ({
     placeholder={label}
     error={touched && invalid}
     helperText={touched && error}
-    autoFocus={true}
+    // autoFocus={true}
     {...input}
     {...custom}
   />

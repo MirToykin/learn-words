@@ -31,6 +31,16 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
   },
+  navDrawer: {
+    width: '200px'
+  },
+  navHeader: {
+    fontSize: '1.7em'
+  },
+  navItem: {
+    fontSize: '1.2em',
+    paddingLeft: '0.5em'
+  }
 }));
 
 const mapState = (state) => ({
@@ -44,7 +54,7 @@ const actions = {
   switchColorTheme
 }
 
-const SignedInMenu = ({visible, toggleDrawer, logout, name, darkState, switchColorTheme}) => {
+const SignedInMenu = ({visible, toggleDrawer, logout, name, darkState, switchColorTheme, location}) => {
   const classes = useStyles();
   return (
     <Toolbar>
@@ -57,38 +67,34 @@ const SignedInMenu = ({visible, toggleDrawer, logout, name, darkState, switchCol
           open={visible}
           onClose={toggleDrawer(false)}
         >
-          <List component="nav">
-            <ListItem component={Typography} color={'primary'}>
-              <ListItemText primary="Категории"/>
+          <List component="nav" className={classes.navDrawer}>
+            <ListItem>
+              <ListItemText
+                disableTypography
+                primary={<Typography
+                  component={'p'}
+                  // variant={'h6'}
+                  color={'primary'}
+                  className={classes.navHeader}
+                >Категории</Typography>}
+              />
             </ListItem>
             <Divider/>
-            <ListItem
-              component={NavLink}
-              to='/next'
-              button
-              selected={false}
-              onClick={toggleDrawer(false)}
-            >
-              <ListItemText secondary="На очереди"/>
-            </ListItem>
-            <ListItem
-              component={NavLink}
-              to='/current'
-              button
-              selected={false}
-              onClick={toggleDrawer(false)}
-            >
-              <ListItemText secondary="Текущий набор"/>
-            </ListItem>
-            <ListItem
-              component={NavLink}
-              to='/done'
-              button
-              selected={false}
-              onClick={toggleDrawer(false)}
-            >
-              <ListItemText secondary="Изученные"/>
-            </ListItem>
+            {[['/next', 'На очереди'], ['/current', 'Текущий набор'], ['/done', 'Изученные']].map(routeData => (
+              <ListItem
+                component={NavLink}
+                to={routeData[0]}
+                button
+                selected={location.pathname === routeData[0]}
+                onClick={toggleDrawer(false)}
+                key={routeData[0]}
+              >
+                <ListItemText
+                  disableTypography
+                  secondary={<Typography component={'p'} className={classes.navItem}>{routeData[1]}</Typography>}
+                />
+              </ListItem>
+            ))}
           </List>
         </Drawer>
       </div>
@@ -127,7 +133,7 @@ const SignedOutMenu = () => {
   )
 };
 
-const NavBar = ({auth, history, name, logout, options, darkState, switchColorTheme}) => {
+const NavBar = ({auth, history, name, logout, options, darkState, switchColorTheme, location}) => {
   const classes = useStyles();
   const [visible, setVisible] = useState(false);
 
@@ -155,6 +161,7 @@ const NavBar = ({auth, history, name, logout, options, darkState, switchColorThe
                           name={name}
                           darkState={darkState}
                           switchColorTheme={switchColorTheme}
+                          location={location}
             /> :
             <SignedOutMenu darkState={darkState} switchColorTheme={switchColorTheme}/>}
         </Container>

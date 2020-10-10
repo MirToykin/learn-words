@@ -35,6 +35,7 @@ const RegisterForm = ({pristine, submitting, error, handleSubmit, register, rese
                   name="name"
                   component={RenderTextField}
                   label='Имя'
+                  autoFocus={true}
                 />
               </Grid>
               <Grid item xs={12}>

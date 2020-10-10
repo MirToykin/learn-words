@@ -19,7 +19,7 @@ export const useSetStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: theme.spacing(2),
+    paddingLeft: theme.spacing(2),
     paddingRight: 0
   },
   divider: {
@@ -27,5 +27,24 @@ export const useSetStyles = makeStyles(theme => ({
   },
   notFound: {
     textAlign: 'center'
+  },
+  list: {
+    height: "calc(100vh - 90px)",
+    overflowY: "auto",
+    // margin: 0,
+    // padding: 0,
+    // listStyle: "none",
+    // height: "100%",
+    '&::-webkit-scrollbar': {
+      width: '0.4em'
+    },
+    '&::-webkit-scrollbar-track': {
+      boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+      webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: 'rgba(0,0,0,.1)',
+      // outline: '1px solid slategrey'
+    }
   }
 }))
