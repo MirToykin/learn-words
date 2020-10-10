@@ -12,15 +12,13 @@ import Set from "./Set";
 import {useDispatch, useSelector} from "react-redux";
 import {setSearchInput} from "../../../redux/actions/wordsActions";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import {setScrolled} from "../../../redux/actions/appActions";
 
 const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
   const classes = useSetStyles();
   const [open, setOpen] = useState(false);
-  const [deltaHeight, setDeltaHeight] = useState(180);
+  const [deltaHeight, setDeltaHeight] = useState(window.pageYOffset ? 90 : 180); // если pageYOffset 0, тогда из высоты контейнера вычитаем 180 px
   const searchInput = useSelector(state => state.words.searchInput);
   const dispatch = useDispatch();
-  const scrolled = useSelector(state => state.app.scrolled);
   const isFetching = useSelector(state => state.app.isFetching);
 
 
@@ -43,13 +41,11 @@ const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
 
   const handleScrollDown = () => {
     window['scrollTo']({top: 90, behavior: 'smooth'});
-    dispatch(setScrolled(true));
     setDeltaHeight(90);
   }
 
   const handleScrollUp = () => {
     window['scrollTo']({top: 0, behavior: 'smooth'});
-    dispatch(setScrolled(false));
     setDeltaHeight(180);
   }
 
@@ -60,7 +56,7 @@ const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
           <div className={classes.head}>
             <Typography variant='h6' color={'textSecondary'}>{pageTitle} - {set.length}</Typography>
             <div>
-              {scrolled ?
+              {deltaHeight === 90 ? // при deltaHeight 90 страница не прокручена, значит показать стрелку вверх, иначе вниз
                 <IconButton onClick={handleScrollUp}>
                   <Icon>expand_more</Icon>
                 </IconButton>
