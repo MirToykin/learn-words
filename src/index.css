@@ -1,6 +1,7 @@
 body {
   margin: 0;
   overflow: hidden;
+  min-height: calc(100vh + 90px); /*для динамического изменения высоты контейнера со словами*/
 }
 
 .MuiExpansionPanelSummary-root.Mui-expanded .MuiExpansionPanelSummary-content.Mui-expanded {

@@ -29,12 +29,8 @@ export const useSetStyles = makeStyles(theme => ({
     textAlign: 'center'
   },
   list: {
-    height: "calc(100vh - 90px)",
+    // height: `calc(100vh - ${window.pageYOffset ? 90 : 180}px)`,
     overflowY: "auto",
-    // margin: 0,
-    // padding: 0,
-    // listStyle: "none",
-    // height: "100%",
     '&::-webkit-scrollbar': {
       width: '0.4em'
     },

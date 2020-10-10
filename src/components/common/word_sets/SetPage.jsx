@@ -17,6 +17,7 @@ import {setScrolled} from "../../../redux/actions/appActions";
 const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
   const classes = useSetStyles();
   const [open, setOpen] = useState(false);
+  const [deltaHeight, setDeltaHeight] = useState(180);
   const searchInput = useSelector(state => state.words.searchInput);
   const dispatch = useDispatch();
   const scrolled = useSelector(state => state.app.scrolled);
@@ -43,11 +44,13 @@ const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
   const handleScrollDown = () => {
     window['scrollTo']({top: 90, behavior: 'smooth'});
     dispatch(setScrolled(true));
+    setDeltaHeight(90);
   }
 
   const handleScrollUp = () => {
     window['scrollTo']({top: 0, behavior: 'smooth'});
     dispatch(setScrolled(false));
+    setDeltaHeight(180);
   }
 
   return (
@@ -96,7 +99,7 @@ const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
           </form>
         </Paper>
         <Paper>
-          <List className={classes.list}>
+          <List className={classes.list} style={{maxHeight: `${window.innerHeight - deltaHeight}px`}}>
             {set.length ? <Set set={set}
                                pageTitle={pageTitle}
                                options={options}
