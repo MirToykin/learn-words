@@ -31,7 +31,7 @@ const ChangeMeaningsForm = ({
   }, []);
 
   const onSubmit = (meaningsArray, id, options) => {
-    meanings = meaningsArray.join('/');
+    meanings = meaningsArray.join('/').toLowerCase();
     editWord(null, id, {meanings}, options);
     onClose();
     dispatch(setAddedMeanings([]));

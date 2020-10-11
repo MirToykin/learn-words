@@ -1,5 +1,5 @@
 import React from 'react';
-import {Field, reduxForm, formValueSelector} from "redux-form";
+import {Field, reduxForm, formValueSelector, stopSubmit} from "redux-form";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -30,8 +30,9 @@ const AddToSetForm = ({
   const correctMeaningValue = meaningValue && meaningValue.replace(/\s/g, '').length; // проверка не содержит ли строка только пробелы и переносы строк
 
   const onSubmit = (word, meanings) => {
+    word['title'] = word['title'].toLowerCase().trim();
     word['user_id'] = uid;
-    word['meanings'] = meanings.join('/');
+    word['meanings'] = meanings.join('/').toLowerCase();
     reset();
     dispatch(setAddedMeanings([]));
     return addToSet(word, options);
@@ -45,7 +46,10 @@ const AddToSetForm = ({
   }
 
   return (
-    <Dialog style={{width: '100%'}} open={open} onClose={() => onClose([() => dispatch(setAddedMeanings([]))])}>
+    <Dialog style={{width: '100%'}} open={open} onClose={() => onClose([
+      () => dispatch(setAddedMeanings([])),
+      () => dispatch(stopSubmit('AddToSetForm', {}))
+    ])}>
       <Paper className={classes.paper}>
         <Typography variant='h5'
                     align='center'
@@ -98,7 +102,10 @@ const AddToSetForm = ({
               <Button type='button'
                       variant="contained"
                       color="primary"
-                      onClick={() => onClose([() => dispatch(setAddedMeanings([]))])}
+                      onClick={() => onClose([
+                        () => dispatch(setAddedMeanings([])),
+                        () => dispatch(stopSubmit('AddToSetForm', {}))
+                      ])}
                       style={{width: '100%'}}
               >Закрыть</Button>
             </Grid>

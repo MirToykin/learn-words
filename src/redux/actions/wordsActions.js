@@ -38,7 +38,7 @@ export const getSet = set => (uid, options) => async dispatch => {
 export const addToSet = set => (data, options) => async (dispatch) => {
 
   dispatch(setIsFetching(true));
-  const newData = {...data, title: data.title.toLowerCase(), meanings: data.meanings.toLowerCase(), category: set};
+  const newData = {...data, category: set};
 
   try {
     const response = await api.addToSet(newData, options);

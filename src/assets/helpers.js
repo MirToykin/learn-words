@@ -8,10 +8,11 @@ export const getFilteredSet = (set, query, field) => {
 export const onAddMeaning = (meaning, dispatch, formName, repeatValue) => {
   if (!meaning || repeatValue) return;
   dispatch(change(formName, 'meanings', ''));
-  dispatch(pushToAddedMeanings(meaning));
+  dispatch(pushToAddedMeanings(meaning.toLowerCase()));
 }
 
 export const handleAddMeaning = (addedMeanings, meaningValue, onAddMeaning, dispatch, formName, correctMeaningValue) => {
   const repeat = addedMeanings.includes(meaningValue);
+  meaningValue = meaningValue.trim();
   correctMeaningValue && onAddMeaning(meaningValue, dispatch, formName, repeat);
 }
