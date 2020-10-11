@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import {useCommonFormStyles} from "../../../assets/useStyles";
 import {deleteWord, editWord, setAddedMeanings} from "../../../redux/actions/wordsActions";
+import {stopSubmit} from "redux-form";
 
 const actions = {
   editWord,
@@ -36,7 +37,8 @@ const WordItemMenu = ({
 
   const onClose = () => {
     setOpen(false);
-    dispatch(setAddedMeanings([]))
+    dispatch(setAddedMeanings([]));
+    dispatch(stopSubmit('changeMeaningsForm', {}));
   }
 
   const menuConfig = {
