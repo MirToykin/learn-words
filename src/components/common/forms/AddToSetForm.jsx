@@ -5,13 +5,13 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import {combineValidators, isRequired} from "revalidate";
-import {RenderTextField} from "../../../assets/formElems";
+import {RenderTextarea, RenderTextField} from "../../../assets/formElems";
 import Dialog from "@material-ui/core/Dialog";
 import {useCommonFormStyles} from "../../../assets/useStyles";
 import {connect, useDispatch} from "react-redux";
 import {setAddedMeanings} from "../../../redux/actions/wordsActions";
 import MeaningsList from "../word_sets/MeaningsList";
-import {onAddMeaning} from "../../../assets/helpers";
+import {handleAddMeaning, onAddMeaning} from "../../../assets/helpers";
 
 const validate = combineValidators({
   word: isRequired({message: 'Введите слово'}),
@@ -27,7 +27,7 @@ const AddToSetForm = ({
                       }) => {
   const classes = useCommonFormStyles();
   const dispatch = useDispatch();
-  const correctMeaningValue = meaningValue && meaningValue.replace(/\s/g, '').length;
+  const correctMeaningValue = meaningValue && meaningValue.replace(/\s/g, '').length; // проверка не содержит ли строка только пробелы и переносы строк
 
   const onSubmit = (word, meanings) => {
     word['user_id'] = uid;
@@ -40,13 +40,8 @@ const AddToSetForm = ({
   const onEnterPress = (e) => {
     if (e.keyCode === 13) {
       e.preventDefault();
-      handleAddMeaning();
+      handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, dispatch, 'AddToSetForm', correctMeaningValue);
     }
-  }
-
-  const handleAddMeaning = () => {
-    const repeat = addedMeanings.includes(meaningValue)
-    correctMeaningValue && onAddMeaning(meaningValue, dispatch, 'AddToSetForm', repeat);
   }
 
   return (
@@ -71,7 +66,7 @@ const AddToSetForm = ({
             <Grid item xs={12}>
               <Field
                 name="meanings"
-                component={RenderTextField}
+                component={RenderTextarea}
                 label='Значение'
                 placeholder='значение'
                 onKeyDown={onEnterPress}
@@ -86,7 +81,7 @@ const AddToSetForm = ({
                       variant="contained"
                       color="primary"
                       style={{width: '100%'}}
-                      onClick={handleAddMeaning}
+                      onClick={() => handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, dispatch, 'AddToSetForm', correctMeaningValue)}
                       disabled={pristine || submitting || !correctMeaningValue}
               >Добавить значение</Button>
             </Grid>

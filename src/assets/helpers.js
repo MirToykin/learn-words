@@ -6,9 +6,12 @@ export const getFilteredSet = (set, query, field) => {
 }
 
 export const onAddMeaning = (meaning, dispatch, formName, repeatValue) => {
-  if (!meaning) return;
+  if (!meaning || repeatValue) return;
   dispatch(change(formName, 'meanings', ''));
-  if (repeatValue) return;
   dispatch(pushToAddedMeanings(meaning));
+}
 
+export const handleAddMeaning = (addedMeanings, meaningValue, onAddMeaning, dispatch, formName, correctMeaningValue) => {
+  const repeat = addedMeanings.includes(meaningValue);
+  correctMeaningValue && onAddMeaning(meaningValue, dispatch, formName, repeat);
 }

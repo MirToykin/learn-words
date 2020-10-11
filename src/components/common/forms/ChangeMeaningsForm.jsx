@@ -4,12 +4,13 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import {combineValidators, isRequired} from "revalidate";
-import {RenderChangeMeaningsTextarea} from "../../../assets/formElems";
+import {RenderChangeMeaningsTextarea, RenderTextField} from "../../../assets/formElems";
 import {useCommonFormStyles} from "../../../assets/useStyles";
 import MeaningsList from "../word_sets/MeaningsList";
 import {connect, useDispatch} from "react-redux";
 import {setAddedMeanings} from "../../../redux/actions/wordsActions";
 import {onAddMeaning} from "../../../assets/helpers";
+import {handleAddMeaning} from "../../../assets/helpers";
 
 const validate = combineValidators({
   means: isRequired({message: 'Введите значения'})
@@ -23,6 +24,7 @@ const ChangeMeaningsForm = ({
                             }) => {
   const classes = useCommonFormStyles();
   const dispatch = useDispatch();
+  const correctMeaningValue = meaningValue && meaningValue.replace(/\s/g, '').length; // проверка не содержит ли строка только пробелы и переносы строк
 
   useEffect(() => {
     dispatch(setAddedMeanings(meanings));
@@ -33,9 +35,14 @@ const ChangeMeaningsForm = ({
     editWord(null, id, {meanings}, options);
     onClose();
     dispatch(setAddedMeanings([]));
-  };
+  }
 
-
+  const onEnterPress = (e) => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, dispatch, 'changeMeaningsForm', correctMeaningValue);
+    }
+  }
 
   return (
     <form /*onSubmit={handleSubmit(onSubmit)}*/ autoComplete='off'>
@@ -47,6 +54,7 @@ const ChangeMeaningsForm = ({
             label='Значение'
             placeholder='Введите значение'
             autoFocus={true}
+            onKeyDown={onEnterPress}
           />
         </Grid>
         <Grid item xs={12}>{error && <Typography align={'center'} variant='body1' color='error'>
@@ -57,13 +65,13 @@ const ChangeMeaningsForm = ({
           <Button type='button'
                   variant="contained"
                   color="primary"
-                  onClick={() => onAddMeaning(meaningValue, dispatch, 'changeMeaningsForm')}
+                  onClick={() => handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, dispatch, 'changeMeaningsForm', correctMeaningValue)}
                   style={{width: '100%'}}
           >Добавить значение</Button>
         </Grid>
         <Grid item xs={12} sm={6}>
           <Button type='button'
-                  disabled={meaningValue || submitting}
+                  disabled={!!meaningValue || submitting}
                   variant="contained"
                   color="primary"
                   className={classes.submit}
