@@ -41,6 +41,7 @@ const AddToSetForm = ({
   const onEnterPress = (e) => {
     if (e.keyCode === 13) {
       e.preventDefault();
+      meaningValue = meaningValue.trim();
       handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, dispatch, 'AddToSetForm', correctMeaningValue);
     }
   }

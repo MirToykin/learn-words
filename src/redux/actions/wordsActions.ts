@@ -8,11 +8,12 @@ import {
 } from "../constants";
 import {setAuthData} from "./authActions";
 import {clearStorage} from "../../assets/browserStorage";
+import {SetNameType, WordType} from "../../types/types";
 
 
 const api = new Api();
 
-export const getSet = set => (uid, options) => async dispatch => {
+export const getSet = (set: SetNameType) => (uid: number, options: any) => async (dispatch: any) => {
   dispatch(setIsFetching(true));
   try {
     const response = await api.getSet(set, uid, options);
@@ -35,7 +36,7 @@ export const getSet = set => (uid, options) => async dispatch => {
   dispatch(setIsFetching(false));
 }
 
-export const addToSet = set => (data, options) => async (dispatch) => {
+export const addToSet = (set: SetNameType) => (data: any, options: any) => async (dispatch: any) => {
 
   dispatch(setIsFetching(true));
   const newData = {...data, category: set};
@@ -63,11 +64,12 @@ export const addToSet = set => (data, options) => async (dispatch) => {
   dispatch(setIsFetching(false));
 }
 
-export const editWord = (setToRemoveFrom, wordId, data, options) => async (dispatch) => {
+export const editWord = (setToRemoveFrom: any, wordId: number, data:any, options: any) => async (dispatch: any) => {
+  // fixme в MeaningsList на место setToRemoveFrom передается null????
   dispatch(setIsFetching(true));
   try {
     const response = await api.editWord(wordId, data, options);
-    const word = response.data.word;
+    const word: WordType = response.data.word;
     if (data.category) {
       // На текущий момент внесение изменений в state, влияющий на отрисовку другой категории
       // избыточен, поскольку при открытии другой категории происходит загрузка записей из БД.
@@ -91,12 +93,11 @@ export const editWord = (setToRemoveFrom, wordId, data, options) => async (dispa
       }));
       clearStorage();
     }
-    console.log(e.response.data.message);
   }
   dispatch(setIsFetching(false));
 }
 
-export const deleteWord = (set, wordId, config) => async dispatch => {
+export const deleteWord = (set:SetNameType, wordId:number, config: any) => async (dispatch: any) => {
   dispatch(setIsFetching(true));
   try {
     const response = await api.deleteWord(wordId, config);
@@ -115,61 +116,105 @@ export const deleteWord = (set, wordId, config) => async dispatch => {
       }));
       clearStorage();
     }
-    console.log(e.response.data.message);
   }
   dispatch(setIsFetching(false));
 }
 
-export const setSearchInput = payload => {
+
+export type SetSearchInputActionType = {
+  type: typeof SET_SEARCH_INPUT
+  payload: string
+}
+export const setSearchInput = (payload: string): SetSearchInputActionType => {
   return {
     type: SET_SEARCH_INPUT,
     payload
   }
 }
 
-export const pushToAddedMeanings = payload => {
+export type PushToAddedMeaningsActionType = {
+  type: typeof PUSH_TO_ADDED_MEANINGS
+  payload: string
+}
+export const pushToAddedMeanings = (payload: string): PushToAddedMeaningsActionType => {
   return {
     type: PUSH_TO_ADDED_MEANINGS,
     payload
   }
 }
 
-export const deleteFromAddedMeanings = payload => {
+export type DeleteFromAddedMeaningsActionType = {
+  type: typeof DELETE_FROM_ADDED_MEANINGS
+  payload: string
+}
+export const deleteFromAddedMeanings = (payload: string):DeleteFromAddedMeaningsActionType => {
   return {
     type: DELETE_FROM_ADDED_MEANINGS,
     payload
   }
 }
 
-export const setAddedMeanings = (payload) => {
+export type SetAddedMeaningsActionType = {
+  type: typeof SET_ADDED_MEANINGS
+  payload: Array<string>
+}
+export const setAddedMeanings = (payload:Array<string>):SetAddedMeaningsActionType => {
   return {
     type: SET_ADDED_MEANINGS,
     payload
   }
 }
 
-const addSet = (setName, set) => {
+type AddSetPayloadType = {
+  setName: SetNameType
+  set: Array<WordType>
+}
+export type AddSetActionType = {
+  type: typeof ADD_SET
+  payload: AddSetPayloadType
+}
+const addSet = (setName:SetNameType, set: Array<WordType>):AddSetActionType => {
   return {
     type: ADD_SET,
     payload: {setName, set}
   }
 }
 
-const deleteWordFromState = (set, wordId) => {
+type DeleteWordFromStatePayloadType = {
+  set: SetNameType
+  wordId: number
+}
+export type DeleteWordFromStateActionType = {
+  type: typeof DELETE_WORD_FROM_STATE
+  payload: DeleteWordFromStatePayloadType
+}
+const deleteWordFromState = (set: SetNameType, wordId: number):DeleteWordFromStateActionType => {
   return {
     type: DELETE_WORD_FROM_STATE,
     payload: {set, wordId}
   }
 }
 
-const addWordToState = (set, word) => {
+type AddWordToStatePayloadType = {
+  set: SetNameType
+  word: WordType
+}
+export type AddWordToStateActionType = {
+  type: typeof ADD_WORD_TO_STATE
+  payload: AddWordToStatePayloadType
+}
+const addWordToState = (set: SetNameType, word: WordType): AddWordToStateActionType => {
   return {
     type: ADD_WORD_TO_STATE,
     payload: {set, word}
   }
 }
 
-const updateWordInState = (payload) => {
+export type UpdateWordInStateActionType = {
+  type: typeof UPDATE_WORD_IN_STATE
+  payload: WordType
+}
+const updateWordInState = (payload: WordType): UpdateWordInStateActionType => {
   return {
     type: UPDATE_WORD_IN_STATE,
     payload
