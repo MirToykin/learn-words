@@ -23,7 +23,7 @@ import Divider from "@material-ui/core/Divider";
 import {AppStateType} from "../../redux/store/configureStore";
 import {ThunkAction} from "redux-thunk";
 import {InitialStateType} from "../../redux/reducers/authReducer";
-import {Action} from "redux";
+import {Action, compose} from "redux";
 import { OptionsType } from '../../types/types';
 
 const useStyles = makeStyles((theme) => ({
@@ -64,15 +64,15 @@ type ActionsType = {
   logout: (options: OptionsType) => ThunkAction<void, InitialStateType, unknown, Action<OptionsType>>
   switchColorTheme: () => SwitchColorThemeActionType
 }
-const actions = {
+const actions: ActionsType = {
   logout,
   switchColorTheme
 }
 
-type OwnPropsType = {
+interface OwnPropsType extends RouteComponentProps {
   options: OptionsType
 }
-type NavBarPropsType = MapStateType & ActionsType & OwnPropsType & RouteComponentProps
+type NavBarPropsType = MapStateType & ActionsType & OwnPropsType
 type ToggleDrawerType = (open: boolean) => (event: any) => void
 type HandleLogoutType = () => void
 
@@ -202,4 +202,7 @@ const NavBar:FC<NavBarPropsType> = ({auth, history, name, logout, options, darkS
   );
 }
 
-export default connect<MapStateType, ActionsType, OwnPropsType, AppStateType>(mapState, actions)(withRouter(NavBar));
+export default compose(
+    withRouter,
+    connect<MapStateType, ActionsType, OwnPropsType, AppStateType>(mapState, actions)
+)(NavBar);
