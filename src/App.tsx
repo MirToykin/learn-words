@@ -18,19 +18,19 @@ import {useMediaQuery} from "@material-ui/core";
 import {AppStateType} from "./redux/store/configureStore";
 import {OptionsType} from "./types/types";
 
-const mapState = (state: AppStateType) => ({
+type MapStateType = {
+  auth: boolean
+  uid: number | null
+  token: string | null
+  darkState: boolean
+}
+
+const mapState = (state: AppStateType) : MapStateType => ({
   auth: state.auth.isAuth,
   uid: state.auth.id,
   token: state.auth.token,
   darkState: state.app.darkState
 })
-
-type MapStateType = {
-  auth: boolean
-  uid: number
-  token: string
-  darkState: boolean
-}
 
 const App:FC<MapStateType> = ({auth, uid, token, darkState}) => {
   const options:OptionsType = {
@@ -57,6 +57,7 @@ const App:FC<MapStateType> = ({auth, uid, token, darkState}) => {
 
   const matches = useMediaQuery('(min-width:540px)');
 
+  // @ts-ignore
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
