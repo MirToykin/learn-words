@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, FC} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -13,12 +13,18 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import {connect} from "react-redux";
-import {NavLink, withRouter} from "react-router-dom";
+import {NavLink, withRouter, RouteComponentProps} from "react-router-dom";
+import { Location } from 'history';
 import {logout} from '../../redux/actions/authActions'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import {switchColorTheme} from "../../redux/actions/appActions";
+import {switchColorTheme, SwitchColorThemeActionType} from "../../redux/actions/appActions";
 import Switch from "@material-ui/core/Switch";
 import Divider from "@material-ui/core/Divider";
+import {AppStateType} from "../../redux/store/configureStore";
+import {ThunkAction} from "redux-thunk";
+import {InitialStateType} from "../../redux/reducers/authReducer";
+import {Action, compose} from "redux";
+import { OptionsType } from '../../types/types';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,18 +49,44 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const mapState = (state) => ({
+type MapStateType = {
+  auth: boolean
+  name: string | null
+  darkState: boolean
+}
+const mapState = (state:AppStateType): MapStateType => ({
   auth: state.auth.isAuth,
   name: state.auth.name,
   darkState: state.app.darkState
 });
 
-const actions = {
+type ActionsType = {
+  logout: (options: OptionsType) => ThunkAction<void, InitialStateType, unknown, Action<OptionsType>>
+  switchColorTheme: () => SwitchColorThemeActionType
+}
+const actions: ActionsType = {
   logout,
   switchColorTheme
 }
 
-const SignedInMenu = ({visible, toggleDrawer, logout, name, darkState, switchColorTheme, location}) => {
+interface OwnPropsType extends RouteComponentProps {
+  options: OptionsType
+}
+type NavBarPropsType = MapStateType & ActionsType & OwnPropsType
+type ToggleDrawerType = (open: boolean) => (event: any) => void
+type HandleLogoutType = () => void
+
+type SignedInMenuPropsType = {
+  visible: boolean
+  toggleDrawer: ToggleDrawerType
+  logout: HandleLogoutType
+  name: string | null
+  darkState: boolean
+  switchColorTheme: () => void
+  location: Location
+}
+
+const SignedInMenu: FC<SignedInMenuPropsType> = ({visible, toggleDrawer, logout, name, darkState, switchColorTheme, location}) => {
   const classes = useStyles();
   return (
     <Toolbar>
@@ -110,9 +142,9 @@ const SignedInMenu = ({visible, toggleDrawer, logout, name, darkState, switchCol
 };
 
 const SignedOutMenu = () => {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState<number>(0);
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (event: any, newValue: number):void => {
     setValue(newValue);
   }
 
@@ -133,16 +165,16 @@ const SignedOutMenu = () => {
   )
 };
 
-const NavBar = ({auth, history, name, logout, options, darkState, switchColorTheme, location}) => {
+const NavBar:FC<NavBarPropsType> = ({auth, history, name, logout, options, darkState, switchColorTheme, location}) => {
   const classes = useStyles();
   const [visible, setVisible] = useState(false);
 
-  const handleLogOut = () => {
+  const handleLogOut: HandleLogoutType = () => {
     logout(options);
     history.push('/');
   }
 
-  const toggleDrawer = (open) => (event) => {
+  const toggleDrawer: ToggleDrawerType = (open: boolean) => (event: any) => { // как указать оба типа? React.KeyboardEvent | React.MouseEvent
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
@@ -163,11 +195,14 @@ const NavBar = ({auth, history, name, logout, options, darkState, switchColorThe
                           switchColorTheme={switchColorTheme}
                           location={location}
             /> :
-            <SignedOutMenu darkState={darkState} switchColorTheme={switchColorTheme}/>}
+            <SignedOutMenu/>}
         </Container>
       </AppBar>
     </div>
   );
 }
 
-export default connect(mapState, actions)(withRouter(NavBar));
+export default compose(
+    withRouter,
+    connect<MapStateType, ActionsType, OwnPropsType, AppStateType>(mapState, actions)
+)(NavBar);

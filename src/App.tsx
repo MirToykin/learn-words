@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FC} from 'react';
 import NavBar from './components/nav/NavBar';
 import Container from "@material-ui/core/Container";
 import {Redirect, Route, Switch} from "react-router-dom";
@@ -15,16 +15,25 @@ import deepOrange from "@material-ui/core/colors/deepOrange";
 import deepPurple from "@material-ui/core/colors/deepPurple";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import {useMediaQuery} from "@material-ui/core";
+import {AppStateType} from "./redux/store/configureStore";
+import {OptionsType} from "./types/types";
 
-const mapState = (state) => ({
+type MapStateType = {
+  auth: boolean
+  uid: number | null
+  token: string | null
+  darkState: boolean
+}
+
+const mapState = (state: AppStateType) : MapStateType => ({
   auth: state.auth.isAuth,
   uid: state.auth.id,
   token: state.auth.token,
   darkState: state.app.darkState
 })
 
-const App = ({auth, uid, token, darkState}) => {
-  const options = {
+const App:FC<MapStateType> = ({auth, uid, token, darkState}) => {
+  const options:OptionsType = {
     headers: {
       "Authorization": `Bearer ${token}`
     }
@@ -48,6 +57,7 @@ const App = ({auth, uid, token, darkState}) => {
 
   const matches = useMediaQuery('(min-width:540px)');
 
+  // @ts-ignore
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
@@ -66,4 +76,4 @@ const App = ({auth, uid, token, darkState}) => {
   );
 }
 
-export default connect(mapState)(App);
+export default connect<MapStateType, {}, {}, AppStateType>(mapState)(App);

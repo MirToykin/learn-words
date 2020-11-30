@@ -9,7 +9,6 @@ import {configureStore} from "./redux/store/configureStore";
 
 const rootElement = document.getElementById('root');
 const store = configureStore();
-window.store = store;
 
 let render = () => {
   ReactDOM.render(<Provider store={store}><BrowserRouter><App/></BrowserRouter></Provider>, rootElement);
