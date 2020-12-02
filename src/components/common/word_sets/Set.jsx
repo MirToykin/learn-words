@@ -24,7 +24,6 @@ const areEqual = (prevProps, props) => {
 }
 
 const Set = ({set, pageTitle, options}) => {
-  console.log('set rendered')
   return (
     <>
       {set.map(word => (
@@ -33,7 +32,7 @@ const Set = ({set, pageTitle, options}) => {
         </ListItem>
       ))}
     </>
-  );
-};
+  )
+}
 
-export default React.memo(Set, areEqual);
+export default React.memo(Set, areEqual)

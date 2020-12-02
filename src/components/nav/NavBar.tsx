@@ -1,4 +1,4 @@
-import React, {useState, FC} from 'react';
+import React, {useState, FC, ChangeEvent} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -12,19 +12,18 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import {connect} from "react-redux";
-import {NavLink, withRouter, RouteComponentProps} from "react-router-dom";
-import { Location } from 'history';
-import {logout} from '../../redux/actions/authActions'
+import {useDispatch, useSelector} from "react-redux";
+import {NavLink, useHistory, useLocation} from "react-router-dom";
+import { Location, History } from 'history';
+import {AuthActionType, logout} from '../../redux/actions/authActions'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import {switchColorTheme, SwitchColorThemeActionType} from "../../redux/actions/appActions";
 import Switch from "@material-ui/core/Switch";
 import Divider from "@material-ui/core/Divider";
 import {AppStateType} from "../../redux/store/configureStore";
-import {ThunkAction} from "redux-thunk";
-import {InitialStateType} from "../../redux/reducers/authReducer";
-import {Action, compose} from "redux";
 import { OptionsType } from '../../types/types';
+import {Dispatch} from "redux";
+import {ThunkDispatch} from "redux-thunk";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,30 +48,9 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-type MapStateType = {
-  auth: boolean
-  name: string | null
-  darkState: boolean
-}
-const mapState = (state:AppStateType): MapStateType => ({
-  auth: state.auth.isAuth,
-  name: state.auth.name,
-  darkState: state.app.darkState
-});
-
-type ActionsType = {
-  logout: (options: OptionsType) => ThunkAction<void, InitialStateType, unknown, Action<OptionsType>>
-  switchColorTheme: () => SwitchColorThemeActionType
-}
-const actions: ActionsType = {
-  logout,
-  switchColorTheme
-}
-
-interface OwnPropsType extends RouteComponentProps {
+type NavBarPropsType = {
   options: OptionsType
 }
-type NavBarPropsType = MapStateType & ActionsType & OwnPropsType
 type ToggleDrawerType = (open: boolean) => (event: any) => void
 type HandleLogoutType = () => void
 
@@ -144,7 +122,7 @@ const SignedInMenu: FC<SignedInMenuPropsType> = ({visible, toggleDrawer, logout,
 const SignedOutMenu = () => {
   const [value, setValue] = useState<number>(0);
 
-  const handleChange = (event: any, newValue: number):void => {
+  const handleChange = (event: ChangeEvent<{}>, newValue: number):void => {
     setValue(newValue);
   }
 
@@ -165,16 +143,30 @@ const SignedOutMenu = () => {
   )
 };
 
-const NavBar:FC<NavBarPropsType> = ({auth, history, name, logout, options, darkState, switchColorTheme, location}) => {
-  const classes = useStyles();
-  const [visible, setVisible] = useState(false);
+const NavBar:FC<NavBarPropsType> = ({options}) => {
+  const classes = useStyles()
+  const [visible, setVisible] = useState(false)
+
+  const history: History = useHistory()
+  const location: Location = useLocation()
+
+  const auth: boolean = useSelector((state: AppStateType) => state.auth.isAuth)
+  const name: string | null = useSelector((state: AppStateType) => state.auth.name)
+  const darkState: boolean = useSelector((state: AppStateType) => state.app.darkState)
+
+  const dispatch: Dispatch<SwitchColorThemeActionType> = useDispatch()
+  const thunkDispatch: ThunkDispatch<AppStateType, unknown, AuthActionType> = useDispatch()
 
   const handleLogOut: HandleLogoutType = () => {
-    logout(options);
-    history.push('/');
+    thunkDispatch(logout(options))
+    history.push('/')
   }
 
-  const toggleDrawer: ToggleDrawerType = (open: boolean) => (event: any) => { // как указать оба типа? React.KeyboardEvent | React.MouseEvent
+  const processSwitchColorTheme = () => {
+    dispatch(switchColorTheme())
+  }
+
+  const toggleDrawer: ToggleDrawerType = (open: boolean) => (event: React.KeyboardEvent) => { // как указать оба типа? React.KeyboardEvent | React.MouseEvent
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
@@ -192,7 +184,7 @@ const NavBar:FC<NavBarPropsType> = ({auth, history, name, logout, options, darkS
                           logout={handleLogOut}
                           name={name}
                           darkState={darkState}
-                          switchColorTheme={switchColorTheme}
+                          switchColorTheme={processSwitchColorTheme}
                           location={location}
             /> :
             <SignedOutMenu/>}
@@ -202,7 +194,4 @@ const NavBar:FC<NavBarPropsType> = ({auth, history, name, logout, options, darkS
   );
 }
 
-export default compose(
-    withRouter,
-    connect<MapStateType, ActionsType, OwnPropsType, AppStateType>(mapState, actions)
-)(NavBar);
+export default NavBar

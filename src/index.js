@@ -10,11 +10,11 @@ import {configureStore} from "./redux/store/configureStore";
 const rootElement = document.getElementById('root');
 const store = configureStore();
 
-let render = () => {
-  ReactDOM.render(<Provider store={store}><BrowserRouter><App/></BrowserRouter></Provider>, rootElement);
-}
+// let render = () => {
+  ReactDOM.render(<Provider store={store}><BrowserRouter><App/></BrowserRouter></Provider>, rootElement)
+// }
 
-render();
+// render();
 
 // if (module.hot) {
 //   module.hot.accept('./App', () => {

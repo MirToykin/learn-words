@@ -1,23 +1,39 @@
 import {SubmissionError} from "redux-form";
 import Api from "../../api/Api";
 import {SET_AUTH_DATA} from "../constants";
-import {setIsFetching} from "./appActions";
+import {setIsFetching, SetIsFetchingActionType} from "./appActions";
 import {clearStorage} from "../../assets/browserStorage";
-import {Action, ActionCreator, Dispatch} from 'redux';
 import {ThunkAction} from 'redux-thunk';
-import {InitialStateType} from '../reducers/authReducer'
 import {OptionsType} from "../../types/types";
+import {AppStateType} from "../store/configureStore";
 
 const api = new Api();
 
-export const setAuthData = (payload: any) => {
+type SetAuthDataPayloadType = {
+  id: number | null
+  name: string | null
+  email: string | null
+  token: string | null
+  isAuth: boolean
+  rememberMe: boolean
+}
+
+type SetAuthDataActionType = {
+  type: typeof SET_AUTH_DATA
+  payload: SetAuthDataPayloadType
+}
+
+export type AuthActionType = SetAuthDataActionType | SetIsFetchingActionType
+export type AuthThunkType = ThunkAction<Promise<void>, AppStateType, unknown, AuthActionType>
+
+export const setAuthData = (payload: SetAuthDataPayloadType): SetAuthDataActionType => {
   return {
     type: SET_AUTH_DATA,
     payload
   }
 }
 
-export const login = (loginData: any) => async (dispatch: any) => {
+export const login = (loginData: any): AuthThunkType => async (dispatch, getState) => {
   dispatch(setIsFetching(true));
   try {
     const response = await api.auth('login', loginData);
@@ -39,7 +55,7 @@ export const login = (loginData: any) => async (dispatch: any) => {
   dispatch(setIsFetching(false));
 }
 
-export const register = (regData: any) => async (dispatch: any) => {
+export const register = (regData: any): AuthThunkType => async (dispatch, getState) => {
   dispatch(setIsFetching(true));
   try {
     const response = await api.auth('register', regData);
@@ -58,16 +74,15 @@ export const register = (regData: any) => async (dispatch: any) => {
   dispatch(setIsFetching(false));
 }
 
-export const logout = (options: OptionsType): ThunkAction<void, InitialStateType, unknown, Action<OptionsType>> => async dispatch => {
-
-  // @ts-ignore
+export const logout = (options: OptionsType): AuthThunkType => async (dispatch, getState) => {
   dispatch(setIsFetching(true));
+
   try {
     await api.logout(options);
   } catch (e) {
     console.log(e.response.data.message);
   }
-  // @ts-ignore
+
   dispatch(setAuthData({
     id: null,
     name: null,
@@ -77,7 +92,5 @@ export const logout = (options: OptionsType): ThunkAction<void, InitialStateType
     rememberMe: false
   }));
   clearStorage();
-  // @ts-ignore
   dispatch(setIsFetching(false));
-
 }

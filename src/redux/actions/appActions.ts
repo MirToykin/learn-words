@@ -1,6 +1,11 @@
 import {SET_IS_FETCHING, SWITCH_COLOR_THEME} from "../constants";
 
-export const setIsFetching = (isFetching: boolean) => {
+export type SetIsFetchingActionType = {
+  type: typeof SET_IS_FETCHING
+  payload: boolean
+}
+
+export const setIsFetching = (isFetching: boolean): SetIsFetchingActionType => {
   return {
     type: SET_IS_FETCHING,
     payload: isFetching

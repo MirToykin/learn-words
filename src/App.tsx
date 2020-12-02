@@ -1,5 +1,4 @@
 import React, {FC} from 'react';
-import NavBar from './components/nav/NavBar';
 import Container from "@material-ui/core/Container";
 import {Redirect, Route, Switch} from "react-router-dom";
 import {connect} from "react-redux";
@@ -17,6 +16,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import {useMediaQuery} from "@material-ui/core";
 import {AppStateType} from "./redux/store/configureStore";
 import {OptionsType} from "./types/types";
+import NavBar from "./components/nav/NavBar";
 
 type MapStateType = {
   auth: boolean
@@ -57,7 +57,6 @@ const App:FC<MapStateType> = ({auth, uid, token, darkState}) => {
 
   const matches = useMediaQuery('(min-width:540px)');
 
-  // @ts-ignore
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
