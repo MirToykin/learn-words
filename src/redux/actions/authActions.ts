@@ -7,7 +7,7 @@ import {ThunkAction} from 'redux-thunk';
 import {OptionsType} from "../../types/types";
 import {AppStateType} from "../store/configureStore";
 
-const api = new Api();
+const api: any = new Api();
 
 type SetAuthDataPayloadType = {
   id: number | null
@@ -18,13 +18,27 @@ type SetAuthDataPayloadType = {
   rememberMe: boolean
 }
 
-type SetAuthDataActionType = {
+export type SetAuthDataActionType = {
   type: typeof SET_AUTH_DATA
   payload: SetAuthDataPayloadType
 }
 
 export type AuthActionType = SetAuthDataActionType | SetIsFetchingActionType
 export type AuthThunkType = ThunkAction<Promise<void>, AppStateType, unknown, AuthActionType>
+
+type TLoginData = {
+  email: string,
+  password: string,
+  rememberMe: boolean
+}
+
+type TRegData = {
+  name: string
+  email: string,
+  password: string,
+  password_confirmation: string,
+  rememberMe: boolean
+}
 
 export const setAuthData = (payload: SetAuthDataPayloadType): SetAuthDataActionType => {
   return {
@@ -33,7 +47,7 @@ export const setAuthData = (payload: SetAuthDataPayloadType): SetAuthDataActionT
   }
 }
 
-export const login = (loginData: any): AuthThunkType => async (dispatch, getState) => {
+export const login = (loginData: TLoginData): AuthThunkType => async (dispatch, getState) => {
   dispatch(setIsFetching(true));
   try {
     const response = await api.auth('login', loginData);
@@ -55,7 +69,7 @@ export const login = (loginData: any): AuthThunkType => async (dispatch, getStat
   dispatch(setIsFetching(false));
 }
 
-export const register = (regData: any): AuthThunkType => async (dispatch, getState) => {
+export const register = (regData: TRegData): AuthThunkType => async (dispatch, getState) => {
   dispatch(setIsFetching(true));
   try {
     const response = await api.auth('register', regData);

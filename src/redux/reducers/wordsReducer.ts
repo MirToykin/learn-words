@@ -5,14 +5,14 @@ import {
   UPDATE_WORD_IN_STATE,
   SET_SEARCH_INPUT,
   PUSH_TO_ADDED_MEANINGS, DELETE_FROM_ADDED_MEANINGS, SET_ADDED_MEANINGS
-} from "../constants";
-import {WordType} from "../../types/types";
+} from "../constants"
+import {WordType} from "../../types/types"
 import {
   AddSetActionType, AddWordToStateActionType,
   DeleteFromAddedMeaningsActionType, DeleteWordFromStateActionType,
   PushToAddedMeaningsActionType, SetAddedMeaningsActionType,
   SetSearchInputActionType, UpdateWordInStateActionType
-} from "../actions/wordsActions";
+} from "../actions/wordsActions"
 
 let initialState = {
   next: [] as Array<WordType>,
@@ -22,46 +22,38 @@ let initialState = {
   addedMeanings: [] as Array<string>
 }
 
-// type ActionType = AddSetActionType | SetSearchInputActionType | PushToAddedMeaningsActionType |
-//     DeleteFromAddedMeaningsActionType | SetAddedMeaningsActionType |
-//     DeleteWordFromStateActionType | AddWordToStateActionType | UpdateWordInStateActionType
+type ActionType = AddSetActionType | SetSearchInputActionType | PushToAddedMeaningsActionType |
+    DeleteFromAddedMeaningsActionType | SetAddedMeaningsActionType |
+    DeleteWordFromStateActionType | AddWordToStateActionType | UpdateWordInStateActionType
 
-// type ActionType = {
-//   type: string
-//   payload: any
-// }
+type InitialStateType = typeof initialState
 
-type InitialStateType = typeof initialState;
-
-const wordsReducer = (state:InitialStateType = initialState, {type, payload}:any): InitialStateType => {
-  switch (type) {
+const wordsReducer = (state:InitialStateType = initialState, action:ActionType): InitialStateType => {
+  switch (action.type) {
     case ADD_SET:
-      return {...state, [payload.setName]: payload.set};
+      return {...state, [action.payload.setName]: action.payload.set}
     case ADD_WORD_TO_STATE:
-      // @ts-ignore
-      return {...state, [payload.set]: [...state[payload.set], payload.word]};
+      return {...state, [action.payload.set]: [...state[action.payload.set], action.payload.word]}
     case DELETE_WORD_FROM_STATE:
-      // @ts-ignore
-      return {...state, [payload.set]: state[payload.set].filter(word => word.id !== payload.wordId)};
+      return {...state, [action.payload.set]: state[action.payload.set].filter(word => word.id !== action.payload.wordId)}
     case UPDATE_WORD_IN_STATE:
-      // @ts-ignore
-      return {...state, [payload.category]: state[payload.category].map((word:WordType) => {
-          if (word.id === payload.id) {
-            return payload;
+      return {...state, [action.payload.category]: state[action.payload.category].map((word:WordType) => {
+          if (word.id === action.payload.id) {
+            return action.payload;
           }
-          return word;
+          return word
         })}
     case SET_SEARCH_INPUT:
-      return {...state, searchInput: payload};
+      return {...state, searchInput: action.payload}
     case PUSH_TO_ADDED_MEANINGS:
-      return {...state, addedMeanings: [...state.addedMeanings, payload]};
+      return {...state, addedMeanings: [...state.addedMeanings, action.payload]}
     case DELETE_FROM_ADDED_MEANINGS:
-      return {...state, addedMeanings: state.addedMeanings.filter(meaning => meaning !== payload)}
+      return {...state, addedMeanings: state.addedMeanings.filter(meaning => meaning !== action.payload)}
     case SET_ADDED_MEANINGS:
-      return {...state, addedMeanings: payload}
+      return {...state, addedMeanings: action.payload}
     default:
-      return state;
+      return state
   }
 }
 
-export default wordsReducer;
+export default wordsReducer

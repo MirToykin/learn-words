@@ -1,4 +1,5 @@
 import {SET_IS_FETCHING, SWITCH_COLOR_THEME} from "../constants";
+import {SetIsFetchingActionType, SwitchColorThemeActionType} from "../actions/appActions";
 
 let initialState = {
   isFetching: false,
@@ -7,7 +8,9 @@ let initialState = {
 
 type InitialStateType = typeof initialState
 
-const authReducer = (state :InitialStateType = initialState, action: any):InitialStateType => {
+type ActionType = SetIsFetchingActionType | SwitchColorThemeActionType
+
+const authReducer = (state :InitialStateType = initialState, action: ActionType):InitialStateType => {
   switch (action.type) {
     case SET_IS_FETCHING:
       return {...state, isFetching: action.payload};

@@ -1,6 +1,6 @@
 export type WordType = {
     id?: number
-    category: string
+    category: SetNameType
     title: string
     meanings: string
     user_id: number
