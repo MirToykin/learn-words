@@ -1,7 +1,7 @@
 import React, {FC} from 'react';
 import Container from "@material-ui/core/Container";
 import {Redirect, Route, Switch} from "react-router-dom";
-import {connect} from "react-redux";
+import {useSelector} from "react-redux";
 import LoginForm from "./components/auth/LoginForm";
 import CurrentSet from "./components/word_sets/current/CurrentSet";
 import RegisterForm from "./components/auth/RegisterForm";
@@ -18,21 +18,13 @@ import {AppStateType} from "./redux/store/configureStore";
 import {OptionsType} from "./types/types";
 import NavBar from "./components/nav/NavBar";
 
-type MapStateType = {
-  auth: boolean
-  uid: number | null
-  token: string | null
-  darkState: boolean
-}
 
-const mapState = (state: AppStateType) : MapStateType => ({
-  auth: state.auth.isAuth,
-  uid: state.auth.id,
-  token: state.auth.token,
-  darkState: state.app.darkState
-})
+const App:FC = () => {
+  const auth = useSelector((state: AppStateType) => state.auth.isAuth)
+  const uid = useSelector((state: AppStateType) => state.auth.id)
+  const token = useSelector((state: AppStateType) => state.auth.token)
+  const darkState = useSelector((state: AppStateType) => state.app.darkState)
 
-const App:FC<MapStateType> = ({auth, uid, token, darkState}) => {
   const options:OptionsType = {
     headers: {
       "Authorization": `Bearer ${token}`
@@ -64,8 +56,8 @@ const App:FC<MapStateType> = ({auth, uid, token, darkState}) => {
       <Container disableGutters={!matches}>
         <Switch>
           <Route path='/' exact render={() => <Redirect to={auth ? '/current' : '/login'}/>}/>
-          <Route path='/login' render={() => <LoginForm auth={token}/>}/>
-          <Route path='/register' render={() => <RegisterForm auth={token} options={options}/>}/>
+          <Route path='/login' render={() => <LoginForm/>}/>
+          <Route path='/register' render={() => <RegisterForm/>}/>
           <Route path='/next' render={() => <NextSet token={token} uid={uid} options={options}/>}/>
           <Route path='/current' render={() => <CurrentSet token={token}  uid={uid} options={options}/>}/>
           <Route path='/done' render={() => <DoneSet token={token}  uid={uid} options={options}/>}/>
@@ -75,4 +67,4 @@ const App:FC<MapStateType> = ({auth, uid, token, darkState}) => {
   );
 }
 
-export default connect<MapStateType, {}, {}, AppStateType>(mapState)(App);
+export default App

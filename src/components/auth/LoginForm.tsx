@@ -1,48 +1,45 @@
-import React from 'react';
-import {Field, reduxForm} from "redux-form";
+import React, {FC} from 'react';
+import {Field, InjectedFormProps, reduxForm} from "redux-form";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import {connect} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {AuthActionType, login, TLoginData} from "../../redux/actions/authActions";
 import {Redirect} from "react-router-dom";
 import {RenderCheckbox, RenderTextField} from "../../assets/formElems";
 import {useCommonFormStyles} from "../../assets/useStyles";
-import {register} from "../../redux/actions/authActions";
+import {ThunkDispatch} from "redux-thunk";
+import {AppStateType} from "../../redux/store/configureStore";
 
-const actions = {
-  register
-}
 
-const RegisterForm = ({pristine, submitting, error, handleSubmit, register, reset, auth}) => {
-  const classes = useCommonFormStyles();
 
-  if (auth) return <Redirect to='/current'/>
+const LoginForm: FC<InjectedFormProps<TLoginData>> = ({pristine, submitting, error, handleSubmit, reset}) => {
+  const classes: any = useCommonFormStyles(); // возможно типизация данной переменной избыточна, пока не знаю
+  const thunkDispatch: ThunkDispatch<AppStateType, unknown, AuthActionType> = useDispatch()
+  const token = useSelector((state: AppStateType) => state.auth.token)
+
+  const handleLogin = (loginData: TLoginData): Promise<void> => thunkDispatch(login(loginData))
+
+  if (token) return <Redirect to='/current'/>
 
   return (
     <Grid container alignItems='center' justify='center'>
-      <Grid item xs={12} sm={9} md={6} lg={3}>
+      <Grid item xs={12} sm={9} md={6} lg={4}>
         <Paper className={classes.paper}>
           <Typography variant='h5'
                       align='center'
                       color={'primary'}
                       className={classes.head}
-          >Зарегистрироваться</Typography>
-          <form onSubmit={handleSubmit(register)}>
+          >Войти</Typography>
+          <form onSubmit={handleSubmit(handleLogin)}>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Field
-                  name="name"
-                  component={RenderTextField}
-                  label='Имя'
-                  autoFocus={true}
-                />
-              </Grid>
               <Grid item xs={12}>
                 <Field
                   name="email"
                   component={RenderTextField}
                   label='Email'
+                  autoFocus={true}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -50,14 +47,6 @@ const RegisterForm = ({pristine, submitting, error, handleSubmit, register, rese
                   name="password"
                   component={RenderTextField}
                   label='Пароль'
-                  type='password'
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Field
-                  name="password_confirmation"
-                  component={RenderTextField}
-                  label='Повторите пароль'
                   type='password'
                 />
               </Grid>
@@ -70,7 +59,7 @@ const RegisterForm = ({pristine, submitting, error, handleSubmit, register, rese
                 <Field
                   name="rememberMe"
                   component={RenderCheckbox}
-                  label='Запомнить меня на этом устройстве'
+                  label='Запомнить меня'
                 />
               </Grid>
               <Grid item xs={12}>
@@ -95,5 +84,6 @@ const RegisterForm = ({pristine, submitting, error, handleSubmit, register, rese
   )
 }
 
-export default connect(null, actions)(reduxForm({form: 'register'/*, validate*/})(RegisterForm));
+export default reduxForm<TLoginData>({form: 'login'/*, validate*/})(LoginForm);
+
 

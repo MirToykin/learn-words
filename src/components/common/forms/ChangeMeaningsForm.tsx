@@ -1,27 +1,40 @@
-import React, {useEffect} from 'react';
-import {Field, formValueSelector, reduxForm} from "redux-form";
+import React, {FC, useEffect} from 'react';
+import {Field, formValueSelector, InjectedFormProps, reduxForm} from "redux-form";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import {combineValidators, isRequired} from "revalidate";
-import {RenderChangeMeaningsTextarea, RenderTextField} from "../../../assets/formElems";
+import {RenderChangeMeaningsTextarea} from "../../../assets/formElems";
 import {useCommonFormStyles} from "../../../assets/useStyles";
 import MeaningsList from "../word_sets/MeaningsList";
-import {connect, useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {setAddedMeanings} from "../../../redux/actions/wordsActions";
 import {onAddMeaning} from "../../../assets/helpers";
 import {handleAddMeaning} from "../../../assets/helpers";
+import {OptionsType} from "../../../types/types";
+import {AppStateType} from "../../../redux/store/configureStore";
 
 const validate = combineValidators({
   means: isRequired({message: 'Введите значения'})
 })
 
-const ChangeMeaningsForm = ({
-                              pristine, submitting, error,
-                              handleSubmit, editWord,
-                              onClose, id, options, meanings,
-                              meaningValue, addedMeanings
+const selector = formValueSelector('changeMeaningsForm');
+
+interface IProps extends InjectedFormProps{
+  meanings: Array<string>
+  editWord: any
+  onClose: () => void
+  id: number
+  options: OptionsType
+}
+
+const ChangeMeaningsForm: FC<IProps> = ({
+                              submitting, error, editWord,
+                              onClose, id, options, meanings
                             }) => {
+  const addedMeanings = useSelector((state: AppStateType) => state.words.addedMeanings)
+  let meaningValue = useSelector((state: AppStateType) => selector(state, 'meanings'))
+
   const classes = useCommonFormStyles();
   const dispatch = useDispatch();
   const correctMeaningValue = meaningValue && meaningValue.replace(/\s/g, '').length; // проверка не содержит ли строка только пробелы и переносы строк
@@ -30,14 +43,14 @@ const ChangeMeaningsForm = ({
     dispatch(setAddedMeanings(meanings));
   }, []);
 
-  const onSubmit = (meaningsArray, id, options) => {
-    meanings = meaningsArray.join('/').toLowerCase();
+  const onSubmit = (meaningsArray: Array<string>, id: number, options: OptionsType) => {
+    const meanings = meaningsArray.join('/').toLowerCase();
     editWord(null, id, {meanings}, options);
     onClose();
     dispatch(setAddedMeanings([]));
   }
 
-  const onEnterPress = (e) => {
+  const onEnterPress = (e: React.KeyboardEvent) => {
     if (e.keyCode === 13) {
       e.preventDefault();
       meaningValue = meaningValue.trim();
@@ -93,10 +106,5 @@ const ChangeMeaningsForm = ({
   )
 }
 
-const form = reduxForm({form: 'changeMeaningsForm', enableReinitialize: true, validate})(ChangeMeaningsForm);
-const selector = formValueSelector('changeMeaningsForm');
-export default connect(state => ({
-  meaningValue: selector(state, 'meanings'),
-  addedMeanings: state.words.addedMeanings
-}))(form);
+export default reduxForm({form: 'changeMeaningsForm', enableReinitialize: true, validate})(ChangeMeaningsForm);
 

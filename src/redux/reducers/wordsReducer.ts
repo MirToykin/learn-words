@@ -39,7 +39,7 @@ const wordsReducer = (state:InitialStateType = initialState, action:ActionType):
     case UPDATE_WORD_IN_STATE:
       return {...state, [action.payload.category]: state[action.payload.category].map((word:WordType) => {
           if (word.id === action.payload.id) {
-            return action.payload;
+            return action.payload
           }
           return word
         })}

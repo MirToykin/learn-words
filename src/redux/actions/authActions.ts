@@ -26,13 +26,13 @@ export type SetAuthDataActionType = {
 export type AuthActionType = SetAuthDataActionType | SetIsFetchingActionType
 export type AuthThunkType = ThunkAction<Promise<void>, AppStateType, unknown, AuthActionType>
 
-type TLoginData = {
+export type TLoginData = {
   email: string,
   password: string,
   rememberMe: boolean
 }
 
-type TRegData = {
+export type TRegData = {
   name: string
   email: string,
   password: string,
