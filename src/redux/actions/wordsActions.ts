@@ -1,6 +1,6 @@
 import {SubmissionError} from "redux-form";
 import {setIsFetching, SetIsFetchingActionType} from "./appActions";
-import Api from "../../api/Api";
+import Api, {TApi} from "../../api/Api";
 import {
   ADD_SET,
   ADD_WORD_TO_STATE, SET_ADDED_MEANINGS, DELETE_FROM_ADDED_MEANINGS,
@@ -12,7 +12,7 @@ import {OptionsType, SetNameType, WordType} from "../../types/types";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "../store/configureStore";
 
-const api: any = new Api();
+const api: TApi = new Api();
 
 type TGetSet = SetIsFetchingActionType | AddSetActionType | SetAuthDataActionType
 export type GetSetThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TGetSet>
@@ -20,8 +20,7 @@ export type GetSetThunkType = ThunkAction<Promise<void>, AppStateType, unknown, 
 export const getSet = (set: SetNameType) => (uid: number, options: OptionsType): GetSetThunkType => async (dispatch, getState) => {
   dispatch(setIsFetching(true));
   try {
-    const response: any = await api.getSet(set, uid, options);
-    const words: Array<WordType> = response.data.words;
+    const words = await api.getSet(set, uid, options);
     dispatch(addSet(set, words));
   } catch(e) {
     if (e.response && e.response.status === 401) {
@@ -39,17 +38,20 @@ export const getSet = (set: SetNameType) => (uid: number, options: OptionsType):
   dispatch(setIsFetching(false));
 }
 
+export type TAddToSetData = {
+  meanings: string
+  title: string
+  user_id: number
+}
 type TAddToSet = SetIsFetchingActionType | AddWordToStateActionType | SetAuthDataActionType
 export type AddToSetThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TAddToSet>
 
-export const addToSet = (set: SetNameType) => (data: any, options: OptionsType): AddToSetThunkType => async (dispatch) => {
-
-  dispatch(setIsFetching(true));
-  const newData: any = {...data, category: set};
+export const addToSet = (set: SetNameType) => (data: TAddToSetData, options: OptionsType): AddToSetThunkType => async (dispatch) => {
+  dispatch(setIsFetching(true))
+  const newData: any = {...data, category: set}
 
   try {
-    const response: any = await api.addToSet(newData, options);
-    const word: WordType = response.data.word;
+    const word = await api.addToSet(newData, options);
     dispatch(addWordToState(set, word));
   } catch (e) {
     if (e.response && e.response.status === 401) {
@@ -69,23 +71,25 @@ export const addToSet = (set: SetNameType) => (data: any, options: OptionsType):
   }
   dispatch(setIsFetching(false));
 }
-
+export type TEditWordData = {
+  meanings: string
+  category?: SetNameType
+}
 type TEditWord = SetIsFetchingActionType | DeleteWordFromStateActionType | UpdateWordInStateActionType| SetAuthDataActionType
 export type EditWordThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TEditWord>
 
-export const editWord = (setToRemoveFrom: SetNameType, wordId: number, data:any, options: OptionsType): EditWordThunkType => async (dispatch) => {
+export const editWord = (setToRemoveFrom: SetNameType, wordId: number, data:TEditWordData, options: OptionsType): EditWordThunkType => async (dispatch) => {
   // fixme в MeaningsList на место setToRemoveFrom передается null????
-  dispatch(setIsFetching(true));
+  dispatch(setIsFetching(true))
   try {
-    const response = await api.editWord(wordId, data, options);
-    const word: WordType = response.data.word;
+    const word = await api.editWord(wordId, data, options)
     if (data.category) {
       // На текущий момент внесение изменений в state, влияющий на отрисовку другой категории
       // избыточен, поскольку при открытии другой категории происходит загрузка записей из БД.
       // Если будет реализован вывод из state без загрузки из БД, то может понадобится
       // dispatch(addWordToState(data.category, word));
 
-      dispatch(deleteWordFromState(setToRemoveFrom, wordId));
+      dispatch(deleteWordFromState(setToRemoveFrom, wordId))
     }
 
     dispatch(updateWordInState(word));
@@ -113,6 +117,7 @@ export const deleteWord = (set:SetNameType, wordId:number, options: OptionsType)
   dispatch(setIsFetching(true));
   try {
     const response = await api.deleteWord(wordId, options);
+    console.log(response)
     if (response.statusText === 'OK') {
       dispatch(deleteWordFromState(set, wordId));
     }

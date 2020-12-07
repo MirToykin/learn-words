@@ -50,9 +50,8 @@ export const setAuthData = (payload: SetAuthDataPayloadType): SetAuthDataActionT
 export const login = (loginData: TLoginData): AuthThunkType => async (dispatch, getState) => {
   dispatch(setIsFetching(true));
   try {
-    const response = await api.auth('login', loginData);
+    const userData = await api.auth('login', loginData);
     const rememberMe = loginData.rememberMe;
-    const userData = response.data.user;
     dispatch(setAuthData({...userData, isAuth: true, rememberMe}));
   } catch (e) {
     let error;
@@ -72,9 +71,8 @@ export const login = (loginData: TLoginData): AuthThunkType => async (dispatch, 
 export const register = (regData: TRegData): AuthThunkType => async (dispatch, getState) => {
   dispatch(setIsFetching(true));
   try {
-    const response = await api.auth('register', regData);
+    const userData = await api.auth('register', regData);
     const rememberMe = regData.rememberMe;
-    const userData = response.data.user;
     dispatch(setAuthData({...userData, isAuth: true, rememberMe}));
   } catch (e) {
     let error;
