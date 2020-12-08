@@ -72,7 +72,7 @@ export const addToSet = (set: SetNameType) => (data: TAddToSetData, options: Opt
   dispatch(setIsFetching(false));
 }
 export type TEditWordData = {
-  meanings: string
+  meanings?: string
   category?: SetNameType
 }
 type TEditWord = SetIsFetchingActionType | DeleteWordFromStateActionType | UpdateWordInStateActionType| SetAuthDataActionType
@@ -117,7 +117,6 @@ export const deleteWord = (set:SetNameType, wordId:number, options: OptionsType)
   dispatch(setIsFetching(true));
   try {
     const response = await api.deleteWord(wordId, options);
-    console.log(response)
     if (response.statusText === 'OK') {
       dispatch(deleteWordFromState(set, wordId));
     }

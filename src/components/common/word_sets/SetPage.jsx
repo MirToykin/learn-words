@@ -30,7 +30,7 @@ const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
     dispatch(setSearchInput(e.target.value));
   }
 
-  const handleClose = additionalActions => {
+  const handleClose = (additionalActions) => {
     setOpen(false);
     if (additionalActions) {
       additionalActions.forEach(action => {
@@ -75,7 +75,8 @@ const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
           {isFetching && !set.length && <LinearProgress color={'secondary'}/>}
           {addToSet && <AddToSetForm open={open}
                                      onClose={handleClose}
-                                     addToSet={addToSet} uid={uid}
+                                     addToSet={addToSet}
+                                     uid={uid}
                                      options={options}
           />}
         </Paper>

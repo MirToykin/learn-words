@@ -1,5 +1,5 @@
-import React from 'react';
-import {Field, reduxForm, formValueSelector, stopSubmit} from "redux-form";
+import React, {FC} from 'react';
+import {Field, reduxForm, formValueSelector, stopSubmit, InjectedFormProps} from "redux-form";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -8,40 +8,61 @@ import {combineValidators, isRequired} from "revalidate";
 import {RenderTextarea, RenderTextField} from "../../../assets/formElems";
 import Dialog from "@material-ui/core/Dialog";
 import {useCommonFormStyles} from "../../../assets/useStyles";
-import {connect, useDispatch} from "react-redux";
-import {setAddedMeanings} from "../../../redux/actions/wordsActions";
+import {connect, useDispatch, useSelector} from "react-redux";
+import {setAddedMeanings, TAddToSetData} from "../../../redux/actions/wordsActions";
 import MeaningsList from "../word_sets/MeaningsList";
 import {handleAddMeaning, onAddMeaning} from "../../../assets/helpers";
+import {AppStateType} from "../../../redux/store/configureStore";
+import {OptionsType} from "../../../types/types";
 
 const validate = combineValidators({
   word: isRequired({message: 'Введите слово'}),
   // means: isRequired({message: 'Введите значения'})
 })
 
-const AddToSetForm = ({
+const selector = formValueSelector('AddToSetForm');
+
+type TOnSubmitWord = {
+  title: string
+}
+
+type IProps = {
+  open: boolean
+  onClose: (additionalActions: Array<() => void>) => void
+  addToSet: any
+  uid: number
+  options: OptionsType
+}
+
+const AddToSetForm: FC<IProps & InjectedFormProps<TOnSubmitWord,IProps>> = ({
                         pristine, submitting, error,
                         handleSubmit, reset,
                         addToSet, open, onClose,
-                        uid, options, meaningValue,
-                        addedMeanings, titleValue
+                        uid, options
                       }) => {
   const classes = useCommonFormStyles();
   const dispatch = useDispatch();
+
+  const titleValue = useSelector((state: AppStateType) => selector(state, 'title'))
+  let meaningValue: string = useSelector((state: AppStateType) => selector(state, 'meanings'))
+  const addedMeanings = useSelector((state: AppStateType) => state.words.addedMeanings)
+
   const correctMeaningValue = meaningValue && meaningValue.replace(/\s/g, '').length; // проверка не содержит ли строка только пробелы и переносы строк
 
-  const onSubmit = (word, meanings) => {
-    word['title'] = word['title'].toLowerCase().trim();
-    word['user_id'] = uid;
-    word['meanings'] = meanings.join('/').toLowerCase();
+  const onSubmit = (word: TOnSubmitWord, meanings: Array<string>) => {
+    const newWord: TAddToSetData = {title: '', meanings: '', user_id: 0}
+    newWord['title'] = word['title'].toLowerCase().trim()
+    newWord['user_id'] = uid
+    newWord['meanings'] = meanings.join('/').toLowerCase()
     reset();
     dispatch(setAddedMeanings([]));
-    return addToSet(word, options);
+    return addToSet(newWord, options);
   }
 
-  const onEnterPress = (e) => {
+  const onEnterPress = (e: React.KeyboardEvent) => {
     if (e.keyCode === 13) {
       e.preventDefault();
-      meaningValue = meaningValue.trim();
+      meaningValue= meaningValue.trim();
       handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, dispatch, 'AddToSetForm', correctMeaningValue);
     }
   }
@@ -125,11 +146,6 @@ const AddToSetForm = ({
   )
 }
 
-const form = reduxForm({form: 'AddToSetForm', validate})(AddToSetForm);
-const selector = formValueSelector('AddToSetForm');
-export default connect(state => ({
-  titleValue: selector(state, 'title'),
-  meaningValue: selector(state, 'meanings'),
-  addedMeanings: state.words.addedMeanings
-}))(form);
+export default reduxForm<TOnSubmitWord, IProps>({form: 'AddToSetForm', validate})(AddToSetForm)
+
 
