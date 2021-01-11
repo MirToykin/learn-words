@@ -16,8 +16,10 @@ const api: TApi = new Api();
 
 type TGetSet = SetIsFetchingActionType | AddSetActionType | SetAuthDataActionType
 export type GetSetThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TGetSet>
+export type GetSetThunkCreatorType = (uid: number, options: OptionsType) => GetSetThunkType
+export type TGetSetActions = SetIsFetchingActionType | AddSetActionType
 
-export const getSet = (set: SetNameType) => (uid: number, options: OptionsType): GetSetThunkType => async (dispatch, getState) => {
+export const getSet = (set: SetNameType): GetSetThunkCreatorType => (uid, options) => async (dispatch, getState) => {
   dispatch(setIsFetching(true));
   try {
     const words = await api.getSet(set, uid, options);

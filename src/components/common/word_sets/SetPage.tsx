@@ -1,52 +1,74 @@
-import React, {useEffect, useState} from 'react';
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper/Paper";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import Icon from "@material-ui/core/Icon";
-import AddToSetForm from "../forms/AddToSetForm";
-import List from "@material-ui/core/List";
-import {useSetStyles} from "../../../assets/useStyles";
-import TextField from "@material-ui/core/TextField";
-import Set from "./Set";
-import {useDispatch, useSelector} from "react-redux";
-import {setSearchInput} from "../../../redux/actions/wordsActions";
-import LinearProgress from "@material-ui/core/LinearProgress";
+import React, {ChangeEvent, FC, useEffect, useState} from 'react'
+import Grid from "@material-ui/core/Grid"
+import Paper from "@material-ui/core/Paper/Paper"
+import Typography from "@material-ui/core/Typography"
+import IconButton from "@material-ui/core/IconButton"
+import Icon from "@material-ui/core/Icon"
+import AddToSetForm from "../forms/AddToSetForm"
+import List from "@material-ui/core/List"
+import {useSetStyles} from "../../../assets/useStyles"
+import TextField from "@material-ui/core/TextField"
+import Set from "./Set"
+import {useDispatch, useSelector} from "react-redux"
+import {
+  GetSetThunkCreatorType,
+  GetSetThunkType,
+  setSearchInput,
+  SetSearchInputActionType, TGetSetActions
+} from "../../../redux/actions/wordsActions"
+import LinearProgress from "@material-ui/core/LinearProgress"
+import {OptionsType, WordType} from "../../../types/types";
+import {AppStateType} from "../../../redux/store/configureStore";
+import {Dispatch} from "redux";
+import {ThunkDispatch} from "redux-thunk";
+import {AuthActionType} from "../../../redux/actions/authActions";
 
-const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
-  const classes = useSetStyles();
-  const [open, setOpen] = useState(false);
-  const [deltaHeight, setDeltaHeight] = useState(window.pageYOffset ? 90 : 180); // если pageYOffset 0, тогда из высоты контейнера вычитаем 180 px
-  const searchInput = useSelector(state => state.words.searchInput);
-  const dispatch = useDispatch();
-  const isFetching = useSelector(state => state.app.isFetching);
+type TProps = {
+  set: Array<WordType>
+  getSet: GetSetThunkCreatorType
+  pageTitle: string
+  uid: number
+  addToSet?: any
+  options: OptionsType
+}
+
+const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) => {
+  const classes = useSetStyles()
+  const [open, setOpen] = useState(false)
+  const [deltaHeight, setDeltaHeight] = useState(window.pageYOffset ? 90 : 180) // если pageYOffset 0, тогда из высоты контейнера вычитаем 180 px
+  const searchInput: string = useSelector((state: AppStateType) => state.words.searchInput)
+  const dispatch: Dispatch<SetSearchInputActionType> = useDispatch()
+  const thunkDispatch: ThunkDispatch<AppStateType, unknown, TGetSetActions> = useDispatch()
+  const isFetching = useSelector((state: AppStateType) => state.app.isFetching)
+
+  const getSetLast = () => thunkDispatch(getSet(uid, options))
 
 
   useEffect(() => {
-    (async () => getSet(uid, options))()
+    (async () => getSetLast())()
   }, [])
 
-  const handleInputChange = e => {
-    dispatch(setSearchInput(e.target.value));
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    dispatch(setSearchInput(e.target.value))
   }
 
-  const handleClose = (additionalActions) => {
-    setOpen(false);
+  const handleClose = (additionalActions: Array<() => void>): void => {
+    setOpen(false)
     if (additionalActions) {
       additionalActions.forEach(action => {
-        action();
+        action()
       })
     }
   }
 
-  const handleScrollDown = () => {
-    window['scrollTo']({top: 90, behavior: 'smooth'});
-    setDeltaHeight(90);
+  const handleScrollDown = (): void => {
+    window['scrollTo']({top: 90, behavior: 'smooth'})
+    setDeltaHeight(90)
   }
 
-  const handleScrollUp = () => {
-    window['scrollTo']({top: 0, behavior: 'smooth'});
-    setDeltaHeight(180);
+  const handleScrollUp = (): void => {
+    window['scrollTo']({top: 0, behavior: 'smooth'})
+    setDeltaHeight(180)
   }
 
   return (
@@ -106,7 +128,7 @@ const SetPage = ({set, getSet, pageTitle, uid, addToSet, options}) => {
         </Paper>
       </Grid>
     </Grid>
-  );
-};
+  )
+}
 
-export default SetPage;
+export default SetPage

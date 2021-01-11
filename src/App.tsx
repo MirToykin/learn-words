@@ -60,7 +60,7 @@ const App:FC = () => {
           <Route path='/register' render={() => <RegisterForm/>}/>
           <Route path='/next' render={() => <NextSet token={token} uid={uid} options={options}/>}/>
           <Route path='/current' render={() => <CurrentSet token={token}  uid={uid} options={options}/>}/>
-          <Route path='/done' render={() => <DoneSet token={token}  uid={uid} options={options}/>}/>
+          <Route path='/done' render={() => <DoneSet uid={uid} options={options}/>}/>
         </Switch>
       </Container>
     </ThemeProvider>

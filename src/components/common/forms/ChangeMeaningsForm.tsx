@@ -37,7 +37,7 @@ const ChangeMeaningsForm: FC<IProps> = ({
 
   const classes = useCommonFormStyles();
   const dispatch = useDispatch();
-  const correctMeaningValue = meaningValue && meaningValue.replace(/\s/g, '').length; // проверка не содержит ли строка только пробелы и переносы строк
+  const correctMeaningValue: boolean = !!(meaningValue && meaningValue.replace(/\s/g, '').length) // проверка не содержит ли строка только пробелы и переносы строк
 
   useEffect(() => {
     dispatch(setAddedMeanings(meanings));
