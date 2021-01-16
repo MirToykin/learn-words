@@ -79,11 +79,10 @@ export type TEditWordData = {
   meanings?: string
   category?: SetNameType
 }
-type TEditWord = SetIsFetchingActionType | DeleteWordFromStateActionType | UpdateWordInStateActionType| SetAuthDataActionType
+export type TEditWord = SetIsFetchingActionType | DeleteWordFromStateActionType | UpdateWordInStateActionType| SetAuthDataActionType
 export type EditWordThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TEditWord>
 
 export const editWord = (setToRemoveFrom: SetNameType, wordId: number, data:TEditWordData, options: OptionsType): EditWordThunkType => async (dispatch) => {
-  // fixme в MeaningsList на место setToRemoveFrom передается null????
   dispatch(setIsFetching(true))
   try {
     const word = await api.editWord(wordId, data, options)
@@ -114,7 +113,7 @@ export const editWord = (setToRemoveFrom: SetNameType, wordId: number, data:TEdi
   dispatch(setIsFetching(false));
 }
 
-type TDeleteWord = SetIsFetchingActionType | DeleteWordFromStateActionType | SetAuthDataActionType
+export type TDeleteWord = SetIsFetchingActionType | DeleteWordFromStateActionType | SetAuthDataActionType
 export type DeleteWordThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TDeleteWord>
 
 export const deleteWord = (set:SetNameType, wordId:number, options: OptionsType): DeleteWordThunkType => async (dispatch: any) => {

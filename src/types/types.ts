@@ -1,5 +1,5 @@
 export type WordType = {
-    id?: number
+    id: number
     category: SetNameType
     title: string
     meanings: string

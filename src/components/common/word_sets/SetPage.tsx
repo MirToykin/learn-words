@@ -12,7 +12,6 @@ import Set from "./Set"
 import {useDispatch, useSelector} from "react-redux"
 import {
   GetSetThunkCreatorType,
-  GetSetThunkType,
   setSearchInput,
   SetSearchInputActionType, TGetSet
 } from "../../../redux/actions/wordsActions"

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {FC, useState} from 'react';
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import Typography from "@material-ui/core/Typography";
@@ -11,6 +11,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import WordItemMenu from "./WordItemMenu";
 import MeaningsList from "./MeaningsList";
+import {OptionsType, WordType} from "../../../types/types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,10 +27,16 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const WordItem = ({word: {id, title, meanings}, pageTitle, options}) => {
+type TProps = {
+  word: WordType
+  pageTitle: string
+  options: OptionsType
+}
+
+const WordItem: FC<TProps> = ({word: {id, title, meanings}, pageTitle, options}) => {
   const classes = useStyles();
   const [expanded, setExpand] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   let meaningsArray = meanings.split('/');
   const currentSet = pageTitle === 'На очереди' ? 'next' : pageTitle === 'Текущий набор' ? 'current' : 'done';

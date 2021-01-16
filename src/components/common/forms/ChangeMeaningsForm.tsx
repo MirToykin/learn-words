@@ -8,11 +8,12 @@ import {RenderChangeMeaningsTextarea} from "../../../assets/formElems";
 import {useCommonFormStyles} from "../../../assets/useStyles";
 import MeaningsList from "../word_sets/MeaningsList";
 import {useDispatch, useSelector} from "react-redux";
-import {setAddedMeanings} from "../../../redux/actions/wordsActions";
+import {editWord, setAddedMeanings, TEditWord} from "../../../redux/actions/wordsActions";
 import {onAddMeaning} from "../../../assets/helpers";
 import {handleAddMeaning} from "../../../assets/helpers";
 import {OptionsType} from "../../../types/types";
 import {AppStateType} from "../../../redux/store/configureStore";
+import {ThunkDispatch} from "redux-thunk";
 
 const validate = combineValidators({
   means: isRequired({message: 'Введите значения'})
@@ -22,14 +23,13 @@ const selector = formValueSelector('changeMeaningsForm');
 
 interface IProps extends InjectedFormProps{
   meanings: Array<string>
-  editWord: any
   onClose: () => void
   id: number
   options: OptionsType
 }
 
 const ChangeMeaningsForm: FC<IProps> = ({
-                              submitting, error, editWord,
+                              submitting, error,
                               onClose, id, options, meanings
                             }) => {
   const addedMeanings = useSelector((state: AppStateType) => state.words.addedMeanings)
@@ -37,6 +37,7 @@ const ChangeMeaningsForm: FC<IProps> = ({
 
   const classes = useCommonFormStyles();
   const dispatch = useDispatch();
+  const dispatchEdit: ThunkDispatch<AppStateType, unknown, TEditWord> = useDispatch()
   const correctMeaningValue: boolean = !!(meaningValue && meaningValue.replace(/\s/g, '').length) // проверка не содержит ли строка только пробелы и переносы строк
 
   useEffect(() => {
@@ -45,7 +46,8 @@ const ChangeMeaningsForm: FC<IProps> = ({
 
   const onSubmit = (meaningsArray: Array<string>, id: number, options: OptionsType) => {
     const meanings = meaningsArray.join('/').toLowerCase();
-    editWord(null, id, {meanings}, options);
+    dispatchEdit(editWord('current', id, {meanings}, options)); // current - указан в качестве заглушки, как валидный для типа SetNameType
+    // в данном вызове этот параметр не используется
     onClose();
     dispatch(setAddedMeanings([]));
   }

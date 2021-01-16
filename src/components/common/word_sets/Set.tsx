@@ -1,8 +1,15 @@
-import React from 'react';
+import React, {FC} from 'react';
 import ListItem from "@material-ui/core/ListItem";
 import WordItem from "./WordItem";
+import {OptionsType, WordType} from "../../../types/types";
 
-const areEqual = (prevProps, props) => {
+type TProps = {
+  set: Array<WordType>
+  pageTitle: string
+  options: OptionsType
+}
+
+const areEqual = (prevProps: TProps, props: TProps): boolean => {
   let prevSet = prevProps.set
   let newSet = props.set
 
@@ -23,7 +30,7 @@ const areEqual = (prevProps, props) => {
   return prevSetTitles === newSetTitles && prevSetMeanings === newSetMeanings
 }
 
-const Set = ({set, pageTitle, options}) => {
+const Set: FC<TProps> = ({set, pageTitle, options}) => {
   return (
     <>
       {set.map(word => (
