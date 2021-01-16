@@ -9,12 +9,18 @@ import {RenderTextarea, RenderTextField} from "../../../assets/formElems";
 import Dialog from "@material-ui/core/Dialog";
 import {useCommonFormStyles} from "../../../assets/useStyles";
 import {connect, useDispatch, useSelector} from "react-redux";
-import {setAddedMeanings, SetAddedMeaningsActionType, TAddToSetData} from "../../../redux/actions/wordsActions";
+import {
+  setAddedMeanings,
+  SetAddedMeaningsActionType,
+  TAddToSet,
+  TAddToSetData
+} from "../../../redux/actions/wordsActions";
 import MeaningsList from "../word_sets/MeaningsList";
 import {handleAddMeaning, onAddMeaning} from "../../../assets/helpers";
 import {AppStateType} from "../../../redux/store/configureStore";
 import {OptionsType} from "../../../types/types";
 import {Dispatch} from "redux";
+import {ThunkDispatch} from "redux-thunk";
 
 const validate = combineValidators({
   word: isRequired({message: 'Введите слово'}),
@@ -43,6 +49,7 @@ const AddToSetForm: FC<TProps & InjectedFormProps<TOnSubmitWord,TProps>> = ({
                       }) => {
   const classes = useCommonFormStyles();
   const dispatch: Dispatch<SetAddedMeaningsActionType | FormAction> = useDispatch();
+  const thunkDispatch: ThunkDispatch<AppStateType, unknown, TAddToSet> = useDispatch();
 
   const titleValue: string = useSelector((state: AppStateType) => selector(state, 'title'))
   let meaningValue: string = useSelector((state: AppStateType) => selector(state, 'meanings'))
@@ -57,7 +64,7 @@ const AddToSetForm: FC<TProps & InjectedFormProps<TOnSubmitWord,TProps>> = ({
     newWord['meanings'] = meanings.join('/').toLowerCase()
     reset();
     dispatch(setAddedMeanings([]))
-    return addToSet(newWord, options)
+    return thunkDispatch(addToSet(newWord, options))
   }
 
   const onEnterPress = (e: React.KeyboardEvent): void => {

@@ -16,3 +16,9 @@ type HeadersType = {
 export type OptionsType = {
     headers: HeadersType
 }
+
+export type TSetProps = {
+    uid: number
+    options: OptionsType
+    token: string
+}

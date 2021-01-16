@@ -14,10 +14,10 @@ import {AppStateType} from "../store/configureStore";
 
 const api: TApi = new Api();
 
-type TGetSet = SetIsFetchingActionType | AddSetActionType | SetAuthDataActionType
+export type TGetSet = SetIsFetchingActionType | AddSetActionType | SetAuthDataActionType
 export type GetSetThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TGetSet>
 export type GetSetThunkCreatorType = (uid: number, options: OptionsType) => GetSetThunkType
-export type TGetSetActions = SetIsFetchingActionType | AddSetActionType
+// export type TGetSetActions = SetIsFetchingActionType | AddSetActionType // возможно лишний тип, исползуется для типизации dispatch в SetPage
 
 export const getSet = (set: SetNameType): GetSetThunkCreatorType => (uid, options) => async (dispatch, getState) => {
   dispatch(setIsFetching(true));
@@ -45,10 +45,12 @@ export type TAddToSetData = {
   title: string
   user_id: number
 }
-type TAddToSet = SetIsFetchingActionType | AddWordToStateActionType | SetAuthDataActionType
+export type TAddToSet = SetIsFetchingActionType | AddWordToStateActionType | SetAuthDataActionType
 export type AddToSetThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TAddToSet>
+export type addToSetThunkCreatorType = (data: TAddToSetData, options: OptionsType) => AddToSetThunkType
+export type TAddToSetActions = SetIsFetchingActionType | AddSetActionType
 
-export const addToSet = (set: SetNameType) => (data: TAddToSetData, options: OptionsType): AddToSetThunkType => async (dispatch) => {
+export const addToSet = (set: SetNameType): addToSetThunkCreatorType => (data, options) => async (dispatch) => {
   dispatch(setIsFetching(true))
   const newData: any = {...data, category: set}
 

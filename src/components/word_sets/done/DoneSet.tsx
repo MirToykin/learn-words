@@ -2,17 +2,12 @@ import React, {FC} from 'react';
 import {useSelector} from "react-redux";
 import withAuthRedirect from "../../HOCs/withAuthRedirect";
 import SetPage from "../../common/word_sets/SetPage";
-import {getSet, GetSetThunkCreatorType, GetSetThunkType} from "../../../redux/actions/wordsActions";
+import {getSet, GetSetThunkCreatorType} from "../../../redux/actions/wordsActions";
 import {getFilteredSet} from "../../../assets/helpers";
 import {AppStateType} from "../../../redux/store/configureStore";
-import {OptionsType, WordType} from "../../../types/types";
+import {TSetProps, WordType} from "../../../types/types";
 
-type TProps = {
-  uid: number
-  options: OptionsType
-}
-
-const DoneSet: FC<TProps> = ({uid, options}) => {
+const DoneSet: FC<TSetProps> = ({uid, options, token}) => {
 
   const done: Array<WordType> = useSelector((state: AppStateType) => getFilteredSet(state.words.done, state.words.searchInput, 'title'))
   const getDone: GetSetThunkCreatorType = getSet('done')
@@ -23,6 +18,7 @@ const DoneSet: FC<TProps> = ({uid, options}) => {
              getSet={getDone}
              pageTitle='Изученные'
              options={options}
+             token={token}
     />
   );
 };

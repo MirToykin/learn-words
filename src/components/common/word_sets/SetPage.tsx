@@ -14,7 +14,7 @@ import {
   GetSetThunkCreatorType,
   GetSetThunkType,
   setSearchInput,
-  SetSearchInputActionType, TGetSetActions
+  SetSearchInputActionType, TGetSet
 } from "../../../redux/actions/wordsActions"
 import LinearProgress from "@material-ui/core/LinearProgress"
 import {OptionsType, WordType} from "../../../types/types";
@@ -30,6 +30,7 @@ type TProps = {
   uid: number
   addToSet?: any
   options: OptionsType
+  token: string
 }
 
 const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) => {
@@ -38,7 +39,7 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
   const [deltaHeight, setDeltaHeight] = useState(window.pageYOffset ? 90 : 180) // если pageYOffset 0, тогда из высоты контейнера вычитаем 180 px
   const searchInput: string = useSelector((state: AppStateType) => state.words.searchInput)
   const dispatch: Dispatch<SetSearchInputActionType> = useDispatch()
-  const thunkDispatch: ThunkDispatch<AppStateType, unknown, TGetSetActions> = useDispatch()
+  const thunkDispatch: ThunkDispatch<AppStateType, unknown, TGetSet> = useDispatch()
   const isFetching = useSelector((state: AppStateType) => state.app.isFetching)
 
   const getSetLast = () => thunkDispatch(getSet(uid, options))
