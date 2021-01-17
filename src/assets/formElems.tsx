@@ -1,9 +1,19 @@
-import React from "react";
+import React, {FC} from "react";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 
-export const RenderTextField = ({
+type TTextField = {
+  label: string
+  input: any
+  meta: {
+    touched: boolean
+    invalid: boolean
+    error: string
+  }
+}
+
+export const RenderTextField: FC<TTextField> = ({
                                   label,
                                   input,
                                   meta: {touched, invalid, error},
@@ -22,16 +32,17 @@ export const RenderTextField = ({
   />
 }
 
-export const RenderTextarea = (props) => RenderTextField({...props, ...{multiline: true, rowsMax: 4, autoFocus: false}})
-export const RenderChangeMeaningsTextarea = (props) => RenderTextField({...props, ...{multiline: true, rowsMax: 4}})
+export const RenderTextarea = (props: TTextField) => RenderTextField({...props, ...{multiline: true, rowsMax: 4, autoFocus: false}})
+export const RenderChangeMeaningsTextarea = (props: TTextField) => RenderTextField({...props, ...{multiline: true, rowsMax: 4}})
 
-export const RenderCheckbox = ({input, label}) => (
+
+export const RenderCheckbox: FC<TTextField> = ({input, label}) => (
   <div>
     <FormControlLabel
       control={
         <Checkbox
           color="primary"
-          checked={input.value ? true : false}
+          checked={!!input.value}
           onChange={input.onChange}
         />
       }
