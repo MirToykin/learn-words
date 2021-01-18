@@ -22,14 +22,13 @@ import {AppStateType} from "../../../redux/store/configureStore"
 
 
 type TProps = {
-  anchorEl: HTMLElement | null
-  // anchorEl: React.ReactHTMLElement<any>
-  setAnchorEl: (el: any) => void
+  anchorEl:  Element | ((element: Element) => Element) | null | undefined
   id: number
   title: string
   meanings: Array<string>
   currentSet: SetNameType
   options: OptionsType
+  setAnchorEl: (el: Element | ((element: Element) => Element) | null | undefined) => void
 }
 
 const WordItemMenu: FC<TProps> = ({
@@ -47,7 +46,7 @@ const WordItemMenu: FC<TProps> = ({
 
   const handleMoveToSet = (e: React.MouseEvent<HTMLLIElement, MouseEvent>, moveToSet: () => void) => {
     moveToSet()
-    setAnchorEl(false)
+    setAnchorEl(null)
   }
 
   const onChangeMeans = () => {
@@ -116,7 +115,6 @@ const WordItemMenu: FC<TProps> = ({
                       className={classes.head}
           >Изменить значения для <Typography variant={'inherit'} color={'textPrimary'}>{title}</Typography></Typography>
           <ChangeMeaningsForm
-            // initialValues={{meanings: meanings}}
             meanings={meanings}
             editWord={editWord}
             onClose={() => setOpen(false)}

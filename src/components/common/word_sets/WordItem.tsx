@@ -9,9 +9,8 @@ import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import WordItemMenu from "./WordItemMenu";
 import MeaningsList from "./MeaningsList";
-import {OptionsType, WordType} from "../../../types/types";
+import {OptionsType, SetNameType, WordType} from "../../../types/types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,15 +30,32 @@ type TProps = {
   word: WordType
   pageTitle: string
   options: OptionsType
+  setAnchorEl: (el: Element | ((element: Element) => Element) | null | undefined) => void
+  setWordId: (id: number) => void
+  setWordTitle: (title: string) => void
+  setCurrentSet: (setName: SetNameType) => void
+  setMeaningsArray: (arr: Array<string>) => void
 }
 
-const WordItem: FC<TProps> = ({word: {id, title, meanings}, pageTitle, options}) => {
+const WordItem: FC<TProps> = (
+  {
+    word: {id, title, meanings},
+    pageTitle, options, setAnchorEl,
+    setCurrentSet, setMeaningsArray, setWordId, setWordTitle
+  }) => {
   const classes = useStyles();
   const [expanded, setExpand] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   let meaningsArray = meanings.split('/');
   const currentSet = pageTitle === 'На очереди' ? 'next' : pageTitle === 'Текущий набор' ? 'current' : 'done';
+
+  const showMenu = (target: Element | ((element: Element) => Element) | null | undefined) => {
+    setAnchorEl(target)
+    setCurrentSet(currentSet)
+    setMeaningsArray(meaningsArray)
+    setWordId(id)
+    setWordTitle(title)
+  }
 
   return (
     <div className={classes.root}>
@@ -55,16 +71,9 @@ const WordItem: FC<TProps> = ({word: {id, title, meanings}, pageTitle, options})
               <ExpandMoreIcon/>
             </IconButton>}
           <Typography variant='h6' color={'primary'}>{title}</Typography>
-          <IconButton onClick={(event) => setAnchorEl(event.currentTarget)}>
+          <IconButton onClick={(event) => showMenu(event.currentTarget)}>
             <MoreVertIcon/>
           </IconButton>
-          <WordItemMenu anchorEl={anchorEl}
-                        setAnchorEl={setAnchorEl}
-                        id={id} title={title}
-                        meanings={meaningsArray}
-                        currentSet={currentSet}
-                        options={options}
-          />
         </ExpansionPanelSummary>
         <Divider/>
         <ExpansionPanelDetails classes={{
