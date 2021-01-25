@@ -4,14 +4,14 @@ import {
   ADD_SET,
   UPDATE_WORD_IN_STATE,
   SET_SEARCH_INPUT,
-  PUSH_TO_ADDED_MEANINGS, DELETE_FROM_ADDED_MEANINGS, SET_ADDED_MEANINGS
+  PUSH_TO_ADDED_MEANINGS, DELETE_FROM_ADDED_MEANINGS, SET_ADDED_MEANINGS, SET_SET_SIZE
 } from "../constants"
 import {WordType} from "../../types/types"
 import {
   AddSetActionType, AddWordToStateActionType,
   DeleteFromAddedMeaningsActionType, DeleteWordFromStateActionType,
   PushToAddedMeaningsActionType, SetAddedMeaningsActionType,
-  SetSearchInputActionType, UpdateWordInStateActionType
+  SetSearchInputActionType, TSetSetSizeAction, UpdateWordInStateActionType
 } from "../actions/wordsActions"
 
 let initialState = {
@@ -19,11 +19,12 @@ let initialState = {
   current: [] as Array<WordType>,
   done: [] as Array<WordType>,
   searchInput: '',
-  addedMeanings: [] as Array<string>
+  addedMeanings: [] as Array<string>,
+  setSize: 30 as number
 }
 
 type ActionType = AddSetActionType | SetSearchInputActionType | PushToAddedMeaningsActionType |
-    DeleteFromAddedMeaningsActionType | SetAddedMeaningsActionType |
+    DeleteFromAddedMeaningsActionType | SetAddedMeaningsActionType | TSetSetSizeAction |
     DeleteWordFromStateActionType | AddWordToStateActionType | UpdateWordInStateActionType
 
 type InitialStateType = typeof initialState
@@ -51,6 +52,8 @@ const wordsReducer = (state:InitialStateType = initialState, action:ActionType):
       return {...state, addedMeanings: state.addedMeanings.filter(meaning => meaning !== action.payload)}
     case SET_ADDED_MEANINGS:
       return {...state, addedMeanings: action.payload}
+    case SET_SET_SIZE:
+      return {...state, setSize: action.payload}
     default:
       return state
   }

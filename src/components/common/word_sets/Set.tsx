@@ -1,13 +1,19 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import ListItem from "@material-ui/core/ListItem";
 import WordItem from "./WordItem";
 import {OptionsType, SetNameType, WordType} from "../../../types/types";
 import WordItemMenu from "./WordItemMenu";
+import { Waypoint } from 'react-waypoint';
+import {Dispatch} from "redux";
+import {SetSearchInputActionType, setSetSize, TSetSetSizeAction} from "../../../redux/actions/wordsActions";
+import {useDispatch, useSelector} from "react-redux";
+import {AppStateType} from "../../../redux/store/configureStore";
 
 type TProps = {
   set: Array<WordType>
   pageTitle: string
   options: OptionsType
+  wordsCount: number
 }
 
 const areEqual = (prevProps: TProps, props: TProps): boolean => {
@@ -37,6 +43,9 @@ const Set: FC<TProps> = ({set, pageTitle, options}) => {
   const [wordTitle, setWordTitle] = useState<string>('')
   const [currentSet, setCurrentSet] = useState<SetNameType>('current')
   const [meaningsArray, setMeaningsArray] = useState<Array<string>>([])
+  const dispatch: Dispatch<TSetSetSizeAction> = useDispatch()
+  const setSize = useSelector((state: AppStateType) => state.words.setSize)
+
   return (
     <>
       <WordItemMenu anchorEl={anchorEl}
@@ -46,17 +55,21 @@ const Set: FC<TProps> = ({set, pageTitle, options}) => {
                     options={options}
                     setAnchorEl={setAnchorEl}
       />
-      {set.map(word => (
-        <ListItem key={word.id}>
-          <WordItem word={word} pageTitle={pageTitle}
-                    options={options} setWordId={setWordId}
-                    setWordTitle={setWordTitle}
-                    setCurrentSet={setCurrentSet}
-                    setMeaningsArray={setMeaningsArray}
-                    setAnchorEl={setAnchorEl}
-          />
-        </ListItem>
-      ))}
+      {set.map((word, index) => {
+        if(index + 1 < setSize)
+          return (<ListItem key={word.id}>
+                    <WordItem word={word} pageTitle={pageTitle}
+                              options={options} setWordId={setWordId}
+                              setWordTitle={setWordTitle}
+                              setCurrentSet={setCurrentSet}
+                              setMeaningsArray={setMeaningsArray}
+                              setAnchorEl={setAnchorEl}
+                    />
+            {index === setSize - 5 && <Waypoint onEnter={() => {
+              dispatch(setSetSize(setSize + 10))
+            }}/>}
+                  </ListItem>)
+      })}
     </>
   )
 }

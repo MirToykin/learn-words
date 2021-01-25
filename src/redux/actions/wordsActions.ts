@@ -4,7 +4,7 @@ import Api, {TApi} from "../../api/Api";
 import {
   ADD_SET,
   ADD_WORD_TO_STATE, SET_ADDED_MEANINGS, DELETE_FROM_ADDED_MEANINGS,
-  DELETE_WORD_FROM_STATE, PUSH_TO_ADDED_MEANINGS, SET_SEARCH_INPUT, UPDATE_WORD_IN_STATE
+  DELETE_WORD_FROM_STATE, PUSH_TO_ADDED_MEANINGS, SET_SEARCH_INPUT, UPDATE_WORD_IN_STATE, SET_SET_SIZE
 } from "../constants";
 import {SetAuthDataActionType, setAuthData} from "./authActions";
 import {clearStorage} from "../../assets/browserStorage";
@@ -236,6 +236,17 @@ export type UpdateWordInStateActionType = {
 const updateWordInState = (payload: WordType): UpdateWordInStateActionType => {
   return {
     type: UPDATE_WORD_IN_STATE,
+    payload
+  }
+}
+
+export type TSetSetSizeAction = {
+  type: typeof SET_SET_SIZE
+  payload: number
+}
+export const setSetSize = (payload: number): TSetSetSizeAction => {
+  return {
+    type: SET_SET_SIZE,
     payload
   }
 }
