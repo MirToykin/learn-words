@@ -11,6 +11,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import MeaningsList from "./MeaningsList";
 import {OptionsType, SetNameType, WordType} from "../../../types/types";
+import {Checkbox} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,16 +36,19 @@ type TProps = {
   setWordTitle: (title: string) => void
   setCurrentSet: (setName: SetNameType) => void
   setMeaningsArray: (arr: Array<string>) => void
+  setSelectedIDs: React.Dispatch<React.SetStateAction<number[]>>
 }
 
 const WordItem: FC<TProps> = (
   {
     word: {id, title, meanings},
     pageTitle, options, setAnchorEl,
-    setCurrentSet, setMeaningsArray, setWordId, setWordTitle
+    setCurrentSet, setMeaningsArray, setWordId, setWordTitle,
+    setSelectedIDs
   }) => {
   const classes = useStyles();
   const [expanded, setExpand] = useState(false);
+  const [checked, setChecked] = useState(false);
 
   let meaningsArray = meanings.split('/');
   const currentSet = pageTitle === 'На очереди' ? 'next' : pageTitle === 'Текущий набор' ? 'current' : 'done';
@@ -71,9 +75,25 @@ const WordItem: FC<TProps> = (
               <ExpandMoreIcon/>
             </IconButton>}
           <Typography variant='h6' color={'primary'}>{title}</Typography>
-          <IconButton onClick={(event) => showMenu(event.currentTarget)}>
-            <MoreVertIcon/>
-          </IconButton>
+          <Checkbox
+            checked={checked}
+            onChange={() => {
+              setChecked((checked) => !checked)
+              if(!checked) {
+                setSelectedIDs((prev) => {
+                  return [...prev, id]
+                })
+              } else {
+                setSelectedIDs((prev) => {
+                  return prev.filter(item => item !== id)
+                })
+              }
+            }}
+            inputProps={{ 'aria-label': 'primary checkbox' }}
+          />
+          {/*<IconButton onClick={(event) => showMenu(event.currentTarget)}>*/}
+          {/*  <MoreVertIcon/>*/}
+          {/*</IconButton>*/}
         </ExpansionPanelSummary>
         <Divider/>
         <ExpansionPanelDetails classes={{

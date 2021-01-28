@@ -22,6 +22,10 @@ export const useSetStyles = makeStyles(theme => ({
     paddingLeft: theme.spacing(2),
     paddingRight: 0
   },
+  multipleActions: {
+    display: 'flex',
+    justifyContent: 'center'
+  },
   divider: {
     marginBottom: theme.spacing(2)
   },

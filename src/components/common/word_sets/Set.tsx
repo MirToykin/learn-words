@@ -14,6 +14,7 @@ type TProps = {
   pageTitle: string
   options: OptionsType
   wordsCount: number
+  setSelectedIDs: React.Dispatch<React.SetStateAction<number[]>>
 }
 
 const areEqual = (prevProps: TProps, props: TProps): boolean => {
@@ -37,7 +38,7 @@ const areEqual = (prevProps: TProps, props: TProps): boolean => {
   return prevSetTitles === newSetTitles && prevSetMeanings === newSetMeanings
 }
 
-const Set: FC<TProps> = ({set, pageTitle, options}) => {
+const Set: FC<TProps> = ({set, pageTitle, options, setSelectedIDs}) => {
   const [anchorEl, setAnchorEl] = useState<Element | ((element: Element) => Element) | null | undefined>(null);
   const [wordId, setWordId] = useState<number>(0)
   const [wordTitle, setWordTitle] = useState<string>('')
@@ -64,6 +65,7 @@ const Set: FC<TProps> = ({set, pageTitle, options}) => {
                               setCurrentSet={setCurrentSet}
                               setMeaningsArray={setMeaningsArray}
                               setAnchorEl={setAnchorEl}
+                              setSelectedIDs={setSelectedIDs}
                     />
             {index === setSize - 5 && <Waypoint onEnter={() => {
               dispatch(setSetSize(setSize + 10))

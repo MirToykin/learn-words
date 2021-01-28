@@ -20,7 +20,11 @@ import {OptionsType, WordType} from "../../../types/types";
 import {AppStateType} from "../../../redux/store/configureStore";
 import {Dispatch} from "redux";
 import {ThunkDispatch} from "redux-thunk";
-import {AuthActionType} from "../../../redux/actions/authActions";
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import EditIcon from '@material-ui/icons/Edit';
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 type TProps = {
   set: Array<WordType>
@@ -35,7 +39,7 @@ type TProps = {
 const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) => {
   const classes = useSetStyles()
   const [open, setOpen] = useState(false)
-  const [wordsCount, setWordsCount] = useState(30)
+  const [selectedIDs, setSelectedIDs] = useState<Array<number>>([])
   const [deltaHeight, setDeltaHeight] = useState(window.pageYOffset ? 90 : 180) // если pageYOffset 0, тогда из высоты контейнера вычитаем 180 px
   const searchInput: string = useSelector((state: AppStateType) => state.words.searchInput)
   const setSize = useSelector((state: AppStateType) => state.words.setSize)
@@ -139,12 +143,29 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
             />
           </form>
         </Paper>
+        <Paper style={{marginBottom: '5px'}}>
+          <div className={classes.multipleActions}>
+            <IconButton>
+              <ArrowBackIcon/>
+            </IconButton>
+            <IconButton>
+              <DeleteForeverIcon/>
+            </IconButton>
+            <IconButton disabled>
+              <EditIcon/>
+            </IconButton>
+            <IconButton>
+              <ArrowForwardIcon/>
+            </IconButton>
+          </div>
+        </Paper>
         <Paper>
           <List id={'words_list'} className={classes.list} style={{maxHeight: `${window.innerHeight - deltaHeight}px`}}>
             {set.length ? <Set set={set}
                                pageTitle={pageTitle}
                                options={options}
                                wordsCount={setSize}
+                               setSelectedIDs={setSelectedIDs}
             /> : !set.length && searchInput ?
               <Typography className={classes.notFound} variant='body1'>Ничего не найдено</Typography> : ''}
           </List>
