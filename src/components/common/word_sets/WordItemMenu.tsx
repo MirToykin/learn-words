@@ -105,7 +105,7 @@ const WordItemMenu: FC<TProps> = ({
         <MenuItem onClick={(e) => handleMoveToSet(e, menuItem1.moveToSet)}>{menuItem1.title}</MenuItem>
         <MenuItem onClick={(e) => handleMoveToSet(e, menuItem2.moveToSet)}>{menuItem2.title}</MenuItem>
         {currentSet !== 'done' && <MenuItem onClick={onChangeMeans}>Изменить значения</MenuItem>}
-        <MenuItem onClick={() => dispatchDelete(deleteWord(currentSet, id, options))}>Удалить</MenuItem>
+        <MenuItem onClick={() => dispatchDelete(deleteWord(currentSet, [id], options))}>Удалить</MenuItem>
       </Menu>
       <Dialog open={open} onClose={onClose}>
         <Paper className={classes.paper}>

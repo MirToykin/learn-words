@@ -11,12 +11,12 @@ import TextField from "@material-ui/core/TextField"
 import Set from "./Set"
 import {useDispatch, useSelector} from "react-redux"
 import {
-  GetSetThunkCreatorType,
+  GetSetThunkCreatorType, moveWords,
   setSearchInput,
-  SetSearchInputActionType, setSetSize, TGetSet, TSetSetSizeAction
+  SetSearchInputActionType, setSetSize, TGetSet, TMoveWords, TSetSetSizeAction
 } from "../../../redux/actions/wordsActions"
 import LinearProgress from "@material-ui/core/LinearProgress"
-import {OptionsType, WordType} from "../../../types/types";
+import {OptionsType, SetNameType, WordType} from "../../../types/types";
 import {AppStateType} from "../../../redux/store/configureStore";
 import {Dispatch} from "redux";
 import {ThunkDispatch} from "redux-thunk";
@@ -25,6 +25,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import EditIcon from '@material-ui/icons/Edit';
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import { useLocation } from 'react-router-dom'
 
 type TProps = {
   set: Array<WordType>
@@ -44,10 +45,15 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
   const searchInput: string = useSelector((state: AppStateType) => state.words.searchInput)
   const setSize = useSelector((state: AppStateType) => state.words.setSize)
   const dispatch: Dispatch<SetSearchInputActionType | TSetSetSizeAction> = useDispatch()
-  const thunkDispatch: ThunkDispatch<AppStateType, unknown, TGetSet> = useDispatch()
+  const thunkDispatchGetSet: ThunkDispatch<AppStateType, unknown, TGetSet> = useDispatch()
+  const thunkDispatchMove: ThunkDispatch<AppStateType, unknown, TMoveWords> = useDispatch()
   const isFetching = useSelector((state: AppStateType) => state.app.isFetching)
+  const currentRoute: any = useLocation().pathname.slice(1)
+  const routes: Array<SetNameType> = ['next', 'current', 'done']
+  const nextRoute = routes.indexOf(currentRoute) === routes.length - 1 ? routes[0] : routes[routes.indexOf(currentRoute) + 1]
+  const prevRoute: SetNameType = routes.indexOf(currentRoute) === 0 ? routes[routes.length - 1] : routes[routes.indexOf(currentRoute) - 1]
 
-  const getSetLast = () => thunkDispatch(getSet(uid, options))
+  const getSetLast = () => thunkDispatchGetSet(getSet(uid, options))
 
   useEffect(() => {
     (async () => getSetLast())()
@@ -95,6 +101,10 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
   const handleScrollUp = (): void => {
     window['scrollTo']({top: 0, behavior: 'smooth'})
     setDeltaHeight(180)
+  }
+
+  const handleMove = (idsArr: Array<number>, setToMove: SetNameType, setToRemoveFrom: SetNameType, options: OptionsType):void => {
+    thunkDispatchMove(moveWords(idsArr, setToMove, setToRemoveFrom, options))
   }
 
   return (
@@ -145,16 +155,16 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
         </Paper>
         <Paper style={{marginBottom: '5px'}}>
           <div className={classes.multipleActions}>
-            <IconButton>
+            <IconButton onClick={() => handleMove(selectedIDs, prevRoute, currentRoute, options)}>
               <ArrowBackIcon/>
             </IconButton>
             <IconButton>
               <DeleteForeverIcon/>
             </IconButton>
-            <IconButton disabled>
+            <IconButton disabled={selectedIDs.length !== 1}>
               <EditIcon/>
             </IconButton>
-            <IconButton>
+            <IconButton onClick={() => handleMove(selectedIDs, nextRoute, currentRoute, options)}>
               <ArrowForwardIcon/>
             </IconButton>
           </div>

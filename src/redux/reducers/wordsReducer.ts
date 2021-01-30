@@ -36,7 +36,7 @@ const wordsReducer = (state:InitialStateType = initialState, action:ActionType):
     case ADD_WORD_TO_STATE:
       return {...state, [action.payload.set]: [...state[action.payload.set], action.payload.word]}
     case DELETE_WORD_FROM_STATE:
-      return {...state, [action.payload.set]: state[action.payload.set].filter(word => word.id !== action.payload.wordId)}
+      return {...state, [action.payload.set]: state[action.payload.set].filter(word => !action.payload.wordIds.includes(word.id))}
     case UPDATE_WORD_IN_STATE:
       return {...state, [action.payload.category]: state[action.payload.category].map((word:WordType) => {
           if (word.id === action.payload.id) {

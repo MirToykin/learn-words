@@ -23,6 +23,10 @@ type TAddAndEditResponse = {
   word: WordType
 }
 
+type TMoveResponse = {
+  updatedWords: Array<number>
+}
+
 class Api {
   ajax;
 
@@ -53,8 +57,12 @@ class Api {
     return this.ajax.patch<TAddAndEditResponse>(`words/${wordId}`, data, options).then(res => res.data.word)
   }
 
-  deleteWord(wordId: number, options: OptionsType) {
-    return this.ajax.delete<AxiosResponse<any>>(`words/${wordId}`, options);
+  moveWords(data: {idsArr: Array<number>, setToMove: SetNameType}, options: OptionsType) {
+    return this.ajax.post<TMoveResponse>(`words/move`, data, options).then(res => res.data.updatedWords)
+  }
+
+  deleteWord(wordIds: Array<number>, options: OptionsType) {
+    return this.ajax.post<AxiosResponse<any>>(`words`,{idsArr: wordIds}, options);
   }
 
 }

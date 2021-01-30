@@ -86,16 +86,38 @@ export const editWord = (setToRemoveFrom: SetNameType, wordId: number, data:TEdi
   dispatch(setIsFetching(true))
   try {
     const word = await api.editWord(wordId, data, options)
-    if (data.category) {
-      // На текущий момент внесение изменений в state, влияющий на отрисовку другой категории
-      // избыточен, поскольку при открытии другой категории происходит загрузка записей из БД.
-      // Если будет реализован вывод из state без загрузки из БД, то может понадобится
-      // dispatch(addWordToState(data.category, word));
-
-      dispatch(deleteWordFromState(setToRemoveFrom, wordId))
-    }
 
     dispatch(updateWordInState(word));
+
+  } catch (e) {
+    if (e.response && e.response.status === 401) {
+      dispatch(setAuthData({
+        id: null,
+        name: null,
+        email: null,
+        token: null,
+        isAuth: false,
+        rememberMe: false
+      }));
+      clearStorage();
+    }
+  }
+  dispatch(setIsFetching(false));
+}
+
+
+export type TMoveWords = SetIsFetchingActionType | DeleteWordFromStateActionType| SetAuthDataActionType
+export type MoveWordsThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TEditWord>
+
+export const moveWords = (idsArr: Array<number>, setToMove: SetNameType, setToRemoveFrom: SetNameType, options: OptionsType): MoveWordsThunkType => async (dispatch) => {
+  dispatch(setIsFetching(true))
+  const data = {
+    idsArr,
+    setToMove
+  }
+  try {
+    const updatedWordsIds = await api.moveWords(data, options)
+    dispatch(deleteWordFromState(setToRemoveFrom, updatedWordsIds));
 
   } catch (e) {
     if (e.response && e.response.status === 401) {
@@ -116,12 +138,12 @@ export const editWord = (setToRemoveFrom: SetNameType, wordId: number, data:TEdi
 export type TDeleteWord = SetIsFetchingActionType | DeleteWordFromStateActionType | SetAuthDataActionType
 export type DeleteWordThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TDeleteWord>
 
-export const deleteWord = (set:SetNameType, wordId:number, options: OptionsType): DeleteWordThunkType => async (dispatch: any) => {
+export const deleteWord = (set:SetNameType, wordIds: Array<number>, options: OptionsType): DeleteWordThunkType => async (dispatch: any) => {
   dispatch(setIsFetching(true));
   try {
-    const response = await api.deleteWord(wordId, options);
+    const response = await api.deleteWord(wordIds, options);
     if (response.statusText === 'OK') {
-      dispatch(deleteWordFromState(set, wordId));
+      dispatch(deleteWordFromState(set, wordIds));
     }
   } catch (e) {
     if (e.response && e.response.status === 401) {
@@ -201,16 +223,16 @@ const addSet = (setName:SetNameType, set: Array<WordType>):AddSetActionType => {
 
 type DeleteWordFromStatePayloadType = {
   set: SetNameType
-  wordId: number
+  wordIds: Array<number>
 }
 export type DeleteWordFromStateActionType = {
   type: typeof DELETE_WORD_FROM_STATE
   payload: DeleteWordFromStatePayloadType
 }
-const deleteWordFromState = (set: SetNameType, wordId: number):DeleteWordFromStateActionType => {
+const deleteWordFromState = (set: SetNameType, wordIds: Array<number>):DeleteWordFromStateActionType => {
   return {
     type: DELETE_WORD_FROM_STATE,
-    payload: {set, wordId}
+    payload: {set, wordIds}
   }
 }
 
