@@ -1,18 +1,18 @@
-import {SubmissionError} from "redux-form";
-import {setIsFetching, SetIsFetchingActionType} from "./appActions";
-import Api, {TApi} from "../../api/Api";
+import {SubmissionError} from "redux-form"
+import {setIsFetching, SetIsFetchingActionType} from "./appActions"
+import Api, {TApi} from "../../api/Api"
 import {
   ADD_SET,
   ADD_WORD_TO_STATE, SET_ADDED_MEANINGS, DELETE_FROM_ADDED_MEANINGS,
   DELETE_WORD_FROM_STATE, PUSH_TO_ADDED_MEANINGS, SET_SEARCH_INPUT, UPDATE_WORD_IN_STATE, SET_SET_SIZE
-} from "../constants";
-import {SetAuthDataActionType, setAuthData} from "./authActions";
-import {clearStorage} from "../../assets/browserStorage";
-import {OptionsType, SetNameType, WordType} from "../../types/types";
-import {ThunkAction} from "redux-thunk";
-import {AppStateType} from "../store/configureStore";
+} from "../constants"
+import {SetAuthDataActionType, setAuthData} from "./authActions"
+import {clearStorage} from "../../assets/browserStorage"
+import {OptionsType, SetNameType, WordType} from "../../types/types"
+import {ThunkAction} from "redux-thunk"
+import {AppStateType} from "../store/configureStore"
 
-const api: TApi = new Api();
+const api: TApi = new Api()
 
 export type TGetSet = SetIsFetchingActionType | AddSetActionType | SetAuthDataActionType
 export type GetSetThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TGetSet>
@@ -20,10 +20,10 @@ export type GetSetThunkCreatorType = (uid: number, options: OptionsType) => GetS
 // export type TGetSetActions = SetIsFetchingActionType | AddSetActionType // возможно лишний тип, исползуется для типизации dispatch в SetPage
 
 export const getSet = (set: SetNameType): GetSetThunkCreatorType => (uid, options) => async (dispatch, getState) => {
-  dispatch(setIsFetching(true));
+  dispatch(setIsFetching(true))
   try {
-    const words = await api.getSet(set, uid, options);
-    dispatch(addSet(set, words));
+    const words = await api.getSet(set, uid, options)
+    dispatch(addSet(set, words))
   } catch(e) {
     if (e.response && e.response.status === 401) {
       dispatch(setAuthData({
@@ -33,11 +33,11 @@ export const getSet = (set: SetNameType): GetSetThunkCreatorType => (uid, option
         token: null,
         isAuth: false,
         rememberMe: false
-      }));
-      clearStorage();
+      }))
+      clearStorage()
     }
   }
-  dispatch(setIsFetching(false));
+  dispatch(setIsFetching(false))
 }
 
 export type TAddToSetData = {
@@ -55,8 +55,8 @@ export const addToSet = (set: SetNameType): addToSetThunkCreatorType => (data, o
   const newData: any = {...data, category: set}
 
   try {
-    const word = await api.addToSet(newData, options);
-    dispatch(addWordToState(set, word));
+    const word = await api.addToSet(newData, options)
+    dispatch(addWordToState(set, word))
   } catch (e) {
     if (e.response && e.response.status === 401) {
       dispatch(setAuthData({
@@ -66,14 +66,14 @@ export const addToSet = (set: SetNameType): addToSetThunkCreatorType => (data, o
         token: null,
         isAuth: false,
         rememberMe: false
-      }));
-      clearStorage();
+      }))
+      clearStorage()
     }
     throw new SubmissionError({
       _error: e.response.data.message
-    });
+    })
   }
-  dispatch(setIsFetching(false));
+  dispatch(setIsFetching(false))
 }
 export type TEditWordData = {
   meanings?: string
@@ -87,7 +87,7 @@ export const editWord = (setToRemoveFrom: SetNameType, wordId: number, data:TEdi
   try {
     const word = await api.editWord(wordId, data, options)
 
-    dispatch(updateWordInState(word));
+    dispatch(updateWordInState(word))
 
   } catch (e) {
     if (e.response && e.response.status === 401) {
@@ -98,16 +98,16 @@ export const editWord = (setToRemoveFrom: SetNameType, wordId: number, data:TEdi
         token: null,
         isAuth: false,
         rememberMe: false
-      }));
-      clearStorage();
+      }))
+      clearStorage()
     }
   }
-  dispatch(setIsFetching(false));
+  dispatch(setIsFetching(false))
 }
 
 
-export type TMoveWords = SetIsFetchingActionType | DeleteWordFromStateActionType| SetAuthDataActionType
-export type MoveWordsThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TEditWord>
+export type TMoveAndDeleteWords = SetIsFetchingActionType | DeleteWordFromStateActionType| SetAuthDataActionType
+export type MoveWordsThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TMoveAndDeleteWords>
 
 export const moveWords = (idsArr: Array<number>, setToMove: SetNameType, setToRemoveFrom: SetNameType, options: OptionsType): MoveWordsThunkType => async (dispatch) => {
   dispatch(setIsFetching(true))
@@ -117,7 +117,7 @@ export const moveWords = (idsArr: Array<number>, setToMove: SetNameType, setToRe
   }
   try {
     const updatedWordsIds = await api.moveWords(data, options)
-    dispatch(deleteWordFromState(setToRemoveFrom, updatedWordsIds));
+    dispatch(deleteWordsFromState(setToRemoveFrom, updatedWordsIds))
 
   } catch (e) {
     if (e.response && e.response.status === 401) {
@@ -128,23 +128,21 @@ export const moveWords = (idsArr: Array<number>, setToMove: SetNameType, setToRe
         token: null,
         isAuth: false,
         rememberMe: false
-      }));
-      clearStorage();
+      }))
+      clearStorage()
     }
   }
-  dispatch(setIsFetching(false));
+  dispatch(setIsFetching(false))
 }
 
 export type TDeleteWord = SetIsFetchingActionType | DeleteWordFromStateActionType | SetAuthDataActionType
-export type DeleteWordThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TDeleteWord>
+export type DeleteWordThunkType = ThunkAction<Promise<void>, AppStateType, unknown, TMoveAndDeleteWords>
 
-export const deleteWord = (set:SetNameType, wordIds: Array<number>, options: OptionsType): DeleteWordThunkType => async (dispatch: any) => {
-  dispatch(setIsFetching(true));
+export const deleteWords = (set:SetNameType, wordIds: Array<number>, options: OptionsType): DeleteWordThunkType => async (dispatch: any) => {
+  dispatch(setIsFetching(true))
   try {
-    const response = await api.deleteWord(wordIds, options);
-    if (response.statusText === 'OK') {
-      dispatch(deleteWordFromState(set, wordIds));
-    }
+    const deletedWords = await api.deleteWord(wordIds, options)
+    dispatch(deleteWordsFromState(set, deletedWords))
   } catch (e) {
     if (e.response && e.response.status === 401) {
       dispatch(setAuthData({
@@ -154,11 +152,11 @@ export const deleteWord = (set:SetNameType, wordIds: Array<number>, options: Opt
         token: null,
         isAuth: false,
         rememberMe: false
-      }));
-      clearStorage();
+      }))
+      clearStorage()
     }
   }
-  dispatch(setIsFetching(false));
+  dispatch(setIsFetching(false))
 }
 
 
@@ -229,7 +227,7 @@ export type DeleteWordFromStateActionType = {
   type: typeof DELETE_WORD_FROM_STATE
   payload: DeleteWordFromStatePayloadType
 }
-const deleteWordFromState = (set: SetNameType, wordIds: Array<number>):DeleteWordFromStateActionType => {
+const deleteWordsFromState = (set: SetNameType, wordIds: Array<number>):DeleteWordFromStateActionType => {
   return {
     type: DELETE_WORD_FROM_STATE,
     payload: {set, wordIds}

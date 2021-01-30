@@ -11,9 +11,10 @@ import TextField from "@material-ui/core/TextField"
 import Set from "./Set"
 import {useDispatch, useSelector} from "react-redux"
 import {
+  deleteWords,
   GetSetThunkCreatorType, moveWords,
   setSearchInput,
-  SetSearchInputActionType, setSetSize, TGetSet, TMoveWords, TSetSetSizeAction
+  SetSearchInputActionType, setSetSize, TGetSet, TMoveAndDeleteWords, TSetSetSizeAction
 } from "../../../redux/actions/wordsActions"
 import LinearProgress from "@material-ui/core/LinearProgress"
 import {OptionsType, SetNameType, WordType} from "../../../types/types";
@@ -46,7 +47,7 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
   const setSize = useSelector((state: AppStateType) => state.words.setSize)
   const dispatch: Dispatch<SetSearchInputActionType | TSetSetSizeAction> = useDispatch()
   const thunkDispatchGetSet: ThunkDispatch<AppStateType, unknown, TGetSet> = useDispatch()
-  const thunkDispatchMove: ThunkDispatch<AppStateType, unknown, TMoveWords> = useDispatch()
+  const thunkDispatchMoveAndDelete: ThunkDispatch<AppStateType, unknown, TMoveAndDeleteWords> = useDispatch()
   const isFetching = useSelector((state: AppStateType) => state.app.isFetching)
   const currentRoute: any = useLocation().pathname.slice(1)
   const routes: Array<SetNameType> = ['next', 'current', 'done']
@@ -104,9 +105,12 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
   }
 
   const handleMove = (idsArr: Array<number>, setToMove: SetNameType, setToRemoveFrom: SetNameType, options: OptionsType):void => {
-    thunkDispatchMove(moveWords(idsArr, setToMove, setToRemoveFrom, options))
+    thunkDispatchMoveAndDelete(moveWords(idsArr, setToMove, setToRemoveFrom, options))
   }
 
+  const handleDelete = (setToRemoveFrom: SetNameType, idsArray: Array<number>, options: OptionsType): void => {
+    thunkDispatchMoveAndDelete(deleteWords(setToRemoveFrom, idsArray, options))
+  }
   return (
     <Grid container justify='center'>
       <Grid item md={5} sm={7} xs={12}>
@@ -158,7 +162,7 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
             <IconButton onClick={() => handleMove(selectedIDs, prevRoute, currentRoute, options)}>
               <ArrowBackIcon/>
             </IconButton>
-            <IconButton>
+            <IconButton onClick={() => handleDelete(currentRoute, selectedIDs, options)}>
               <DeleteForeverIcon/>
             </IconButton>
             <IconButton disabled={selectedIDs.length !== 1}>

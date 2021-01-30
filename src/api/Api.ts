@@ -27,6 +27,10 @@ type TMoveResponse = {
   updatedWords: Array<number>
 }
 
+type TDeleteResponse = {
+  deletedWords: Array<number>
+}
+
 class Api {
   ajax;
 
@@ -62,7 +66,7 @@ class Api {
   }
 
   deleteWord(wordIds: Array<number>, options: OptionsType) {
-    return this.ajax.post<AxiosResponse<any>>(`words`,{idsArr: wordIds}, options);
+    return this.ajax.post<TDeleteResponse>(`words/delete`,{idsArr: wordIds}, options).then(res => res.data.deletedWords)
   }
 
 }

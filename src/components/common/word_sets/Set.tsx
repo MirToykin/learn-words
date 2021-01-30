@@ -49,13 +49,13 @@ const Set: FC<TProps> = ({set, pageTitle, options, setSelectedIDs}) => {
 
   return (
     <>
-      <WordItemMenu anchorEl={anchorEl}
-                    id={wordId} title={wordTitle}
-                    meanings={meaningsArray}
-                    currentSet={currentSet}
-                    options={options}
-                    setAnchorEl={setAnchorEl}
-      />
+      {/*<WordItemMenu anchorEl={anchorEl}*/}
+      {/*              id={wordId} title={wordTitle}*/}
+      {/*              meanings={meaningsArray}*/}
+      {/*              currentSet={currentSet}*/}
+      {/*              options={options}*/}
+      {/*              setAnchorEl={setAnchorEl}*/}
+      {/*/>*/}
       {set.map((word, index) => {
         if(index + 1 < setSize)
           return (<ListItem key={word.id}>
