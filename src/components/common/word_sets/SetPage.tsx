@@ -11,10 +11,9 @@ import TextField from "@material-ui/core/TextField"
 import Set from "./Set"
 import {useDispatch, useSelector} from "react-redux"
 import {
-  deleteWords, editWord,
-  GetSetThunkCreatorType, moveWords, setAddedMeanings,
-  setSearchInput,
-  SetSearchInputActionType, setSetSize, TGetSet, TMoveAndDeleteWords, TSetSetSizeAction
+  deleteWords, GetSetThunkCreatorType,
+  moveWords, setAddedMeanings, setSearchInput,
+  SetSearchInputActionType, TGetSet, TMoveAndDeleteWords, TSetSetSizeAction
 } from "../../../redux/actions/wordsActions"
 import LinearProgress from "@material-ui/core/LinearProgress"
 import {OptionsType, SetNameType, WordType} from "../../../types/types";
@@ -60,7 +59,7 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
   const [openDialogConfirm, setOpenDialogConfirm] = useState(false)
   const [selectedIDs, setSelectedIDs] = useState<Array<number>>([])
   const [searchFieldActive, setSearchFieldActive] = useState(false)
-  const [deltaHeight, setDeltaHeight] = useState(window.pageYOffset ? 90 : 180) // если pageYOffset 0, тогда из высоты контейнера вычитаем 180 px
+  const [topOffset, setTopOffset] = useState(0);
   const searchInput: string = useSelector((state: AppStateType) => state.words.searchInput)
   const setSize = useSelector((state: AppStateType) => state.words.setSize)
   const dispatchHelpers: Dispatch<SetSearchInputActionType | TSetSetSizeAction> = useDispatch()
@@ -95,6 +94,12 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
     (async () => getSetLast())()
   }, [])
 
+  useEffect(() => {
+    let list: any = document.getElementById('words_list')
+    let data = list.getBoundingClientRect()
+    setTopOffset(data.top)
+  }, [])
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     dispatchHelpers(setSearchInput(e.target.value))
   }
@@ -110,12 +115,26 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
 
   const handleScrollDown = (): void => {
     window['scrollTo']({top: 90, behavior: 'smooth'})
-    setDeltaHeight(90)
+
+    setInterval(() => {
+      if(window.pageYOffset === 90) {
+        let list: any = document.getElementById('words_list')
+        let data = list.getBoundingClientRect()
+        setTopOffset(data.top)
+      }
+    }, 25)
   }
 
   const handleScrollUp = (): void => {
     window['scrollTo']({top: 0, behavior: 'smooth'})
-    setDeltaHeight(180)
+
+    setInterval(() => {
+      if(window.pageYOffset === 0) {
+        let list: any = document.getElementById('words_list')
+        let data = list.getBoundingClientRect()
+        setTopOffset(data.top)
+      }
+    }, 25)
   }
 
   const handleMove = (idsArr: Array<number>, setToMove: SetNameType, setToRemoveFrom: SetNameType, options: OptionsType):void => {
@@ -207,7 +226,7 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
                 }}>
                   <SearchIcon/>
                 </IconButton>
-                {deltaHeight === 90 ? // при deltaHeight 90 страница не прокручена, значит показать стрелку вверх, иначе вниз
+                {window.pageYOffset !== 0 ? // если условие верно страница не прокручена, значит показать стрелку вверх, иначе вниз
                   <IconButton onClick={handleScrollUp}>
                     <Icon>expand_more</Icon>
                   </IconButton>
@@ -276,7 +295,8 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
             </Paper>
           </Collapse>
           <Paper>
-            <List id={'words_list'} className={classes.list} style={{maxHeight: `${window.innerHeight - deltaHeight}px`}}>
+            {/*<List id={'words_list'} className={classes.list} style={{maxHeight: `${window.innerHeight - deltaHeight}px`}}>*/}
+            <List id={'words_list'} className={classes.list} style={{maxHeight: `${window.innerHeight - (topOffset + 1)}px`}}>
               {set.length ? <Set set={set}
                                  pageTitle={pageTitle}
                                  options={options}
