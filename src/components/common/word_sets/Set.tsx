@@ -2,7 +2,6 @@ import React, {FC, useEffect, useState} from 'react';
 import ListItem from "@material-ui/core/ListItem";
 import WordItem from "./WordItem";
 import {OptionsType, SetNameType, WordType} from "../../../types/types";
-import WordItemMenu from "./WordItemMenu";
 import { Waypoint } from 'react-waypoint';
 import {Dispatch} from "redux";
 import {SetSearchInputActionType, setSetSize, TSetSetSizeAction} from "../../../redux/actions/wordsActions";
@@ -49,13 +48,6 @@ const Set: FC<TProps> = ({set, pageTitle, options, setSelectedIDs}) => {
 
   return (
     <>
-      {/*<WordItemMenu anchorEl={anchorEl}*/}
-      {/*              id={wordId} title={wordTitle}*/}
-      {/*              meanings={meaningsArray}*/}
-      {/*              currentSet={currentSet}*/}
-      {/*              options={options}*/}
-      {/*              setAnchorEl={setAnchorEl}*/}
-      {/*/>*/}
       {set.map((word, index) => {
         if(index + 1 < setSize)
           return (<ListItem key={word.id}>

@@ -45,5 +45,8 @@ export const useSetStyles = makeStyles(theme => ({
       backgroundColor: 'rgba(0,0,0,.1)',
       // outline: '1px solid slategrey'
     }
+  },
+  searchClear: {
+    cursor: 'pointer'
   }
 }))

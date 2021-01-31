@@ -25,12 +25,22 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import EditIcon from '@material-ui/icons/Edit';
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import SearchIcon from '@material-ui/icons/Search';
+import ClearIcon from '@material-ui/icons/Clear';
 import { useLocation } from 'react-router-dom'
 import ChangeMeaningsForm from "../forms/ChangeMeaningsForm";
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import {stopSubmit} from "redux-form";
-import {Button, Collapse, DialogActions, DialogContent, DialogTitle} from "@material-ui/core";
+import {Button, Collapse, DialogActions, DialogContent, DialogTitle, InputAdornment} from "@material-ui/core";
+import styled from 'styled-components'
+
+const StyledTextField = styled(TextField)`
+  .MuiOutlinedInput-root {
+    fieldset {
+      border: none;
+    }
+  }
+` as typeof TextField
 
 type TProps = {
   set: Array<WordType>
@@ -49,6 +59,7 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
   const [openDialogForm, setOpenDialogForm] = useState(false)
   const [openDialogConfirm, setOpenDialogConfirm] = useState(false)
   const [selectedIDs, setSelectedIDs] = useState<Array<number>>([])
+  const [searchFieldActive, setSearchFieldActive] = useState(false)
   const [deltaHeight, setDeltaHeight] = useState(window.pageYOffset ? 90 : 180) // если pageYOffset 0, тогда из высоты контейнера вычитаем 180 px
   const searchInput: string = useSelector((state: AppStateType) => state.words.searchInput)
   const setSize = useSelector((state: AppStateType) => state.words.setSize)
@@ -68,11 +79,8 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
     return state.words[routes[currentRouteIndex]].filter(word => word.id === selectedIDs[0])[0]
   })
 
-  let ConfirmTitle: string
   const [confirmTitle, setConfirmTitle] = useState('')
-  let ConfirmBody: string
   const [confirmBody, setConfirmBody] = useState('')
-  let ConfirmAction: () => void
   const [confirmAction, setConfirmAction] = useState<() => void >(() => {})
 
   const pagesTitles = {
@@ -194,6 +202,11 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
             <div className={classes.head}>
               <Typography variant='h6' color={'textSecondary'}>{pageTitle} - {set.length}</Typography>
               <div>
+                <IconButton onClick={() => {
+                  setSearchFieldActive((prev) => !prev)
+                }}>
+                  <SearchIcon/>
+                </IconButton>
                 {deltaHeight === 90 ? // при deltaHeight 90 страница не прокручена, значит показать стрелку вверх, иначе вниз
                   <IconButton onClick={handleScrollUp}>
                     <Icon>expand_more</Icon>
@@ -218,21 +231,32 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
                                        options={options}
             />}
           </Paper>
-          <Paper style={{marginBottom: '5px'}}>
-            <form>
-              <TextField fullWidth={true}
-                         placeholder={'введите строку для поиска'}
-                         inputProps={{
-                           style: {
-                             textAlign: "center"
-                           }
-                         }}
-                         value={searchInput}
-                         onChange={handleInputChange}
-                         disabled={!set.length && !searchInput}
-              />
-            </form>
-          </Paper>
+          <Collapse in={searchFieldActive}>
+            <Paper style={{marginBottom: '5px'}}>
+              <form>
+                <StyledTextField fullWidth={true}
+                                 placeholder={'введите строку для поиска'}
+                                 inputProps={{
+                                   style: {
+                                     textAlign: "center",
+                                     padding: '15px 14px'
+                                   }
+                                 }}
+                                 InputProps={{
+                                   endAdornment: (
+                                     searchInput && <InputAdornment classes={{root: classes.searchClear}} position="start" onClick={() => {dispatchHelpers(setSearchInput(''))}}>
+                                       <ClearIcon />
+                                     </InputAdornment>
+                                   ),
+                                 }}
+                                 value={searchInput}
+                                 onChange={handleInputChange}
+                                 disabled={!set.length && !searchInput}
+                                 variant={'outlined'}
+                />
+              </form>
+            </Paper>
+          </Collapse>
           <Collapse in={!!selectedIDs[0]}>
             <Paper style={{marginBottom: '5px'}}>
               <div className={classes.multipleActions}>
