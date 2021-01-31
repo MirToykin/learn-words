@@ -77,6 +77,7 @@ const WordItem: FC<TProps> = (
           <Typography variant='h6' color={'primary'}>{title}</Typography>
           <Checkbox
             checked={checked}
+            color={'primary'}
             onChange={() => {
               setChecked((checked) => !checked)
               if(!checked) {
@@ -89,7 +90,6 @@ const WordItem: FC<TProps> = (
                 })
               }
             }}
-            inputProps={{ 'aria-label': 'primary checkbox' }}
           />
           {/*<IconButton onClick={(event) => showMenu(event.currentTarget)}>*/}
           {/*  <MoreVertIcon/>*/}

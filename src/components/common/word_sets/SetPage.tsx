@@ -30,6 +30,7 @@ import { useLocation } from 'react-router-dom'
 import ChangeMeaningsForm from "../forms/ChangeMeaningsForm";
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import {stopSubmit} from "redux-form";
+import {Button, Collapse, DialogActions, DialogContent, DialogTitle} from "@material-ui/core";
 
 type TProps = {
   set: Array<WordType>
@@ -45,7 +46,8 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
   const classes = useSetStyles()
   const classesForm = useCommonFormStyles()
   const [open, setOpen] = useState(false)
-  const [openDialog, setOpenDialog] = useState(false)
+  const [openDialogForm, setOpenDialogForm] = useState(false)
+  const [openDialogConfirm, setOpenDialogConfirm] = useState(false)
   const [selectedIDs, setSelectedIDs] = useState<Array<number>>([])
   const [deltaHeight, setDeltaHeight] = useState(window.pageYOffset ? 90 : 180) // если pageYOffset 0, тогда из высоты контейнера вычитаем 180 px
   const searchInput: string = useSelector((state: AppStateType) => state.words.searchInput)
@@ -66,32 +68,24 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
     return state.words[routes[currentRouteIndex]].filter(word => word.id === selectedIDs[0])[0]
   })
 
+  let ConfirmTitle: string
+  const [confirmTitle, setConfirmTitle] = useState('')
+  let ConfirmBody: string
+  const [confirmBody, setConfirmBody] = useState('')
+  let ConfirmAction: () => void
+  const [confirmAction, setConfirmAction] = useState<() => void >(() => {})
+
+  const pagesTitles = {
+    'next': 'На очереди',
+    'current': 'Текущий набор',
+    'done': 'Изученные'
+  }
+
   const getSetLast = () => thunkDispatchGetSet(getSet(uid, options))
 
   useEffect(() => {
     (async () => getSetLast())()
   }, [])
-
-  // useEffect(() => {
-  //   let wordsList: HTMLElement | null = document.querySelector('#words_list')
-  //   let listener = (e: any) => {
-  //     const list: any = e.currentTarget
-  //     list && list.addEventListener('scroll', (e: any) => {
-  //       if (list.scrollHeight - (list.scrollTop + list.offsetHeight) < 100) {
-  //         dispatch(setSetSize(setSize + 10))
-  //         console.log('SetPage mounted, size: ' + setSize)
-  //       }
-  //     })
-  //   }
-  //
-  //   if (wordsList != null) {
-  //     wordsList.addEventListener('scroll', listener)
-  //   }
-  //
-  //   return () => {
-  //     wordsList && wordsList.removeEventListener('scroll', listener)
-  //   }
-  // })
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     dispatchHelpers(setSearchInput(e.target.value))
@@ -121,38 +115,79 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
     setSelectedIDs([]);
   }
 
+  const onMoveClick = (route: SetNameType) => {
+    setConfirmAction(() => () => handleMove(selectedIDs, route, currentRoute, options))
+    setConfirmTitle('Перемещение')
+    setConfirmBody(`Переместить выбранные слова (${selectedIDs.length}) в набор "${pagesTitles[route]}"?`)
+    setOpenDialogConfirm(true)
+  }
+
   const handleDelete = (setToRemoveFrom: SetNameType, idsArray: Array<number>, options: OptionsType): void => {
     thunkDispatchMoveAndDelete(deleteWords(setToRemoveFrom, idsArray, options))
     setSelectedIDs([]);
   }
 
-  const handleEdit = () => {
-    setOpenDialog(true)
+  const onDeleteClick = () => {
+    setConfirmAction(() => () => handleDelete(currentRoute, selectedIDs, options))
+    setConfirmTitle('Удаление')
+    setConfirmBody(`Удалить выбранные слова (${selectedIDs.length}) из набора "${pagesTitles[routes[currentRouteIndex]]}"?`)
+    setOpenDialogConfirm(true)
   }
 
-  const onCloseDialog = () => {
-    setOpenDialog(false)
+  const handleEdit = () => {
+    setOpenDialogForm(true)
+  }
+
+  const onCloseDialogForm = () => {
+    setOpenDialogForm(false)
     dispatch(setAddedMeanings([]))
     dispatch(stopSubmit('changeMeaningsForm', {}))
   }
+
+  const onCloseDialogConfirm = () => {
+    setOpenDialogConfirm(false)
+  }
   return (
     <>
-      wordToEdit && <Dialog open={openDialog} onClose={onCloseDialog}>
-        <Paper className={classesForm.paper}>
-          <Typography variant='h5'
-                      align='center'
-                      color='primary'
-                      className={classesForm.head}
-          >Изменить значения для <Typography variant={'inherit'} color={'textPrimary'}>{wordToEdit && wordToEdit.title}</Typography></Typography>
-          <ChangeMeaningsForm
-            meanings={wordToEdit && wordToEdit.meanings.split('/')}
-            // editWord={editWord}
-            onClose={() => setOpenDialog(false)}
-            id={wordToEdit && wordToEdit.id}
-            options={options}
-          />
-        </Paper>
-      </Dialog>
+      {!!selectedIDs.length && <Dialog open={openDialogConfirm} onClose={onCloseDialogConfirm}>
+        <DialogTitle id="confirm-dialog">{confirmTitle}</DialogTitle>
+        <DialogContent>{confirmBody}</DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            onClick={() => setOpenDialogConfirm(false)}
+            color="primary"
+          >
+            Отмена
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setOpenDialogConfirm(false)
+              confirmAction()
+            }}
+            color="default"
+          >
+            Подтвердить
+          </Button>
+        </DialogActions>
+      </Dialog>}
+      {wordToEdit && <Dialog open={openDialogForm} onClose={onCloseDialogForm}>
+          <Paper className={classesForm.paper}>
+              <Typography variant='h5'
+                          align='center'
+                          color='primary'
+                          className={classesForm.head}
+              >Изменить значения для <Typography variant={'inherit'}
+                                                 color={'textPrimary'}>{wordToEdit.title}</Typography></Typography>
+              <ChangeMeaningsForm
+                  meanings={wordToEdit.meanings.split('/')}
+                  onClose={() => setOpenDialogForm(false)}
+                  id={wordToEdit.id}
+                  options={options}
+              />
+          </Paper>
+      </Dialog>}
       <Grid container justify='center'>
         <Grid item md={5} sm={7} xs={12}>
           <Paper style={{marginBottom: '5px'}}>
@@ -198,22 +233,24 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
               />
             </form>
           </Paper>
-          <Paper style={{marginBottom: '5px'}}>
-            <div className={classes.multipleActions}>
-              <IconButton onClick={() => handleMove(selectedIDs, prevRoute, currentRoute, options)}>
-                <ArrowBackIcon/>
-              </IconButton>
-              <IconButton onClick={() => handleDelete(currentRoute, selectedIDs, options)}>
-                <DeleteForeverIcon/>
-              </IconButton>
-              <IconButton disabled={selectedIDs.length !== 1} onClick={handleEdit}>
-                <EditIcon/>
-              </IconButton>
-              <IconButton onClick={() => handleMove(selectedIDs, nextRoute, currentRoute, options)}>
-                <ArrowForwardIcon/>
-              </IconButton>
-            </div>
-          </Paper>
+          <Collapse in={!!selectedIDs[0]}>
+            <Paper style={{marginBottom: '5px'}}>
+              <div className={classes.multipleActions}>
+                <IconButton onClick={() => onMoveClick(prevRoute)}>
+                  <ArrowBackIcon/>
+                </IconButton>
+                <IconButton onClick={onDeleteClick}>
+                  <DeleteForeverIcon/>
+                </IconButton>
+                <IconButton disabled={selectedIDs.length !== 1} onClick={handleEdit}>
+                  <EditIcon/>
+                </IconButton>
+                <IconButton onClick={() => onMoveClick(nextRoute)}>
+                  <ArrowForwardIcon/>
+                </IconButton>
+              </div>
+            </Paper>
+          </Collapse>
           <Paper>
             <List id={'words_list'} className={classes.list} style={{maxHeight: `${window.innerHeight - deltaHeight}px`}}>
               {set.length ? <Set set={set}
