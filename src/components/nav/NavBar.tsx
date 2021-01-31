@@ -32,9 +32,11 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButton: {
     marginRight: theme.spacing(2),
+    color: '#fff'
   },
   title: {
     flexGrow: 1,
+    color: '#fff'
   },
   navDrawer: {
     width: '200px'
@@ -69,7 +71,7 @@ const SignedInMenu: FC<SignedInMenuPropsType> = ({visible, toggleDrawer, logout,
   return (
     <Toolbar>
       <div>
-        <IconButton onClick={toggleDrawer(true)} edge="start" className={classes.menuButton} /*color="inherit"*/>
+        <IconButton onClick={toggleDrawer(true)} edge="start" className={classes.menuButton}>
           <MenuIcon/>
         </IconButton>
         <Drawer
@@ -176,7 +178,7 @@ const NavBar:FC<NavBarPropsType> = ({options}) => {
 
   return (
     <div className={classes.root}>
-      <AppBar position={'static'} /*style={{ backgroundColor: "#1976d2", color: '#fff' }}*/>
+      <AppBar position={'static'} style={{ backgroundColor: darkState ? "#424242" : "#1976d2", color: '#fff' }}>
         <Container>
           {auth ?
             <SignedInMenu visible={visible}
