@@ -13,13 +13,14 @@ import {useDispatch, useSelector} from "react-redux"
 import {
   deleteWords, GetSetThunkCreatorType,
   moveWords, setAddedMeanings, setSearchInput,
-  SetSearchInputActionType, TGetSet, TMoveAndDeleteWords, TSetSetSizeAction
+  SetSearchInputActionType, shuffleSet, TGetSet, TMoveAndDeleteWords, TSetSetSizeAction, TShuffleSetAction
 } from "../../../redux/actions/wordsActions"
 import LinearProgress from "@material-ui/core/LinearProgress"
 import {OptionsType, SetNameType, WordType} from "../../../types/types";
 import {AppStateType} from "../../../redux/store/configureStore";
 import {AnyAction, Dispatch} from "redux";
 import {ThunkDispatch} from "redux-thunk";
+import ShuffleIcon from '@material-ui/icons/Shuffle';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
@@ -62,7 +63,7 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
   const [topOffset, setTopOffset] = useState(0);
   const searchInput: string = useSelector((state: AppStateType) => state.words.searchInput)
   const setSize = useSelector((state: AppStateType) => state.words.setSize)
-  const dispatchHelpers: Dispatch<SetSearchInputActionType | TSetSetSizeAction> = useDispatch()
+  const dispatchHelpers: Dispatch<SetSearchInputActionType | TSetSetSizeAction | TShuffleSetAction> = useDispatch()
   const dispatch: Dispatch<AnyAction> = useDispatch()
   const thunkDispatchGetSet: ThunkDispatch<AppStateType, unknown, TGetSet> = useDispatch()
   const thunkDispatchMoveAndDelete: ThunkDispatch<AppStateType, unknown, TMoveAndDeleteWords> = useDispatch()
@@ -221,6 +222,9 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
             <div className={classes.head}>
               <Typography variant='h6' color={'textSecondary'}>{pageTitle} - {set.length}</Typography>
               <div>
+                <IconButton onClick={() => dispatchHelpers(shuffleSet(routes[currentRouteIndex]))}>
+                  <ShuffleIcon/>
+                </IconButton>
                 <IconButton onClick={() => {
                   setSearchFieldActive((prev) => !prev)
                 }}>
