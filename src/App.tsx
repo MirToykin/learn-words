@@ -17,6 +17,7 @@ import {useMediaQuery} from "@material-ui/core";
 import {AppStateType} from "./redux/store/configureStore";
 import {OptionsType} from "./types/types";
 import NavBar from "./components/nav/NavBar";
+import TestPage from "./components/testing/TestPage";
 
 
 const App:FC = () => {
@@ -61,6 +62,7 @@ const App:FC = () => {
           <Route path='/next' render={() => <NextSet token={token} uid={uid} options={options}/>}/>
           <Route path='/current' render={() => <CurrentSet token={token}  uid={uid} options={options}/>}/>
           <Route path='/done' render={() => <DoneSet token={token} uid={uid} options={options}/>}/>
+          <Route path='/testing' render={() => <TestPage/>}/>
         </Switch>
       </Container>
     </ThemeProvider>

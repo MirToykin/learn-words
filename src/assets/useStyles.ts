@@ -1,4 +1,5 @@
 import {makeStyles} from "@material-ui/core/styles";
+import exp from "constants";
 
 export const useCommonFormStyles = makeStyles(theme => {
   return ({
@@ -12,7 +13,30 @@ export const useCommonFormStyles = makeStyles(theme => {
       marginBottom: theme.spacing(2)
     }
   })
-});
+})
+
+export const useTestingStyles = makeStyles(theme => ({
+  tac: {
+    textAlign: 'center',
+  },
+  block: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+    marginBottom: theme.spacing(1)
+  },
+  margin: {
+    margin: theme.spacing(1)
+  },
+  settings: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  bold: {
+    fontWeight: 'bold'
+  }
+}))
 
 export const useSetStyles = makeStyles(theme => ({
   head: {
