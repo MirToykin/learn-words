@@ -1,7 +1,7 @@
-import React, {FC} from 'react';
+import React, {FC, useEffect} from 'react';
 import Container from "@material-ui/core/Container";
 import {Redirect, Route, Switch} from "react-router-dom";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import LoginForm from "./components/auth/LoginForm";
 import CurrentSet from "./components/word_sets/current/CurrentSet";
 import RegisterForm from "./components/auth/RegisterForm";
@@ -18,6 +18,8 @@ import {AppStateType} from "./redux/store/configureStore";
 import {OptionsType} from "./types/types";
 import NavBar from "./components/nav/NavBar";
 import TestPage from "./components/testing/TestPage";
+import {getSet, GetSetThunkCreatorType, TGetSet} from "./redux/actions/wordsActions";
+import {ThunkDispatch} from "redux-thunk";
 
 
 const App:FC = () => {
@@ -62,7 +64,7 @@ const App:FC = () => {
           <Route path='/next' render={() => <NextSet token={token} uid={uid} options={options}/>}/>
           <Route path='/current' render={() => <CurrentSet token={token}  uid={uid} options={options}/>}/>
           <Route path='/done' render={() => <DoneSet token={token} uid={uid} options={options}/>}/>
-          <Route path='/testing' render={() => <TestPage/>}/>
+          <Route path='/testing' render={() => <TestPage token={token} uid={uid} options={options}/>}/>
         </Switch>
       </Container>
     </ThemeProvider>

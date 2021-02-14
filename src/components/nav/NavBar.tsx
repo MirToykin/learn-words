@@ -92,7 +92,7 @@ const SignedInMenu: FC<SignedInMenuPropsType> = ({visible, toggleDrawer, logout,
               />
             </ListItem>
             <Divider/>
-            {[['/next', 'На очереди'], ['/current', 'Текущий набор'], ['/done', 'Изученные']].map(routeData => (
+            {[['/next', 'На очереди'], ['/current', 'Текущий набор'], ['/done', 'Изученные'], ['/testing', 'Тестирование']].map(routeData => (
               <ListItem
                 component={NavLink}
                 to={routeData[0]}

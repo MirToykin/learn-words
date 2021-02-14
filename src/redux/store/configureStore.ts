@@ -7,12 +7,14 @@ import wordsReducer from "../reducers/wordsReducer";
 import appReducer from "../reducers/appReducer";
 import {loadState, saveState} from "../../assets/browserStorage";
 import throttle from 'lodash/throttle';
+import testingReducer from "../reducers/testingReducer";
 
 const rootReducer = combineReducers({
   form: formReducer,
   auth: authReducer,
   words: wordsReducer,
-  app: appReducer
+  app: appReducer,
+  testing: testingReducer
 })
 
 type RootReducerType = typeof rootReducer

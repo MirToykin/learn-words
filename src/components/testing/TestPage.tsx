@@ -1,15 +1,21 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper/Paper";
 import Typography from "@material-ui/core/Typography";
 import {createStyles, FormControl, InputBase, InputLabel, MenuItem, Select, Theme, withStyles} from "@material-ui/core";
 import {useTestingStyles} from "../../assets/useStyles";
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import {handleAddMeaning, onAddMeaning} from "../../assets/helpers";
+import {handleAddMeaning, onAddMeaning, randomInteger} from "../../assets/helpers";
 import Button from "@material-ui/core/Button";
 import {RenderTextField} from "../../assets/formElems";
 import {Field} from "redux-form";
 import TestForm from "./TestForm";
+import {useDispatch, useSelector} from "react-redux";
+import {AppStateType} from "../../redux/store/configureStore";
+import withAuthRedirect from "../HOCs/withAuthRedirect";
+import {OptionsType} from "../../types/types";
+import {getSet, GetSetThunkCreatorType, TGetSet} from "../../redux/actions/wordsActions";
+import {ThunkDispatch} from "redux-thunk";
 
 const BootstrapInput = withStyles((theme: Theme) =>
   createStyles({
@@ -47,12 +53,38 @@ const BootstrapInput = withStyles((theme: Theme) =>
   }),
 )(InputBase);
 
-const TestPage: FC = () => {
+type TProps = {
+  uid: number,
+  options: OptionsType,
+  token: string
+}
+
+const TestPage: FC<TProps> = ({uid, options}) => {
   const classes = useTestingStyles()
   const [wordsCount, setWordsCount] = useState(10)
   const handleCountChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setWordsCount(event.target.value as number)
   }
+
+  const done = useSelector((state: AppStateType) => state.words.done)
+  const max = done.length - 1
+  const indexes = []
+  for (let i = 0; i < wordsCount; i++) {
+    indexes.push(randomInteger(0, max))
+  }
+  const testingSet = indexes.map(index => done[index])
+
+  const thunkDispatchGetSet: ThunkDispatch<AppStateType, unknown, TGetSet> = useDispatch()
+  const getDone: GetSetThunkCreatorType = getSet('done')
+  const getDoneSet = () => thunkDispatchGetSet(getDone(uid, options))
+
+  useEffect(() => {
+    (async () => getDoneSet())()
+  }, [])
+
+  useEffect(() => {
+    if (done.length) console.log(testingSet)
+  }, [wordsCount, done])
   const word = 'Test'
   return (
     <Grid container justify='center'>
@@ -90,4 +122,4 @@ const TestPage: FC = () => {
   );
 };
 
-export default TestPage;
+export default withAuthRedirect(TestPage);

@@ -21,3 +21,8 @@ export const handleAddMeaning = (addedMeanings: Array<string>, meaningValue: str
   const repeat = addedMeanings.includes(meaningValue);
   correctMeaningValue && onAddMeaning(meaningValue, dispatch, formName, repeat);
 }
+
+export const randomInteger = (min: number, max: number) => {
+  let rand = min - 0.5 + Math.random() * (max - min + 1);
+  return Math.round(rand);
+}
