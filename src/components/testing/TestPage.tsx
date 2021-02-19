@@ -2,13 +2,11 @@ import React, {FC, useEffect, useState} from 'react';
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper/Paper";
 import Typography from "@material-ui/core/Typography";
-import {createStyles, FormControl, InputBase, InputLabel, MenuItem, Select, Theme, withStyles} from "@material-ui/core";
+import {createStyles, FormControl, InputBase, MenuItem, Select, Theme, withStyles} from "@material-ui/core";
 import {useTestingStyles} from "../../assets/useStyles";
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import {handleAddMeaning, onAddMeaning, randomInteger} from "../../assets/helpers";
+import {randomInteger} from "../../assets/helpers";
 import Button from "@material-ui/core/Button";
-import {RenderTextField} from "../../assets/formElems";
-import {Field} from "redux-form";
 import TestForm from "./TestForm";
 import {useDispatch, useSelector} from "react-redux";
 import {AppStateType} from "../../redux/store/configureStore";
@@ -16,6 +14,13 @@ import withAuthRedirect from "../HOCs/withAuthRedirect";
 import {OptionsType} from "../../types/types";
 import {getSet, GetSetThunkCreatorType, TGetSet} from "../../redux/actions/wordsActions";
 import {ThunkDispatch} from "redux-thunk";
+import {Dispatch} from "redux";
+import {
+  getSetForTest,
+  setTestActive,
+  TGetSetForTestAction,
+  TSetTestActiveAction
+} from "../../redux/actions/testingActions";
 
 const BootstrapInput = withStyles((theme: Theme) =>
   createStyles({
@@ -66,6 +71,8 @@ const TestPage: FC<TProps> = ({uid, options}) => {
     setWordsCount(event.target.value as number)
   }
 
+  const currentWordIndex = useSelector((state: AppStateType) => state.testing.currentWordIndex)
+  const isTestActive = useSelector((state: AppStateType) => state.testing.testActive)
   const done = useSelector((state: AppStateType) => state.words.done)
   const max = done.length - 1
   const indexes = []
@@ -75,17 +82,22 @@ const TestPage: FC<TProps> = ({uid, options}) => {
   const testingSet = indexes.map(index => done[index])
 
   const thunkDispatchGetSet: ThunkDispatch<AppStateType, unknown, TGetSet> = useDispatch()
+  const dispatch: Dispatch<TSetTestActiveAction | TGetSetForTestAction> = useDispatch();
   const getDone: GetSetThunkCreatorType = getSet('done')
   const getDoneSet = () => thunkDispatchGetSet(getDone(uid, options))
+
+  const handleStartTest = (): void => {
+    dispatch(setTestActive(true))
+  }
 
   useEffect(() => {
     (async () => getDoneSet())()
   }, [])
 
   useEffect(() => {
-    if (done.length) console.log(testingSet)
+    if (done.length) dispatch(getSetForTest(testingSet))
   }, [wordsCount, done])
-  const word = 'Test'
+
   return (
     <Grid container justify='center'>
       <Grid item md={5} sm={7} xs={12}>
@@ -110,13 +122,13 @@ const TestPage: FC<TProps> = ({uid, options}) => {
           <Button type='button'
                   variant="contained"
                   color="primary"
-                  // onClick={() => handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, dispatch, 'changeMeaningsForm', correctMeaningValue)}
+                  onClick={() => handleStartTest()}
           >Начать</Button>
         </Paper>
-        <Paper className={classes.block}>
-          <Typography variant='h6' color={'primary'}>Test</Typography>
-          <TestForm word={word}/>
-        </Paper>
+        {isTestActive && <Paper className={classes.block}>
+          <Typography variant='h6' color={'primary'}>{testingSet[currentWordIndex].title}</Typography>
+          <TestForm word={testingSet && testingSet[currentWordIndex]}/>
+        </Paper>}
       </Grid>
     </Grid>
   );

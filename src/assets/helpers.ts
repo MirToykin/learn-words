@@ -9,7 +9,7 @@ export const getFilteredSet = (set: Array<WordType>, query: string, field: 'titl
 }
 
 type TDispatch = Dispatch<FormAction | PushToAddedMeaningsActionType>
-type TFormName = 'AddToSetForm' | 'changeMeaningsForm'
+type TFormName = 'AddToSetForm' | 'changeMeaningsForm' | 'TestForm'
 type TOnAddMeaning = (meaning: string, dispatch: TDispatch, formName: TFormName, repeatValue: boolean) => void
 export const onAddMeaning: TOnAddMeaning = (meaning, dispatch, formName, repeatValue) => {
   if (!meaning || repeatValue) return;
