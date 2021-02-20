@@ -1,5 +1,4 @@
 import {makeStyles} from "@material-ui/core/styles";
-import exp from "constants";
 
 export const useCommonFormStyles = makeStyles(theme => {
   return ({
@@ -35,6 +34,30 @@ export const useTestingStyles = makeStyles(theme => ({
   },
   bold: {
     fontWeight: 'bold'
+  },
+  success: {
+    color: theme.palette.success.main
+  },
+  error: {
+    color: theme.palette.error.main
+  },
+  formHead: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start'
+  },
+  startButton: {
+    height: 41,
+    flex: 1,
+    color: '#fff'
+  },
+  controlsWrapper: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'flex-start'
+  },
+  select: {
+    marginRight: theme.spacing(1)
   }
 }))
 

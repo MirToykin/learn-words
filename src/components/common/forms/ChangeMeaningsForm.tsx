@@ -55,6 +55,7 @@ const ChangeMeaningsForm: FC<IProps> = ({
   const onEnterPress = (e: React.KeyboardEvent) => {
     if (e.keyCode === 13) {
       e.preventDefault();
+      if (!meaningValue) return
       meaningValue = meaningValue.trim();
       handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, dispatch, 'changeMeaningsForm', correctMeaningValue);
     }

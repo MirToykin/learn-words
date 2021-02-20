@@ -70,6 +70,7 @@ const AddToSetForm: FC<TProps & InjectedFormProps<TOnSubmitWord,TProps>> = ({
   const onEnterPress = (e: React.KeyboardEvent): void => {
     if (e.keyCode === 13) {
       e.preventDefault()
+      if (!meaningValue) return
       meaningValue= meaningValue.trim()
       handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, dispatch, 'AddToSetForm', correctMeaningValue)
     }

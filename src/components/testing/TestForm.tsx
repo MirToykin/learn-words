@@ -15,9 +15,17 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppStateType} from "../../redux/store/configureStore";
 import {handleAddMeaning, onAddMeaning} from "../../assets/helpers";
 import {Dispatch} from "redux";
-import {SetAddedMeaningsActionType} from "../../redux/actions/wordsActions";
+import {setAddedMeanings, SetAddedMeaningsActionType} from "../../redux/actions/wordsActions";
 import {WordType} from "../../types/types";
 import {makeStyles} from "@material-ui/core/styles";
+import {
+  pushToTestResult,
+  setCurrentWordIndex,
+  TPushToTestResultAction,
+  TSetCurrentWordIndexAction
+} from "../../redux/actions/testingActions";
+import {useTestingStyles} from "../../assets/useStyles";
+import {TTestResultItem, TWordResult} from "../../redux/reducers/testingReducer";
 
 const validate = combineValidators({
   meaning: isRequired({message: 'Введите значение'}),
@@ -32,37 +40,37 @@ type TOnCheckMeanings = {
 
 type TProps = {
   word: WordType
+  currentWordIndex: number
+  wordsCount: number
+  showResult: 1 | 0
+  setResultVisible: (visible: boolean) => void
 }
-
-const useTestFormStyles = makeStyles(theme => ({
-  success: {
-    color: theme.palette.success.main
-  },
-  error: {
-    color: theme.palette.error.main
-  }
-}))
 
 const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
                                                                               pristine, submitting, error,
-                                                                              handleSubmit, reset, word
+                                                                              handleSubmit, reset, word, currentWordIndex,
+                                                                              wordsCount, showResult, setResultVisible
                                                                             }) => {
-  const classes = useTestFormStyles()
-
+  const classes = useTestingStyles()
   const addedMeanings = useSelector((state: AppStateType) => state.testing.addedMeanings)
   let meaningValue: string = useSelector((state: AppStateType) => selector(state, 'meanings'))
-  const dispatch: Dispatch<SetAddedMeaningsActionType | FormAction> = useDispatch()
+  const helpersDispatch: Dispatch<SetAddedMeaningsActionType | FormAction> = useDispatch()
+  const dispatch: Dispatch<TSetCurrentWordIndexAction | TPushToTestResultAction> = useDispatch()
   const correctMeaningValue: boolean = !!(meaningValue && meaningValue.replace(/\s/g, '').length) // проверка не содержит ли строка только пробелы и переносы строк
+  const meaningsArray = word.meanings.split('/')
+  const wordResult: Array<TWordResult> = []
 
-  const onEnterPress = (e: React.KeyboardEvent): void => {
+  const onEnterPress = async (e: React.KeyboardEvent): Promise<void> => {
     if (e.keyCode === 13) {
       e.preventDefault()
+      if (!meaningValue) return
       meaningValue = meaningValue.trim()
-      handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, dispatch, 'TestForm', correctMeaningValue)
+      handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, helpersDispatch, 'TestForm', correctMeaningValue)
+      if (addedMeanings.length + 1 === meaningsArray.length && wordsCount === currentWordIndex + 1) {
+        setResultVisible(true)
+      }
     }
   }
-
-  const meaningsArray = word.meanings.split('/')
 
   const handleCheckResult = (input: Array<string>, answer: Array<string>) => {
     const result: Array<boolean> = []
@@ -72,6 +80,12 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
     })
 
     console.log(result)
+  }
+
+  const handleNext = (): void => {
+    dispatch(setCurrentWordIndex(currentWordIndex + 1))
+    helpersDispatch(setAddedMeanings([]))
+    dispatch(pushToTestResult({word, wordResult}))
   }
 
   return (
@@ -93,46 +107,41 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
             {error}
           </Typography>}
           </Grid>
-          <Grid item xs={12}>
+          {!!showResult && <Grid item xs={12}>
             <List>
-              <Fragment>
-                {addedMeanings.map((meaning) => {
-                  let className
-                  if(~meaningsArray.indexOf(meaning)) className = classes.success
-                  else className = classes.error
-                  return (
-                    <Fragment key={meaning}>
-                      <ListItem>
-                        <ListItemText primary={meaning} className={className}/>
-                        {/*{true && <IconButton>*/}
-                        {/*    <DeleteForeverIcon/>*/}
-                        {/*</IconButton>}*/}
-                      </ListItem>
-                      <Divider/>
-                    </Fragment>
-                  )
-                })}
-              </Fragment>
+              {addedMeanings.map((meaning) => {
+                let className
+                let isCorrect: boolean
+                if (~meaningsArray.indexOf(meaning)) {
+                  className = classes.success
+                  isCorrect = true
+                } else {
+                  className = classes.error
+                  isCorrect = false
+                }
+                wordResult.push({meaning, isCorrect})
+
+                return (
+                  <Fragment key={meaning}>
+                    <ListItem>
+                      <ListItemText primary={meaning} className={className}/>
+                    </ListItem>
+                    <Divider/>
+                  </Fragment>
+                )
+              })}
             </List>
-          </Grid>
-          {/*<Grid item xs={12} sm={4}>*/}
-          {/*  <Button type='button'*/}
-          {/*          variant="contained"*/}
-          {/*          color="primary"*/}
-          {/*          style={{width: '100%'}}*/}
-          {/*          // onClick={() => handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, dispatch, 'AddToSetForm', correctMeaningValue)}*/}
-          {/*          // disabled={pristine || submitting || !correctMeaningValue}*/}
-          {/*  >Назад</Button>*/}
-          {/*</Grid>*/}
+          </Grid>}
           <Grid item xs={12} sm={4}>
             <Button type='button'
               // disabled={pristine || submitting || !addedMeanings.length || !titleValue}
-                    variant="contained"
-                    color="primary"
+              disabled={wordsCount === currentWordIndex + 1 || addedMeanings.length !== meaningsArray.length}
+              variant="contained"
+              color="primary"
               // className={classes.submit}
-                    style={{width: '100%'}}
-                    onClick={() => handleCheckResult(addedMeanings, meaningsArray)}
-            >Проверить</Button>
+              style={{width: '100%'}}
+              onClick={() => handleNext()}
+            >Дальше</Button>
           </Grid>
         </Grid>
       </form>

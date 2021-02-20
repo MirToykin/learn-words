@@ -1,4 +1,4 @@
-import axios, {AxiosResponse} from "axios";
+import axios, {AxiosInstance, AxiosResponse} from "axios";
 import {OptionsType, SetNameType, WordType} from "../types/types";
 import {TLoginData, TRegData} from "../redux/actions/authActions";
 import {TAddToSetData, TEditWordData} from "../redux/actions/wordsActions";
@@ -32,12 +32,13 @@ type TDeleteResponse = {
 }
 
 class Api {
-  ajax;
+  ajax: AxiosInstance
 
   constructor() {
     this.ajax = axios.create({
       // baseURL: "http://api-simpledictionary.ru/api/"
       baseURL: "http://learnwords/api/"
+      // baseURL: "http://simpdict-api/api/"
     });
   }
 
