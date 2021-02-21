@@ -1,4 +1,4 @@
-import React, {FC, Fragment} from 'react';
+import React, {FC, Fragment, useEffect} from 'react';
 import Grid from "@material-ui/core/Grid";
 import {Field, FormAction, formValueSelector, InjectedFormProps, reduxForm, stopSubmit} from "redux-form";
 import {RenderTextarea, RenderTextField} from "../../assets/formElems";
@@ -59,6 +59,12 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
   const correctMeaningValue: boolean = !!(meaningValue && meaningValue.replace(/\s/g, '').length) // проверка не содержит ли строка только пробелы и переносы строк
   const meaningsArray = word.meanings.split('/')
   const wordResult: Array<TWordResult> = []
+  const meaningNum = meaningsArray.length === addedMeanings.length ? addedMeanings.length : addedMeanings.length + 1
+  const inputPlaceholder = meaningsArray.length === 1 ? 'Значение' : `Значение ${meaningNum} из ${meaningsArray.length}`
+
+  useEffect(() => {
+    if (addedMeanings.length === meaningsArray.length) dispatch(pushToTestResult({word, wordResult}))
+  }, [addedMeanings, word])
 
   const onEnterPress = async (e: React.KeyboardEvent): Promise<void> => {
     if (e.keyCode === 13) {
@@ -67,6 +73,7 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
       meaningValue = meaningValue.trim()
       handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, helpersDispatch, 'TestForm', correctMeaningValue)
       if (addedMeanings.length + 1 === meaningsArray.length && wordsCount === currentWordIndex + 1) {
+        // dispatch(pushToTestResult({word, wordResult}))
         setResultVisible(true)
       }
     }
@@ -88,6 +95,28 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
     dispatch(pushToTestResult({word, wordResult}))
   }
 
+  const addedMeaningsList = addedMeanings.map((meaning) => {
+    let className
+    let isCorrect: boolean
+    if (~meaningsArray.indexOf(meaning)) {
+      className = classes.success
+      isCorrect = true
+    } else {
+      className = classes.error
+      isCorrect = false
+    }
+    wordResult.push({meaning, isCorrect})
+
+    return (
+      <Fragment key={meaning}>
+        <ListItem>
+          <ListItemText primary={meaning} className={className}/>
+        </ListItem>
+        <Divider/>
+      </Fragment>
+    )
+  })
+
   return (
     <div>
       <form autoComplete='off'>
@@ -96,10 +125,10 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
             <Field
               name="meanings"
               component={RenderTextField}
-              label='Значение'
+              label={`Значение`}
               disabled={addedMeanings.length === meaningsArray.length}
               // placeholder={`введите значения для "${word.title}" по одному`}
-              placeholder={`введите значения по одному`}
+              placeholder={inputPlaceholder}
               onKeyDown={onEnterPress}
             />
           </Grid>
@@ -109,27 +138,7 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
           </Grid>
           {!!showResult && <Grid item xs={12}>
             <List>
-              {addedMeanings.map((meaning) => {
-                let className
-                let isCorrect: boolean
-                if (~meaningsArray.indexOf(meaning)) {
-                  className = classes.success
-                  isCorrect = true
-                } else {
-                  className = classes.error
-                  isCorrect = false
-                }
-                wordResult.push({meaning, isCorrect})
-
-                return (
-                  <Fragment key={meaning}>
-                    <ListItem>
-                      <ListItemText primary={meaning} className={className}/>
-                    </ListItem>
-                    <Divider/>
-                  </Fragment>
-                )
-              })}
+              {addedMeaningsList}
             </List>
           </Grid>}
           <Grid item xs={12} sm={4}>

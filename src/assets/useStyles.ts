@@ -58,6 +58,23 @@ export const useTestingStyles = makeStyles(theme => ({
   },
   select: {
     marginRight: theme.spacing(1)
+  },
+  resultTable: {
+    marginBottom: theme.spacing(1)
+  },
+  detailResultHead: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    border: "none",
+    backgroundColor: 'inherit'
+  },
+  resultHead: {
+    minHeight: '40px !important',
+    marginTop: 0
+  },
+  resultPanelExpanded: {
+    margin: '1px 0 !important'
   }
 }))
 

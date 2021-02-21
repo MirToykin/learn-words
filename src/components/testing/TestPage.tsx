@@ -9,7 +9,7 @@ import {
   FormControlLabel, FormHelperText,
   InputBase,
   MenuItem,
-  Select,
+  Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Theme,
   withStyles
 } from "@material-ui/core";
@@ -34,6 +34,12 @@ import {
 } from "../../redux/actions/testingActions";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import IconButton from "@material-ui/core/IconButton";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import Divider from "@material-ui/core/Divider";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import MeaningsList from "../common/word_sets/MeaningsList";
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 
 const BootstrapInput = withStyles((theme: Theme) =>
   createStyles({
@@ -82,6 +88,9 @@ const TestPage: FC<TProps> = ({uid, options}) => {
   const [wordsCount, setWordsCount] = useState(10)
   const [showResult, setShowResult] = useState<1 | 0>(0)
   const [resultVisible, setResultVisible] = useState(false)
+  const [detailResultShown, setDetailResultShown] = useState(false)
+  const [commonResultShown, setCommonResultShown] = useState(true)
+
   const handleCountChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setWordsCount(event.target.value as number)
   }
@@ -93,6 +102,29 @@ const TestPage: FC<TProps> = ({uid, options}) => {
   const testSetFromState = useSelector((state: AppStateType) => state.testing.testSet)
   const currentWordIndex = useSelector((state: AppStateType) => state.testing.currentWordIndex)
   const isTestActive = useSelector((state: AppStateType) => state.testing.testActive)
+  const testResult = useSelector((state: AppStateType) => state.testing.testResult)
+
+  let correctMeaningsCount = 0
+  let totalMeaningsCount = 0
+  let correctWordsCount = 0
+  testResult.forEach((item) => {
+    let isCorrectCount = 0
+    item.wordResult.forEach((res) => {
+      if (res.isCorrect) {
+        correctMeaningsCount++
+        isCorrectCount++
+      }
+      totalMeaningsCount++
+    })
+    if (isCorrectCount === item.wordResult.length) correctWordsCount++
+  })
+
+  const resultData = [
+    {title: 'Колчичество верно указанных значений', value: correctMeaningsCount},
+    {title: 'Всего значений', value: totalMeaningsCount},
+    {title: 'Колчичество слов без ошибок', value: correctWordsCount}
+  ]
+
   let testingSet: Array<WordType> = []
   const done = useSelector((state: AppStateType) => state.words.done)
   const max = done.length - 1
@@ -187,8 +219,108 @@ const TestPage: FC<TProps> = ({uid, options}) => {
               setResultVisible={setResultVisible}
           />
         </Paper>}
-        {resultVisible && <Paper className={classes.block}>
-          <Typography variant='body1' color={'textSecondary'} className={classes.tac}>Результаты</Typography>
+        {resultVisible && <Paper>
+          {/*<Typography variant='h6' color={'textPrimary'} className={classes.tac}>Результаты</Typography>*/}
+            <ExpansionPanel
+                component={'div'}
+                expanded={commonResultShown}
+                onChange={() => setCommonResultShown(shown => !shown)}
+                classes={{
+                  expanded: classes.resultPanelExpanded,
+                }}
+            >
+                <ExpansionPanelSummary
+                  color={'secondary'}
+                  classes={{
+                    content: classes.detailResultHead,
+                    expanded: classes.resultHead
+                  }}
+                  onClick={() => {
+                    if (detailResultShown) setDetailResultShown(false)
+                    else setDetailResultShown(true)
+                  }}
+                >
+                    <Typography>Общий результат</Typography>
+                </ExpansionPanelSummary>
+                <Divider/>
+                <ExpansionPanelDetails>
+                  <TableContainer className={classes.resultTable}>
+                      <Table>
+                          <TableBody>
+                            {resultData.map((row) => (
+                              <TableRow key={row.title}>
+                                <TableCell component="th" scope="row">
+                                  {row.title}
+                                </TableCell>
+                                <TableCell align="right">{row.value}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                      </Table>
+                  </TableContainer>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+            <ExpansionPanel
+                component={'div'}
+                expanded={detailResultShown}
+                onChange={() => setDetailResultShown(shown => !shown)}
+                classes={{
+                  expanded: classes.resultPanelExpanded
+                }}
+            >
+                <ExpansionPanelSummary
+                    classes={{
+                      content: classes.detailResultHead,
+                      expanded: classes.resultHead
+                    }}
+                >
+                    <Typography>Детальный результат</Typography>
+                </ExpansionPanelSummary>
+                <Divider/>
+                <ExpansionPanelDetails>
+                    Детальный результат
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+          {/*<TableContainer className={classes.resultTable}>*/}
+          {/*    <Table>*/}
+          {/*        <TableBody>*/}
+          {/*          {resultData.map((row) => (*/}
+          {/*            <TableRow key={row.title}>*/}
+          {/*              <TableCell component="th" scope="row">*/}
+          {/*                {row.title}*/}
+          {/*              </TableCell>*/}
+          {/*              <TableCell align="right">{row.value}</TableCell>*/}
+          {/*            </TableRow>*/}
+          {/*          ))}*/}
+          {/*        </TableBody>*/}
+          {/*    </Table>*/}
+          {/*</TableContainer>*/}
+          {/*<div className={classes.tac}>*/}
+          {/*  <ExpansionPanel component={'div'} expanded={detailResultShown}>*/}
+          {/*      <ExpansionPanelSummary*/}
+          {/*          classes={{*/}
+          {/*            content: classes.detailResultHead,*/}
+          {/*          }}*/}
+          {/*          onClick={() => {*/}
+          {/*            if (detailResultShown) setDetailResultShown(false)*/}
+          {/*            else setDetailResultShown(true)*/}
+          {/*          }}*/}
+          {/*      >*/}
+          {/*        <Typography>{`${detailResultShown ? 'Скрыть' : 'Показать'} детальный результат`}</Typography>*/}
+          {/*        /!*{detailResultShown ?*!/*/}
+          {/*        /!*  <IconButton onClick={() => setDetailResultShown(false)}>*!/*/}
+          {/*        /!*    <ExpandLessIcon/>*!/*/}
+          {/*        /!*  </IconButton> :*!/*/}
+          {/*        /!*  <IconButton onClick={() => setDetailResultShown(true)}>*!/*/}
+          {/*        /!*    <ExpandMoreIcon/>*!/*/}
+          {/*        /!*  </IconButton>}*!/*/}
+          {/*      </ExpansionPanelSummary>*/}
+          {/*      <Divider/>*/}
+          {/*      <ExpansionPanelDetails>*/}
+          {/*          Детальный результат*/}
+          {/*      </ExpansionPanelDetails>*/}
+          {/*  </ExpansionPanel>*/}
+          {/*</div>*/}
         </Paper>}
       </Grid>
     </Grid>
