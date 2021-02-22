@@ -2,6 +2,7 @@ import React, {FC} from "react";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
+import {InputBase} from "@material-ui/core";
 
 type TTextField = {
   label: string
@@ -26,6 +27,25 @@ export const RenderTextField: FC<TTextField> = ({
     placeholder={label}
     error={touched && invalid}
     helperText={touched && error}
+    // autoFocus={true}
+    {...input}
+    {...custom}
+  />
+}
+
+export const RenderInputBase: FC<TTextField> = ({
+                                                  label,
+                                                  input,
+                                                  meta: {touched, invalid, error},
+                                                  ...custom
+                                                }) => {
+  return <InputBase
+    fullWidth
+    // variant="filled"
+    label={label}
+    placeholder={label}
+    error={touched && invalid}
+    // helperText={touched && error}
     // autoFocus={true}
     {...input}
     {...custom}

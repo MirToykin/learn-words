@@ -38,11 +38,6 @@ const areEqual = (prevProps: TProps, props: TProps): boolean => {
 }
 
 const Set: FC<TProps> = ({set, pageTitle, options, setSelectedIDs}) => {
-  const [anchorEl, setAnchorEl] = useState<Element | ((element: Element) => Element) | null | undefined>(null);
-  const [wordId, setWordId] = useState<number>(0)
-  const [wordTitle, setWordTitle] = useState<string>('')
-  const [currentSet, setCurrentSet] = useState<SetNameType>('current')
-  const [meaningsArray, setMeaningsArray] = useState<Array<string>>([])
   const dispatch: Dispatch<TSetSetSizeAction> = useDispatch()
   const setSize = useSelector((state: AppStateType) => state.words.setSize)
 
@@ -52,11 +47,7 @@ const Set: FC<TProps> = ({set, pageTitle, options, setSelectedIDs}) => {
         if(index + 1 < setSize)
           return (<ListItem key={word.id}>
                     <WordItem word={word} pageTitle={pageTitle}
-                              options={options} setWordId={setWordId}
-                              setWordTitle={setWordTitle}
-                              setCurrentSet={setCurrentSet}
-                              setMeaningsArray={setMeaningsArray}
-                              setAnchorEl={setAnchorEl}
+                              options={options}
                               setSelectedIDs={setSelectedIDs}
                     />
             {index === setSize - 5 && <Waypoint onEnter={() => {

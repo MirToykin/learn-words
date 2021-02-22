@@ -3,18 +3,17 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper/Paper";
 import Typography from "@material-ui/core/Typography";
 import {
-  Checkbox,
   createStyles,
   FormControl,
-  FormControlLabel, FormHelperText,
+  FormHelperText,
   InputBase,
   MenuItem,
   Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Theme,
   withStyles
 } from "@material-ui/core";
-import {useTestingStyles} from "../../assets/useStyles";
-import { fade } from '@material-ui/core/styles/colorManipulator';
+import {useSetStyles, useTestingStyles} from "../../assets/useStyles";
+import {fade} from '@material-ui/core/styles/colorManipulator';
 import {randomInteger} from "../../assets/helpers";
 import Button from "@material-ui/core/Button";
 import TestForm from "./TestForm";
@@ -25,21 +24,59 @@ import {OptionsType, WordType} from "../../types/types";
 import {getSet, GetSetThunkCreatorType, TGetSet} from "../../redux/actions/wordsActions";
 import {ThunkDispatch} from "redux-thunk";
 import {Dispatch} from "redux";
-import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite'
+import MuiAccordion from '@material-ui/core/Accordion';
+import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
+import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
 import {
-  getSetForTest,
+  setSetForTest,
   setTestActive,
-  TGetSetForTestAction,
+  TSetSetForTestAction,
   TSetTestActiveAction
 } from "../../redux/actions/testingActions";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import IconButton from "@material-ui/core/IconButton";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import Divider from "@material-ui/core/Divider";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import MeaningsList from "../common/word_sets/MeaningsList";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import List from "@material-ui/core/List";
+
+const Accordion = withStyles({
+  root: {
+    border: '1px solid rgba(0, 0, 0, .125)',
+    boxShadow: 'none',
+    '&:not(:last-child)': {
+      borderBottom: 0,
+    },
+    '&:before': {
+      display: 'none',
+    },
+    '&$expanded': {
+      margin: 'auto',
+    },
+  },
+  expanded: {},
+})(MuiAccordion);
+
+const AccordionSummary = withStyles((theme) => ({
+  root: {
+    backgroundColor: 'rgba(0, 0, 0, .03)',
+    borderBottom: '1px solid rgba(0, 0, 0, .125)',
+    marginBottom: -1,
+    minHeight: 56,
+    '&$expanded': {
+      minHeight: 56,
+    },
+  },
+  content: {
+    '&$expanded': {
+      margin: '12px 0',
+    },
+    color: theme.palette.primary.main,
+  },
+  expanded: {},
+}))(MuiAccordionSummary);
+
+const AccordionDetails = withStyles((theme) => ({
+  root: {
+    padding: 0
+  },
+}))(MuiAccordionDetails);
 
 const BootstrapInput = withStyles((theme: Theme) =>
   createStyles({
@@ -85,11 +122,13 @@ type TProps = {
 
 const TestPage: FC<TProps> = ({uid, options}) => {
   const classes = useTestingStyles()
+  const setClasses = useSetStyles()
   const [wordsCount, setWordsCount] = useState(10)
   const [showResult, setShowResult] = useState<1 | 0>(0)
   const [resultVisible, setResultVisible] = useState(false)
   const [detailResultShown, setDetailResultShown] = useState(false)
   const [commonResultShown, setCommonResultShown] = useState(true)
+  const [topOffset, setTopOffset] = useState(0);
 
   const handleCountChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setWordsCount(event.target.value as number)
@@ -120,18 +159,57 @@ const TestPage: FC<TProps> = ({uid, options}) => {
   })
 
   const resultData = [
-    {title: 'Колчичество верно указанных значений', value: correctMeaningsCount},
     {title: 'Всего значений', value: totalMeaningsCount},
+    {title: 'Колчичество верно указанных значений', value: correctMeaningsCount},
     {title: 'Колчичество слов без ошибок', value: correctWordsCount}
   ]
 
   let testingSet: Array<WordType> = []
   const done = useSelector((state: AppStateType) => state.words.done)
+  let invertDoneObj: any = {}
+  if (done.length) {
+    done.forEach((word) => {
+      const meanings = word.meanings.split('/')
+      meanings.forEach(meaning => {
+        if (invertDoneObj[meaning]) {
+          invertDoneObj[meaning].push(word.title)
+        } else {
+          invertDoneObj[meaning] = [word.title]
+        }
+      })
+    })
+
+    type TInvertTestItem = {
+      title: string
+      meanings: string
+    }
+
+    const invertDone: Array<TInvertTestItem> = []
+
+    for (let title in invertDoneObj) {
+      invertDone.push({
+        title,
+        meanings: invertDoneObj[title].join('/')
+      })
+    }
+
+    const max = invertDone.length - 1
+    const indexes = []
+
+    while (indexes.length < wordsCount) {
+      const ind = randomInteger(0, max)
+      if (!~indexes.indexOf(ind)) indexes.push(ind)
+    }
+    const invertTestingSet = indexes.map(index => invertDone[index])
+
+    console.log(invertTestingSet)
+  }
+
   const max = done.length - 1
   const indexes = []
 
   if (max !== -1) { // max = -1 до тех пор пока с сервера не будет получен набор done
-    while(indexes.length < wordsCount) {
+    while (indexes.length < wordsCount) {
       const ind = randomInteger(0, max)
       if (!~indexes.indexOf(ind)) indexes.push(ind)
     }
@@ -139,7 +217,7 @@ const TestPage: FC<TProps> = ({uid, options}) => {
   }
 
   const thunkDispatchGetSet: ThunkDispatch<AppStateType, unknown, TGetSet> = useDispatch()
-  const dispatch: Dispatch<TSetTestActiveAction | TGetSetForTestAction> = useDispatch();
+  const dispatch: Dispatch<TSetTestActiveAction | TSetSetForTestAction> = useDispatch();
   const getDone: GetSetThunkCreatorType = getSet('done')
   const getDoneSet = () => thunkDispatchGetSet(getDone(uid, options))
 
@@ -154,14 +232,22 @@ const TestPage: FC<TProps> = ({uid, options}) => {
   }, [])
 
   useEffect(() => {
-    if (done.length) dispatch(getSetForTest(testingSet))
+    if (done.length) dispatch(setSetForTest(testingSet))
   }, [wordsCount, done])
+
+  useEffect(() => {
+    if(resultVisible) {
+      let resultBlock: any = document.getElementById('result_block')
+      let data = resultBlock.getBoundingClientRect()
+      setTopOffset(data.top)
+    }
+  }, [resultVisible])
 
   return (
     <Grid container justify='center'>
       <Grid item md={5} sm={7} xs={12}>
         <Paper className={classes.block}>
-            <Typography variant='h6' color={'textSecondary'} className={classes.tac}>Тестирование</Typography>
+          <Typography variant='h6' color={'textSecondary'} className={classes.tac}>Тестирование</Typography>
         </Paper>
         <Paper className={`${classes.block} ${classes.settings}`}>
           <div className={classes.controlsWrapper}>
@@ -169,7 +255,7 @@ const TestPage: FC<TProps> = ({uid, options}) => {
               <Select
                 value={wordsCount}
                 onChange={handleCountChange}
-                input={<BootstrapInput />}
+                input={<BootstrapInput/>}
                 disabled={isTestActive}
               >
                 <MenuItem value={1}>1</MenuItem>
@@ -184,7 +270,7 @@ const TestPage: FC<TProps> = ({uid, options}) => {
               <Select
                 value={showResult}
                 onChange={handleShowResultChange}
-                input={<BootstrapInput />}
+                input={<BootstrapInput/>}
                 // disabled={isTestActive}
               >
                 <MenuItem value={1}>Да</MenuItem>
@@ -193,134 +279,105 @@ const TestPage: FC<TProps> = ({uid, options}) => {
               <FormHelperText>Промежуточный результат</FormHelperText>
             </FormControl>
             {!isTestActive && <Button type='button'
-                     variant="contained"
-                     color="primary"
-                     onClick={() => handleStartTest()}
-                     className={classes.startButton}
-            >Старт</Button>}
-            {isTestActive && <Button type='button'
                                       variant="contained"
                                       color="primary"
-                                      // onClick={() => handleStartTest()}
+                                      onClick={() => handleStartTest()}
                                       className={classes.startButton}
+            >Старт</Button>}
+            {isTestActive && <Button type='button'
+                                     variant="contained"
+                                     color="primary"
+              // onClick={() => handleStartTest()}
+                                     className={classes.startButton}
             >Стоп</Button>}
           </div>
         </Paper>
-        {isTestActive && <Paper className={classes.block}>
-          <div className={classes.formHead}>
-            <Typography variant='h6' color={'primary'}>{testSetFromState[currentWordIndex].title}</Typography>
-            <Typography variant='h6'>{currentWordIndex + 1}/{wordsCount}</Typography>
-          </div>
-          <TestForm
-              word={testSetFromState && testSetFromState[currentWordIndex]}
-              currentWordIndex={currentWordIndex}
-              wordsCount={wordsCount}
-              showResult={showResult}
-              setResultVisible={setResultVisible}
-          />
+        {isTestActive && <Paper className={classes.block} style={{display: resultVisible ? 'none' : 'block'}}>
+            <div className={classes.formHead}>
+                <Typography variant='h6' color={'primary'}>{testSetFromState[currentWordIndex].title}</Typography>
+                <Typography variant='h6'>{currentWordIndex + 1}/{wordsCount}</Typography>
+            </div>
+            <TestForm
+                word={testSetFromState && testSetFromState[currentWordIndex]}
+                currentWordIndex={currentWordIndex}
+                wordsCount={wordsCount}
+                showResult={showResult}
+                setResultVisible={setResultVisible}
+                testResult={testResult}
+            />
         </Paper>}
-        {resultVisible && <Paper>
-          {/*<Typography variant='h6' color={'textPrimary'} className={classes.tac}>Результаты</Typography>*/}
-            <ExpansionPanel
-                component={'div'}
+        {resultVisible && <Paper id={'result_block'} className={setClasses.list} style={{maxHeight: `${window.innerHeight - (topOffset + 1)}px`}}>
+            <Accordion
                 expanded={commonResultShown}
                 onChange={() => setCommonResultShown(shown => !shown)}
-                classes={{
-                  expanded: classes.resultPanelExpanded,
-                }}
             >
-                <ExpansionPanelSummary
-                  color={'secondary'}
-                  classes={{
-                    content: classes.detailResultHead,
-                    expanded: classes.resultHead
-                  }}
-                  onClick={() => {
-                    if (detailResultShown) setDetailResultShown(false)
-                    else setDetailResultShown(true)
-                  }}
-                >
-                    <Typography>Общий результат</Typography>
-                </ExpansionPanelSummary>
+                <AccordionSummary>
+                    <Typography>Сводный результат</Typography>
+                </AccordionSummary>
                 <Divider/>
-                <ExpansionPanelDetails>
-                  <TableContainer className={classes.resultTable}>
-                      <Table>
-                          <TableBody>
-                            {resultData.map((row) => (
-                              <TableRow key={row.title}>
-                                <TableCell component="th" scope="row">
-                                  {row.title}
-                                </TableCell>
-                                <TableCell align="right">{row.value}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                      </Table>
-                  </TableContainer>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
-            <ExpansionPanel
-                component={'div'}
+                <AccordionDetails>
+                    <TableContainer className={classes.resultTable}>
+                        <Table>
+                            <TableBody>
+                              {resultData.map((row) => (
+                                <TableRow key={row.title}>
+                                  <TableCell component="th" scope="row">
+                                    {row.title}
+                                  </TableCell>
+                                  <TableCell align="right">{row.value}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion
                 expanded={detailResultShown}
                 onChange={() => setDetailResultShown(shown => !shown)}
-                classes={{
-                  expanded: classes.resultPanelExpanded
-                }}
             >
-                <ExpansionPanelSummary
-                    classes={{
-                      content: classes.detailResultHead,
-                      expanded: classes.resultHead
-                    }}
-                >
+                <AccordionSummary>
                     <Typography>Детальный результат</Typography>
-                </ExpansionPanelSummary>
+                </AccordionSummary>
                 <Divider/>
-                <ExpansionPanelDetails>
-                    Детальный результат
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
-          {/*<TableContainer className={classes.resultTable}>*/}
-          {/*    <Table>*/}
-          {/*        <TableBody>*/}
-          {/*          {resultData.map((row) => (*/}
-          {/*            <TableRow key={row.title}>*/}
-          {/*              <TableCell component="th" scope="row">*/}
-          {/*                {row.title}*/}
-          {/*              </TableCell>*/}
-          {/*              <TableCell align="right">{row.value}</TableCell>*/}
-          {/*            </TableRow>*/}
-          {/*          ))}*/}
-          {/*        </TableBody>*/}
-          {/*    </Table>*/}
-          {/*</TableContainer>*/}
-          {/*<div className={classes.tac}>*/}
-          {/*  <ExpansionPanel component={'div'} expanded={detailResultShown}>*/}
-          {/*      <ExpansionPanelSummary*/}
-          {/*          classes={{*/}
-          {/*            content: classes.detailResultHead,*/}
-          {/*          }}*/}
-          {/*          onClick={() => {*/}
-          {/*            if (detailResultShown) setDetailResultShown(false)*/}
-          {/*            else setDetailResultShown(true)*/}
-          {/*          }}*/}
-          {/*      >*/}
-          {/*        <Typography>{`${detailResultShown ? 'Скрыть' : 'Показать'} детальный результат`}</Typography>*/}
-          {/*        /!*{detailResultShown ?*!/*/}
-          {/*        /!*  <IconButton onClick={() => setDetailResultShown(false)}>*!/*/}
-          {/*        /!*    <ExpandLessIcon/>*!/*/}
-          {/*        /!*  </IconButton> :*!/*/}
-          {/*        /!*  <IconButton onClick={() => setDetailResultShown(true)}>*!/*/}
-          {/*        /!*    <ExpandMoreIcon/>*!/*/}
-          {/*        /!*  </IconButton>}*!/*/}
-          {/*      </ExpansionPanelSummary>*/}
-          {/*      <Divider/>*/}
-          {/*      <ExpansionPanelDetails>*/}
-          {/*          Детальный результат*/}
-          {/*      </ExpansionPanelDetails>*/}
-          {/*  </ExpansionPanel>*/}
-          {/*</div>*/}
+                <AccordionDetails>
+                    <TableContainer component={Paper}>
+                        <Table size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Слово</TableCell>
+                                    <TableCell align="left" style={{padding: 0}}>Значения</TableCell>
+                                    <TableCell align="left" style={{padding: 0}}>Результат</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {testResult.map((row) => (
+                                <TableRow key={row.word.id}>
+                                  <TableCell component="th" scope="row">
+                                    {row.word.title}
+                                  </TableCell>
+                                  <TableCell align="left">
+                                    <ol style={{padding: 0}}>
+                                      {row.word.meanings.split('/').map(item => <li key={item}>{item}</li>)}
+                                    </ol>
+                                  </TableCell>
+                                  <TableCell align="left">
+                                    <ol style={{padding: 0}}>
+                                      {row.wordResult.map(res => {
+                                        let className
+                                        if (res.isCorrect) className = classes.success
+                                        else className = classes.error
+                                        return <li key={res.meaning} className={className}>{res.meaning}</li>
+                                      })}
+                                    </ol>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </AccordionDetails>
+            </Accordion>
         </Paper>}
       </Grid>
     </Grid>

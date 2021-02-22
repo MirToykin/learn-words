@@ -75,6 +75,17 @@ export const useTestingStyles = makeStyles(theme => ({
   },
   resultPanelExpanded: {
     margin: '1px 0 !important'
+  },
+  input: {
+    marginRight: theme.spacing(1)
+  },
+  inputWrapper: {
+    // backgroundColor: '#535353',
+    borderRadius: 4,
+    marginTop: theme.spacing(2),
+    display: 'flex',
+    // height: 50,
+    padding: '0 0 0 1em !important',
   }
 }))
 

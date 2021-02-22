@@ -1,16 +1,16 @@
 import {WordType} from "../../types/types"
 import {
-  GET_SET_FOR_TEST,
+  SET_SET_FOR_TEST,
   PUSH_TO_ADDED_MEANINGS, PUSH_TO_TEST_RESULT,
   SET_ADDED_MEANINGS,
   SET_CURRENT_WORD_INDEX,
-  SET_TEST_ACTIVE
+  SET_TEST_ACTIVE, SET_INVERT_SET_FOR_TEST
 } from "../constants";
 import {
-  TGetSetForTestAction,
+  TSetSetForTestAction,
   TPushToTestResultAction,
   TSetCurrentWordIndexAction,
-  TSetTestActiveAction
+  TSetTestActiveAction, TSetInvertSetForTestAction, TInvertTestItem
 } from "../actions/testingActions";
 import {PushToAddedMeaningsActionType, SetAddedMeaningsActionType} from "../actions/wordsActions";
 
@@ -26,21 +26,24 @@ export type TTestResultItem = {
 
 let initialState = {
   testSet: [] as Array<WordType>,
+  invertTestSet: [] as Array<TInvertTestItem>,
   testActive: false as boolean,
   currentWordIndex: 0 as number,
   addedMeanings: [] as Array<string>,
   testResult: [] as Array<TTestResultItem>
 }
 
-type ActionType = TGetSetForTestAction | TSetTestActiveAction | PushToAddedMeaningsActionType |
-  TSetCurrentWordIndexAction | SetAddedMeaningsActionType | TPushToTestResultAction
+type ActionType = TSetSetForTestAction | TSetTestActiveAction | PushToAddedMeaningsActionType |
+  TSetCurrentWordIndexAction | SetAddedMeaningsActionType | TPushToTestResultAction | TSetInvertSetForTestAction
 
 type InitialStateType = typeof initialState
 
 const testingReducer = (state:InitialStateType = initialState, action:ActionType): InitialStateType => {
   switch (action.type) {
-    case GET_SET_FOR_TEST:
+    case SET_SET_FOR_TEST:
       return {...state, testSet: action.payload}
+    case SET_INVERT_SET_FOR_TEST:
+      return {...state, invertTestSet: action.payload}
     case SET_TEST_ACTIVE:
       return {...state, testActive: action.payload}
     case PUSH_TO_ADDED_MEANINGS:

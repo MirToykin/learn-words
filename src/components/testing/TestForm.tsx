@@ -1,23 +1,23 @@
 import React, {FC, Fragment, useEffect} from 'react';
 import Grid from "@material-ui/core/Grid";
-import {Field, FormAction, formValueSelector, InjectedFormProps, reduxForm, stopSubmit} from "redux-form";
-import {RenderTextarea, RenderTextField} from "../../assets/formElems";
+import {Field, FormAction, formValueSelector, InjectedFormProps, reduxForm} from "redux-form";
+import {RenderTextField} from "../../assets/formElems";
 import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
 import {combineValidators, isRequired} from "revalidate";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText/ListItemText";
 import IconButton from "@material-ui/core/IconButton";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
 import {useDispatch, useSelector} from "react-redux";
 import {AppStateType} from "../../redux/store/configureStore";
 import {handleAddMeaning, onAddMeaning} from "../../assets/helpers";
 import {Dispatch} from "redux";
-import {setAddedMeanings, SetAddedMeaningsActionType} from "../../redux/actions/wordsActions";
+import {
+  setAddedMeanings,
+  SetAddedMeaningsActionType,
+} from "../../redux/actions/wordsActions";
 import {WordType} from "../../types/types";
-import {makeStyles} from "@material-ui/core/styles";
 import {
   pushToTestResult,
   setCurrentWordIndex,
@@ -26,6 +26,8 @@ import {
 } from "../../redux/actions/testingActions";
 import {useTestingStyles} from "../../assets/useStyles";
 import {TTestResultItem, TWordResult} from "../../redux/reducers/testingReducer";
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
+import {Button} from "@material-ui/core";
 
 const validate = combineValidators({
   meaning: isRequired({message: 'Введите значение'}),
@@ -44,12 +46,13 @@ type TProps = {
   wordsCount: number
   showResult: 1 | 0
   setResultVisible: (visible: boolean) => void
+  testResult: Array<TTestResultItem>
 }
 
 const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
                                                                               pristine, submitting, error,
                                                                               handleSubmit, reset, word, currentWordIndex,
-                                                                              wordsCount, showResult, setResultVisible
+                                                                              wordsCount, showResult, setResultVisible, testResult
                                                                             }) => {
   const classes = useTestingStyles()
   const addedMeanings = useSelector((state: AppStateType) => state.testing.addedMeanings)
@@ -63,36 +66,37 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
   const inputPlaceholder = meaningsArray.length === 1 ? 'Значение' : `Значение ${meaningNum} из ${meaningsArray.length}`
 
   useEffect(() => {
-    if (addedMeanings.length === meaningsArray.length) dispatch(pushToTestResult({word, wordResult}))
-  }, [addedMeanings, word])
+    if (addedMeanings.length === meaningsArray.length) {
+      if (testResult.length !== currentWordIndex + 1) dispatch(pushToTestResult({word, wordResult}))
+      if (wordsCount !== currentWordIndex + 1 && !showResult) handleNext()
+    }
+  }, [addedMeanings, word, currentWordIndex, wordResult])
+
+  useEffect(() => {
+    const input = document.getElementById('test_meaning')
+    input && input.focus()
+  })
 
   const onEnterPress = async (e: React.KeyboardEvent): Promise<void> => {
-    if (e.keyCode === 13) {
+    if (e.key === 'Enter') {
       e.preventDefault()
-      if (!meaningValue) return
-      meaningValue = meaningValue.trim()
-      handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, helpersDispatch, 'TestForm', correctMeaningValue)
-      if (addedMeanings.length + 1 === meaningsArray.length && wordsCount === currentWordIndex + 1) {
-        // dispatch(pushToTestResult({word, wordResult}))
-        setResultVisible(true)
-      }
+      onArrowClick()
     }
   }
 
-  const handleCheckResult = (input: Array<string>, answer: Array<string>) => {
-    const result: Array<boolean> = []
-
-    input.forEach((word, i) => {
-      result[i] = !!(~answer.indexOf(word))
-    })
-
-    console.log(result)
+  const onArrowClick = () => {
+    if (!meaningValue) return
+    meaningValue = meaningValue.trim()
+    handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, helpersDispatch, 'TestForm', correctMeaningValue)
+    if (addedMeanings.length + 1 === meaningsArray.length && wordsCount === currentWordIndex + 1) {
+      setResultVisible(true)
+    }
   }
 
   const handleNext = (): void => {
     dispatch(setCurrentWordIndex(currentWordIndex + 1))
     helpersDispatch(setAddedMeanings([]))
-    dispatch(pushToTestResult({word, wordResult}))
+    // dispatch(pushToTestResult({word, wordResult}))
   }
 
   const addedMeaningsList = addedMeanings.map((meaning) => {
@@ -121,16 +125,21 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
     <div>
       <form autoComplete='off'>
         <Grid container spacing={2} justify={'flex-end'}>
-          <Grid item xs={12}>
+          <Grid item xs={12} className={classes.inputWrapper}>
             <Field
               name="meanings"
+              id={'test_meaning'}
               component={RenderTextField}
               label={`Значение`}
               disabled={addedMeanings.length === meaningsArray.length}
-              // placeholder={`введите значения для "${word.title}" по одному`}
               placeholder={inputPlaceholder}
+              autoFocus={true}
+              fullWidth
               onKeyDown={onEnterPress}
             />
+            <IconButton style={{ backgroundColor: 'transparent' }} onClick={onArrowClick}>
+              <ArrowForwardIcon/>
+            </IconButton>
           </Grid>
           <Grid item xs={12}>{error && <Typography align={'center'} variant='body1' color='error'>
             {error}
@@ -141,17 +150,18 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
               {addedMeaningsList}
             </List>
           </Grid>}
-          <Grid item xs={12} sm={4}>
+          {!!showResult && <Grid item xs={12} sm={4}>
             <Button type='button'
-              // disabled={pristine || submitting || !addedMeanings.length || !titleValue}
               disabled={wordsCount === currentWordIndex + 1 || addedMeanings.length !== meaningsArray.length}
               variant="contained"
               color="primary"
-              // className={classes.submit}
               style={{width: '100%'}}
-              onClick={() => handleNext()}
+              onClick={() => {
+                dispatch(setCurrentWordIndex(currentWordIndex + 1))
+                helpersDispatch(setAddedMeanings([]))
+              }}
             >Дальше</Button>
-          </Grid>
+          </Grid>}
         </Grid>
       </form>
     </div>

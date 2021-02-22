@@ -74,6 +74,15 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
   const nextRoute = currentRouteIndex === routes.length - 1 ? routes[0] : routes[currentRouteIndex + 1]
   const prevRoute: SetNameType = currentRouteIndex === 0 ? routes[routes.length - 1] : routes[currentRouteIndex - 1]
   let wordToEdit: WordType | undefined
+  let intervalDown: NodeJS.Timeout
+  let intervalUp: NodeJS.Timeout
+
+  useEffect(() => {
+    return () => {
+      if(intervalDown) clearInterval(intervalDown)
+      if(intervalUp) clearInterval(intervalUp)
+    }
+  })
 
   wordToEdit = useSelector((state: AppStateType) => {
     return state.words[routes[currentRouteIndex]].filter(word => word.id === selectedIDs[0])[0]
@@ -117,25 +126,29 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
   const handleScrollDown = (): void => {
     window['scrollTo']({top: 90, behavior: 'smooth'})
 
-    setInterval(() => {
+    const interval = setInterval(() => {
       if(window.pageYOffset === 90) {
         let list: any = document.getElementById('words_list')
         let data = list.getBoundingClientRect()
         setTopOffset(data.top)
       }
     }, 25)
+    intervalDown = interval
+    setTimeout(() => {clearInterval(interval)}, 2000)
   }
 
   const handleScrollUp = (): void => {
     window['scrollTo']({top: 0, behavior: 'smooth'})
 
-    setInterval(() => {
+    const interval = setInterval(() => {
       if(window.pageYOffset === 0) {
         let list: any = document.getElementById('words_list')
         let data = list.getBoundingClientRect()
         setTopOffset(data.top)
       }
     }, 25)
+    intervalUp = interval
+    setTimeout(() => {clearInterval(interval)}, 2000)
   }
 
   const handleMove = (idsArr: Array<number>, setToMove: SetNameType, setToRemoveFrom: SetNameType, options: OptionsType):void => {
@@ -299,7 +312,6 @@ const SetPage: FC<TProps> = ({set, getSet, pageTitle, uid, addToSet, options}) =
             </Paper>
           </Collapse>
           <Paper>
-            {/*<List id={'words_list'} className={classes.list} style={{maxHeight: `${window.innerHeight - deltaHeight}px`}}>*/}
             <List id={'words_list'} className={classes.list} style={{maxHeight: `${window.innerHeight - (topOffset + 1)}px`}}>
               {set.length ? <Set set={set}
                                  pageTitle={pageTitle}

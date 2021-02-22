@@ -1,14 +1,36 @@
-import {GET_SET_FOR_TEST, PUSH_TO_TEST_RESULT, SET_CURRENT_WORD_INDEX, SET_TEST_ACTIVE} from "../constants";
+import {
+  SET_SET_FOR_TEST,
+  PUSH_TO_TEST_RESULT,
+  SET_CURRENT_WORD_INDEX,
+  SET_TEST_ACTIVE,
+  SET_INVERT_SET_FOR_TEST
+} from "../constants";
 import {WordType} from "../../types/types";
 import {TTestResultItem} from "../reducers/testingReducer";
 
-export type TGetSetForTestAction = {
-  type: typeof GET_SET_FOR_TEST,
+export type TSetSetForTestAction = {
+  type: typeof SET_SET_FOR_TEST,
   payload: Array<WordType>
 }
 
-export const getSetForTest = (set: Array<WordType>): TGetSetForTestAction => ({
-  type: GET_SET_FOR_TEST,
+export const setSetForTest = (set: Array<WordType>): TSetSetForTestAction => ({
+  type: SET_SET_FOR_TEST,
+  payload: set
+})
+
+
+export type TInvertTestItem = {
+  title: string
+  meanings: string
+}
+
+export type TSetInvertSetForTestAction = {
+  type: typeof SET_INVERT_SET_FOR_TEST,
+  payload: Array<TInvertTestItem>
+}
+
+export const setInvertSetForTest = (set: Array<TInvertTestItem>): TSetInvertSetForTestAction => ({
+  type: SET_INVERT_SET_FOR_TEST,
   payload: set
 })
 
