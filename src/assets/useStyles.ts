@@ -29,8 +29,8 @@ export const useTestingStyles = makeStyles(theme => ({
     margin: theme.spacing(1)
   },
   settings: {
-    display: 'flex',
-    alignItems: 'center'
+    // display: 'flex',
+    // alignItems: 'center'
   },
   bold: {
     fontWeight: 'bold'
@@ -46,9 +46,9 @@ export const useTestingStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
     alignItems: 'flex-start'
   },
-  startButton: {
+  settingsButton: {
     height: 41,
-    flex: 1,
+    // flex: 1,
     color: '#fff'
   },
   controlsWrapper: {
@@ -56,8 +56,16 @@ export const useTestingStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'flex-start'
   },
+  buttonsWrapper: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'flex-end'
+  },
   select: {
     marginRight: theme.spacing(1)
+  },
+  testVariant: {
+    flex: 1
   },
   resultTable: {
     marginBottom: theme.spacing(1)

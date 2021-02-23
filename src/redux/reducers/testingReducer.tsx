@@ -20,7 +20,7 @@ export type TWordResult = {
 }
 
 export type TTestResultItem = {
-  word: WordType
+  word: WordType | TInvertTestItem
   wordResult: Array<TWordResult>
 }
 

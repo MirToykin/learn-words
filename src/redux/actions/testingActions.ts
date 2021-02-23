@@ -20,6 +20,7 @@ export const setSetForTest = (set: Array<WordType>): TSetSetForTestAction => ({
 
 
 export type TInvertTestItem = {
+  id: string
   title: string
   meanings: string
 }

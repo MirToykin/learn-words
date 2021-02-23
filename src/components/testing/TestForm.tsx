@@ -20,7 +20,7 @@ import {
 import {WordType} from "../../types/types";
 import {
   pushToTestResult,
-  setCurrentWordIndex,
+  setCurrentWordIndex, TInvertTestItem,
   TPushToTestResultAction,
   TSetCurrentWordIndexAction
 } from "../../redux/actions/testingActions";
@@ -41,7 +41,7 @@ type TOnCheckMeanings = {
 }
 
 type TProps = {
-  word: WordType
+  word: WordType | TInvertTestItem
   currentWordIndex: number
   wordsCount: number
   showResult: 1 | 0

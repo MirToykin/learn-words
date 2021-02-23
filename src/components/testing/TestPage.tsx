@@ -28,8 +28,9 @@ import MuiAccordion from '@material-ui/core/Accordion';
 import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
 import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
 import {
+  setInvertSetForTest,
   setSetForTest,
-  setTestActive,
+  setTestActive, TSetInvertSetForTestAction,
   TSetSetForTestAction,
   TSetTestActiveAction
 } from "../../redux/actions/testingActions";
@@ -125,10 +126,15 @@ const TestPage: FC<TProps> = ({uid, options}) => {
   const setClasses = useSetStyles()
   const [wordsCount, setWordsCount] = useState(10)
   const [showResult, setShowResult] = useState<1 | 0>(0)
+  const [testVariant, setTestVariant] = useState<1 | 0>(1)
   const [resultVisible, setResultVisible] = useState(false)
   const [detailResultShown, setDetailResultShown] = useState(false)
   const [commonResultShown, setCommonResultShown] = useState(true)
   const [topOffset, setTopOffset] = useState(0);
+
+  const thunkDispatchGetSet: ThunkDispatch<AppStateType, unknown, TGetSet> = useDispatch()
+  const dispatch: Dispatch<TSetTestActiveAction | TSetSetForTestAction | TSetInvertSetForTestAction> = useDispatch();
+  const getDone: GetSetThunkCreatorType = getSet('done')
 
   const handleCountChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setWordsCount(event.target.value as number)
@@ -138,7 +144,11 @@ const TestPage: FC<TProps> = ({uid, options}) => {
     setShowResult(event.target.value as 1 | 0)
   }
 
-  const testSetFromState = useSelector((state: AppStateType) => state.testing.testSet)
+  const handleTestVariantChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setTestVariant(event.target.value as 1 | 0)
+  }
+
+  const testSetFromState = useSelector((state: AppStateType) => !!testVariant ? state.testing.testSet : state.testing.invertTestSet)
   const currentWordIndex = useSelector((state: AppStateType) => state.testing.currentWordIndex)
   const isTestActive = useSelector((state: AppStateType) => state.testing.testActive)
   const testResult = useSelector((state: AppStateType) => state.testing.testResult)
@@ -180,6 +190,7 @@ const TestPage: FC<TProps> = ({uid, options}) => {
     })
 
     type TInvertTestItem = {
+      id: string
       title: string
       meanings: string
     }
@@ -188,6 +199,7 @@ const TestPage: FC<TProps> = ({uid, options}) => {
 
     for (let title in invertDoneObj) {
       invertDone.push({
+        id: title,
         title,
         meanings: invertDoneObj[title].join('/')
       })
@@ -203,6 +215,7 @@ const TestPage: FC<TProps> = ({uid, options}) => {
     const invertTestingSet = indexes.map(index => invertDone[index])
 
     console.log(invertTestingSet)
+    if (!testSetFromState.length) dispatch(setInvertSetForTest(invertTestingSet))
   }
 
   const max = done.length - 1
@@ -216,9 +229,6 @@ const TestPage: FC<TProps> = ({uid, options}) => {
     testingSet = indexes.map(index => done[index])
   }
 
-  const thunkDispatchGetSet: ThunkDispatch<AppStateType, unknown, TGetSet> = useDispatch()
-  const dispatch: Dispatch<TSetTestActiveAction | TSetSetForTestAction> = useDispatch();
-  const getDone: GetSetThunkCreatorType = getSet('done')
   const getDoneSet = () => thunkDispatchGetSet(getDone(uid, options))
 
   const handleStartTest = (): void => {
@@ -278,17 +288,31 @@ const TestPage: FC<TProps> = ({uid, options}) => {
               </Select>
               <FormHelperText>Промежуточный результат</FormHelperText>
             </FormControl>
+            <FormControl className={classes.testVariant}>
+              <Select
+                value={testVariant}
+                onChange={handleTestVariantChange}
+                input={<BootstrapInput/>}
+                disabled={isTestActive}
+              >
+                <MenuItem value={1}>слово-перевод</MenuItem>
+                <MenuItem value={0}>перевод-слово</MenuItem>
+              </Select>
+              <FormHelperText>Вариант теста</FormHelperText>
+            </FormControl>
+          </div>
+          <div className={classes.buttonsWrapper}>
             {!isTestActive && <Button type='button'
                                       variant="contained"
                                       color="primary"
                                       onClick={() => handleStartTest()}
-                                      className={classes.startButton}
+                                      className={classes.settingsButton}
             >Старт</Button>}
             {isTestActive && <Button type='button'
                                      variant="contained"
                                      color="primary"
               // onClick={() => handleStartTest()}
-                                     className={classes.startButton}
+                                     className={classes.settingsButton}
             >Стоп</Button>}
           </div>
         </Paper>
