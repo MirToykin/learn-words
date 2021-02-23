@@ -1,16 +1,22 @@
 import {WordType} from "../../types/types"
 import {
-  SET_SET_FOR_TEST,
-  PUSH_TO_ADDED_MEANINGS, PUSH_TO_TEST_RESULT,
+  PUSH_TO_ADDED_MEANINGS,
+  PUSH_TO_TEST_RESULT,
   SET_ADDED_MEANINGS,
   SET_CURRENT_WORD_INDEX,
-  SET_TEST_ACTIVE, SET_INVERT_SET_FOR_TEST
+  SET_INVERT_SET_FOR_TEST,
+  SET_SET_FOR_TEST,
+  SET_TEST_ACTIVE,
+  SET_TEST_RESULT
 } from "../constants";
 import {
-  TSetSetForTestAction,
+  TInvertTestItem,
   TPushToTestResultAction,
   TSetCurrentWordIndexAction,
-  TSetTestActiveAction, TSetInvertSetForTestAction, TInvertTestItem
+  TSetInvertSetForTestAction,
+  TSetSetForTestAction,
+  TSetTestActiveAction,
+  TSetTestResultAction
 } from "../actions/testingActions";
 import {PushToAddedMeaningsActionType, SetAddedMeaningsActionType} from "../actions/wordsActions";
 
@@ -33,7 +39,7 @@ let initialState = {
   testResult: [] as Array<TTestResultItem>
 }
 
-type ActionType = TSetSetForTestAction | TSetTestActiveAction | PushToAddedMeaningsActionType |
+type ActionType = TSetSetForTestAction | TSetTestActiveAction | PushToAddedMeaningsActionType | TSetTestResultAction |
   TSetCurrentWordIndexAction | SetAddedMeaningsActionType | TPushToTestResultAction | TSetInvertSetForTestAction
 
 type InitialStateType = typeof initialState
@@ -54,6 +60,8 @@ const testingReducer = (state:InitialStateType = initialState, action:ActionType
       return {...state, currentWordIndex: action.payload}
     case PUSH_TO_TEST_RESULT:
       return {...state, testResult: [...state.testResult, action.payload]}
+    case SET_TEST_RESULT:
+      return {...state, testResult: action.payload}
   }
   return state
 }

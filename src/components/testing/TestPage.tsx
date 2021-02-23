@@ -3,7 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper/Paper";
 import Typography from "@material-ui/core/Typography";
 import {
-  createStyles,
+  createStyles, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
   FormControl,
   FormHelperText,
   InputBase,
@@ -21,18 +21,25 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppStateType} from "../../redux/store/configureStore";
 import withAuthRedirect from "../HOCs/withAuthRedirect";
 import {OptionsType, WordType} from "../../types/types";
-import {getSet, GetSetThunkCreatorType, TGetSet} from "../../redux/actions/wordsActions";
+import {
+  getSet,
+  GetSetThunkCreatorType,
+  setAddedMeanings,
+  SetAddedMeaningsActionType,
+  TGetSet
+} from "../../redux/actions/wordsActions";
 import {ThunkDispatch} from "redux-thunk";
 import {Dispatch} from "redux";
 import MuiAccordion from '@material-ui/core/Accordion';
 import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
 import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
 import {
+  setCurrentWordIndex,
   setInvertSetForTest,
   setSetForTest,
-  setTestActive, TSetInvertSetForTestAction,
+  setTestActive, setTestResult, TInvertTestItem, TSetCurrentWordIndexAction, TSetInvertSetForTestAction,
   TSetSetForTestAction,
-  TSetTestActiveAction
+  TSetTestActiveAction, TSetTestResultAction
 } from "../../redux/actions/testingActions";
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
@@ -130,10 +137,11 @@ const TestPage: FC<TProps> = ({uid, options}) => {
   const [resultVisible, setResultVisible] = useState(false)
   const [detailResultShown, setDetailResultShown] = useState(false)
   const [commonResultShown, setCommonResultShown] = useState(true)
+  const [stopTestDialog, setStopTestDialog] = useState(false)
   const [topOffset, setTopOffset] = useState(0);
 
   const thunkDispatchGetSet: ThunkDispatch<AppStateType, unknown, TGetSet> = useDispatch()
-  const dispatch: Dispatch<TSetTestActiveAction | TSetSetForTestAction | TSetInvertSetForTestAction> = useDispatch();
+  const dispatch: Dispatch<TSetTestActiveAction | TSetSetForTestAction | TSetInvertSetForTestAction | TSetCurrentWordIndexAction | SetAddedMeaningsActionType | TSetTestResultAction> = useDispatch();
   const getDone: GetSetThunkCreatorType = getSet('done')
 
   const handleCountChange = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -177,6 +185,7 @@ const TestPage: FC<TProps> = ({uid, options}) => {
   let testingSet: Array<WordType> = []
   const done = useSelector((state: AppStateType) => state.words.done)
   let invertDoneObj: any = {}
+  let invertTestingSet: Array<TInvertTestItem>
   if (done.length) {
     done.forEach((word) => {
       const meanings = word.meanings.split('/')
@@ -212,10 +221,9 @@ const TestPage: FC<TProps> = ({uid, options}) => {
       const ind = randomInteger(0, max)
       if (!~indexes.indexOf(ind)) indexes.push(ind)
     }
-    const invertTestingSet = indexes.map(index => invertDone[index])
+    invertTestingSet = indexes.map(index => invertDone[index])
 
-    console.log(invertTestingSet)
-    if (!testSetFromState.length) dispatch(setInvertSetForTest(invertTestingSet))
+    // if (!testSetFromState.length) dispatch(setInvertSetForTest(invertTestingSet))
   }
 
   const max = done.length - 1
@@ -232,7 +240,20 @@ const TestPage: FC<TProps> = ({uid, options}) => {
   const getDoneSet = () => thunkDispatchGetSet(getDone(uid, options))
 
   const handleStartTest = (): void => {
+    setResultVisible(false)
     dispatch(setTestActive(true))
+    if (testResult.length) dispatch(setTestResult([]))
+  }
+
+  const handleStopTest = (): void => {
+    dispatch(setTestActive(false))
+    dispatch(setSetForTest([]))
+    dispatch(setInvertSetForTest([]))
+    dispatch(setTestActive(false))
+    dispatch(setCurrentWordIndex(0))
+    dispatch(setAddedMeanings([]))
+    setResultVisible(true)
+    setStopTestDialog(false)
   }
 
   useEffect(() => {
@@ -243,10 +264,14 @@ const TestPage: FC<TProps> = ({uid, options}) => {
 
   useEffect(() => {
     if (done.length) dispatch(setSetForTest(testingSet))
-  }, [wordsCount, done])
+  }, [wordsCount, done, isTestActive])
 
   useEffect(() => {
-    if(resultVisible) {
+    if (done.length) dispatch(setInvertSetForTest(invertTestingSet))
+  }, [wordsCount, done, isTestActive])
+
+  useEffect(() => {
+    if (resultVisible) {
       let resultBlock: any = document.getElementById('result_block')
       let data = resultBlock.getBoundingClientRect()
       setTopOffset(data.top)
@@ -311,14 +336,14 @@ const TestPage: FC<TProps> = ({uid, options}) => {
             {isTestActive && <Button type='button'
                                      variant="contained"
                                      color="primary"
-              // onClick={() => handleStartTest()}
+                                     onClick={() => setStopTestDialog(true)}
                                      className={classes.settingsButton}
             >Стоп</Button>}
           </div>
         </Paper>
         {isTestActive && <Paper className={classes.block} style={{display: resultVisible ? 'none' : 'block'}}>
             <div className={classes.formHead}>
-                <Typography variant='h6' color={'primary'}>{testSetFromState[currentWordIndex].title}</Typography>
+                <Typography variant='h6' color={'primary'}>{testSetFromState[currentWordIndex] && testSetFromState[currentWordIndex].title}</Typography>
                 <Typography variant='h6'>{currentWordIndex + 1}/{wordsCount}</Typography>
             </div>
             <TestForm
@@ -328,9 +353,11 @@ const TestPage: FC<TProps> = ({uid, options}) => {
                 showResult={showResult}
                 setResultVisible={setResultVisible}
                 testResult={testResult}
+                handleStopTest={handleStopTest}
             />
         </Paper>}
-        {resultVisible && <Paper id={'result_block'} className={setClasses.list} style={{maxHeight: `${window.innerHeight - (topOffset + 1)}px`}}>
+        {resultVisible && <Paper id={'result_block'} className={setClasses.list}
+                                 style={{maxHeight: `${window.innerHeight - (topOffset + 1)}px`}}>
             <Accordion
                 expanded={commonResultShown}
                 onChange={() => setCommonResultShown(shown => !shown)}
@@ -404,6 +431,29 @@ const TestPage: FC<TProps> = ({uid, options}) => {
             </Accordion>
         </Paper>}
       </Grid>
+      <Dialog
+        open={stopTestDialog}
+        onClose={() => {
+          setStopTestDialog(false)
+        }}
+      >
+        <DialogTitle>Завершение теста</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Завершить тестирование и отобразить текущий результат?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            setStopTestDialog(false)
+          }} color="primary">
+            Отмена
+          </Button>
+          <Button onClick={handleStopTest} autoFocus>
+            Подтвердить
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 };

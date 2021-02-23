@@ -3,7 +3,7 @@ import {
   PUSH_TO_TEST_RESULT,
   SET_CURRENT_WORD_INDEX,
   SET_TEST_ACTIVE,
-  SET_INVERT_SET_FOR_TEST
+  SET_INVERT_SET_FOR_TEST, SET_TEST_RESULT
 } from "../constants";
 import {WordType} from "../../types/types";
 import {TTestResultItem} from "../reducers/testingReducer";
@@ -63,4 +63,14 @@ export type TPushToTestResultAction = {
 export const pushToTestResult = (resItem: TTestResultItem): TPushToTestResultAction => ({
   type: PUSH_TO_TEST_RESULT,
   payload: resItem
+})
+
+export type TSetTestResultAction = {
+  type: typeof SET_TEST_RESULT,
+  payload: Array<TTestResultItem>
+}
+
+export const setTestResult = (res: Array<TTestResultItem>): TSetTestResultAction => ({
+  type: SET_TEST_RESULT,
+  payload: res
 })

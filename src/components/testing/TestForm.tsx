@@ -20,9 +20,9 @@ import {
 import {WordType} from "../../types/types";
 import {
   pushToTestResult,
-  setCurrentWordIndex, TInvertTestItem,
+  setCurrentWordIndex, setTestActive, TInvertTestItem,
   TPushToTestResultAction,
-  TSetCurrentWordIndexAction
+  TSetCurrentWordIndexAction, TSetTestActiveAction
 } from "../../redux/actions/testingActions";
 import {useTestingStyles} from "../../assets/useStyles";
 import {TTestResultItem, TWordResult} from "../../redux/reducers/testingReducer";
@@ -47,10 +47,11 @@ type TProps = {
   showResult: 1 | 0
   setResultVisible: (visible: boolean) => void
   testResult: Array<TTestResultItem>
+  handleStopTest: () => void
 }
 
 const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
-                                                                              pristine, submitting, error,
+                                                                              pristine, submitting, error, handleStopTest,
                                                                               handleSubmit, reset, word, currentWordIndex,
                                                                               wordsCount, showResult, setResultVisible, testResult
                                                                             }) => {
@@ -58,9 +59,9 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
   const addedMeanings = useSelector((state: AppStateType) => state.testing.addedMeanings)
   let meaningValue: string = useSelector((state: AppStateType) => selector(state, 'meanings'))
   const helpersDispatch: Dispatch<SetAddedMeaningsActionType | FormAction> = useDispatch()
-  const dispatch: Dispatch<TSetCurrentWordIndexAction | TPushToTestResultAction> = useDispatch()
+  const dispatch: Dispatch<TSetCurrentWordIndexAction | TPushToTestResultAction | TSetTestActiveAction> = useDispatch()
   const correctMeaningValue: boolean = !!(meaningValue && meaningValue.replace(/\s/g, '').length) // проверка не содержит ли строка только пробелы и переносы строк
-  const meaningsArray = word.meanings.split('/')
+  const meaningsArray = word ? word.meanings.split('/') : []
   const wordResult: Array<TWordResult> = []
   const meaningNum = meaningsArray.length === addedMeanings.length ? addedMeanings.length : addedMeanings.length + 1
   const inputPlaceholder = meaningsArray.length === 1 ? 'Значение' : `Значение ${meaningNum} из ${meaningsArray.length}`
@@ -90,6 +91,7 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
     handleAddMeaning(addedMeanings, meaningValue, onAddMeaning, helpersDispatch, 'TestForm', correctMeaningValue)
     if (addedMeanings.length + 1 === meaningsArray.length && wordsCount === currentWordIndex + 1) {
       setResultVisible(true)
+      setTimeout(handleStopTest)
     }
   }
 
