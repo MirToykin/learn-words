@@ -26,3 +26,10 @@ export const randomInteger = (min: number, max: number) => {
   let rand = min - 0.5 + Math.random() * (max - min + 1);
   return Math.round(rand);
 }
+
+export const transformMeaning = (meaning: string) => {
+  meaning = meaning.replaceAll(/\(.+\)/g, '') // исключение комментариев в скобках
+  meaning = meaning.replaceAll(/[._^%$#!~@,]+/g, '') // исключение знаков препинания
+  meaning = meaning.replaceAll(/\s+/g, ' ') // замена любого кол-ва пробелов больше одного на один пробел
+  return meaning.trim().toLowerCase()
+}

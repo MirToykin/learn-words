@@ -43,7 +43,7 @@ const Set: FC<TProps> = ({set, pageTitle, options, setSelectedIDs}) => {
 
   return (
     <>
-      {set.map((word, index) => {
+      {set.reverse().map((word, index) => {
         if(index + 1 < setSize)
           return (<ListItem key={word.id}>
                     <WordItem word={word} pageTitle={pageTitle}

@@ -8,6 +8,10 @@ body {
   margin: 0;
 }
 
+MuiPickersBasePicker-pickerView-253 {
+  color: #fff;
+}
+
 @media (max-width: 539px) {
   .makeStyles-root-1 {
     margin-bottom: 5px !important;

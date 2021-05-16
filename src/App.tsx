@@ -1,6 +1,6 @@
 import React, {FC, useEffect} from 'react';
 import Container from "@material-ui/core/Container";
-import {Redirect, Route, Switch} from "react-router-dom";
+import {Redirect, Route, Switch, useHistory} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import LoginForm from "./components/auth/LoginForm";
 import CurrentSet from "./components/word_sets/current/CurrentSet";
@@ -18,8 +18,22 @@ import {AppStateType} from "./redux/store/configureStore";
 import {OptionsType} from "./types/types";
 import NavBar from "./components/nav/NavBar";
 import TestPage from "./components/testing/TestPage";
-import {getSet, GetSetThunkCreatorType, TGetSet} from "./redux/actions/wordsActions";
+import {
+  getSet,
+  GetSetThunkCreatorType,
+  setAddedMeanings,
+  SetAddedMeaningsActionType,
+  TGetSet
+} from "./redux/actions/wordsActions";
 import {ThunkDispatch} from "redux-thunk";
+import {
+  setCurrentWordIndex,
+  setInvertSetForTest,
+  setSetForTest,
+  setTestActive, TSetCurrentWordIndexAction, TSetInvertSetForTestAction, TSetSetForTestAction,
+  TSetTestActiveAction, TSetTestResultAction
+} from "./redux/actions/testingActions";
+import {Dispatch} from "redux";
 
 
 const App:FC = () => {
@@ -27,6 +41,7 @@ const App:FC = () => {
   const uid = useSelector((state: AppStateType) => state.auth.id)
   const token = useSelector((state: AppStateType) => state.auth.token)
   const darkState = useSelector((state: AppStateType) => state.app.darkState)
+  const testingEnabled = useSelector((state: AppStateType) => state.words.done.length >= 10)
 
   const options:OptionsType = {
     headers: {
@@ -49,6 +64,25 @@ const App:FC = () => {
       }
     }
   });
+
+  const history = useHistory()
+  const dispatch: Dispatch<TSetTestActiveAction | TSetSetForTestAction | TSetInvertSetForTestAction | TSetCurrentWordIndexAction | SetAddedMeaningsActionType | TSetTestResultAction> = useDispatch();
+  useEffect(() => {
+    let unlisten = history.listen(location => {
+      if (location.pathname !== '/testing') {
+        dispatch(setTestActive(false))
+        dispatch(setSetForTest([]))
+        dispatch(setInvertSetForTest([]))
+        dispatch(setTestActive(false))
+        dispatch(setCurrentWordIndex(0))
+        dispatch(setAddedMeanings([]))
+      }
+    })
+
+    return () => {
+      unlisten()
+    }
+  })
 
   const matches = useMediaQuery('(min-width:540px)');
 

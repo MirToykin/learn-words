@@ -11,7 +11,7 @@ import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
 import {useDispatch, useSelector} from "react-redux";
 import {AppStateType} from "../../redux/store/configureStore";
-import {handleAddMeaning, onAddMeaning} from "../../assets/helpers";
+import {handleAddMeaning, onAddMeaning, transformMeaning} from "../../assets/helpers";
 import {Dispatch} from "redux";
 import {
   setAddedMeanings,
@@ -68,10 +68,13 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
 
   useEffect(() => {
     if (addedMeanings.length === meaningsArray.length) {
-      if (testResult.length !== currentWordIndex + 1) dispatch(pushToTestResult({word, wordResult}))
-      if (wordsCount !== currentWordIndex + 1 && !showResult) handleNext()
+      if (testResult.length !== currentWordIndex + 1 && word) dispatch(pushToTestResult({word, wordResult}))
+      if (wordsCount !== currentWordIndex + 1 && !showResult && addedMeanings.length) {
+        handleNext()
+      }
     }
-  }, [addedMeanings, word, currentWordIndex, wordResult])
+  }, [addedMeanings, currentWordIndex])
+  // }, [addedMeanings, word, currentWordIndex, wordResult])
 
   useEffect(() => {
     const input = document.getElementById('test_meaning')
@@ -104,7 +107,8 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
   const addedMeaningsList = addedMeanings.map((meaning) => {
     let className
     let isCorrect: boolean
-    if (~meaningsArray.indexOf(meaning)) {
+    const arrayForComparision = meaningsArray.map(word => transformMeaning(word))
+    if (~arrayForComparision.indexOf(transformMeaning(meaning))) {
       className = classes.success
       isCorrect = true
     } else {
@@ -152,7 +156,7 @@ const TestForm: FC<TProps & InjectedFormProps<TOnCheckMeanings, TProps>> = ({
               {addedMeaningsList}
             </List>
           </Grid>}
-          {!!showResult && <Grid item xs={12} sm={4}>
+          {(!!showResult || (!showResult && addedMeanings.length === meaningsArray.length)) && <Grid item xs={12} sm={4}>
             <Button type='button'
               disabled={wordsCount === currentWordIndex + 1 || addedMeanings.length !== meaningsArray.length}
               variant="contained"

@@ -23,12 +23,17 @@ export const useTestingStyles = makeStyles(theme => ({
     paddingRight: theme.spacing(2),
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
-    marginBottom: theme.spacing(1)
   },
   margin: {
     margin: theme.spacing(1)
   },
+  loading: {
+    marginTop: -3,
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4
+  },
   settings: {
+    marginTop: theme.spacing(1)
     // display: 'flex',
     // alignItems: 'center'
   },
@@ -54,7 +59,12 @@ export const useTestingStyles = makeStyles(theme => ({
   controlsWrapper: {
     width: '100%',
     display: 'flex',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+    flexWrap: 'wrap'
+  },
+  formControl: {
+    marginBottom: theme.spacing(1),
+    // marginRight: theme.spacing(2)
   },
   buttonsWrapper: {
     width: '100%',
@@ -94,6 +104,22 @@ export const useTestingStyles = makeStyles(theme => ({
     display: 'flex',
     // height: 50,
     padding: '0 0 0 1em !important',
+  },
+  datepicker: {
+    width: 100,
+    marginRight: theme.spacing(2)
+  },
+  datepickerHelperText: {
+    color: theme.palette.text.secondary
+  },
+  pickersContainer: {
+    display: 'flex',
+    alignSelf: 'stretch'
+  },
+  testDisabledMessage: {
+    fontSize: 13,
+    marginTop: '1em',
+    color: theme.palette.text.hint
   }
 }))
 

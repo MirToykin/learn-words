@@ -22,7 +22,13 @@ export type GetSetThunkCreatorType = (uid: number, options: OptionsType) => GetS
 export const getSet = (set: SetNameType): GetSetThunkCreatorType => (uid, options) => async (dispatch, getState) => {
   dispatch(setIsFetching(true))
   try {
-    const words = await api.getSet(set, uid, options)
+    let words = await api.getSet(set, uid, options)
+    words = words.sort((a, b) => {
+      const dateA = a.updated_at ? Date.parse(a.updated_at) : 0
+      const dateB = b.updated_at ? Date.parse(b.updated_at) : 0
+      return dateA - dateB
+    })
+
     dispatch(addSet(set, words))
   } catch(e) {
     if (e.response && e.response.status === 401) {
